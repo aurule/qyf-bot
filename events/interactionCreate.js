@@ -1,20 +1,30 @@
 module.exports = {
     name: 'interactionCreate',
     execute(interaction) {
-        if (!(interaction.isCommand() || interaction.isApplicationCommand())) {
-            console.log(`${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`);
-            return;
+        if (interaction.isCommand() || interaction.isApplicationCommand()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+
+            if (!command) return;
+
+            try {
+                command.execute(interaction);
+            } catch (error) {
+                console.error(error);
+                interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
         }
 
-        const command = interaction.client.commands.get(interaction.commandName);
+        if (interaction.isSelectMenu()) {
+            const followup = interaction.client.followups.get(interaction.customId);
 
-        if (!command) return;
+            if (!followup) return;
 
-        try {
-            command.execute(interaction);
-        } catch (error) {
-            console.error(error);
-            interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            try {
+                followup.execute(interaction);
+            } catch (error) {
+                console.error(error);
+                interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
         }
     },
 };
