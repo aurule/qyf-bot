@@ -6,8 +6,11 @@ module.exports = {
         .setName('Quote Message')
         .setType(ApplicationCommandType.Message),
     async execute(interaction) {
-        console.log(interaction.message);
+        const message = await interaction.channel.messages.fetch(interaction.targetId)
+        const text = message.content;
+        const speaker = message.author;
+        const name = speaker.username;
 
-        await interaction.reply(`quoted?`);
+        await interaction.reply(`The quote: "${text}" ~ ${name}`);
     },
 };
