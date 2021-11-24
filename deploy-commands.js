@@ -1,6 +1,7 @@
 // Load envvars
 require("dotenv").config();
 
+const logger = require('pino')()
 const fs = require("fs");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -22,14 +23,14 @@ const rest = new REST({ version: "9" }).setToken(token);
 
 (async () => {
     try {
-        console.log("Started refreshing application (/) commands.");
+        logger.info("Started refreshing application (/) commands.");
 
         await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
             body: commands,
         });
 
-        console.log("Successfully reloaded application (/) commands.");
+        logger.info("Successfully reloaded application (/) commands.");
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 })();
