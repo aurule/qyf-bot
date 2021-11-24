@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { keyv } = require('../util/keyv.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,10 +16,13 @@ module.exports = {
         const current_channel = interaction.channel;
         const channel_option = interaction.options.getChannel('channel');
         const target_channel = channel_option ? channel_option : current_channel;
-
         const server_wide = interaction.options.getBoolean('server');
 
-        // TODO: store options for later use
+        const command_options = {
+            target_channel: target_channel,
+            server_wide: server_wide
+        }
+        keyv.set(interaction.id, command_options);
 
         const scope = server_wide ? 'the server' : target_channel;
         const gameSelectRow = new MessageActionRow()

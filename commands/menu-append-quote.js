@@ -1,21 +1,23 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { ContextMenuCommandBuilder } = require('@discordjs/builders');
+const { ApplicationCommandType } = require('discord-api-types/v9');
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('append-quote')
-        .setDescription('Add a line to a quote')
-        .addStringOption(option =>
-            option.setName('text')
-            .setDescription('What was said')
-            .setRequired(true))
-        .addUserOption(option =>
-            option.setName('speaker')
-            .setDescription('The user who said the thing. Defaults to last speaker.'))
-        .addStringOption(option =>
-            option.setName('alias')
-            .setDescription("The name of who said it. Replaces the speaker's current nickname.")),
+    data: new ContextMenuCommandBuilder()
+        .setName('Add to quote')
+        .setType(ApplicationCommandType.Message),
     async execute(interaction) {
+        const message = await interaction.channel.messages.fetch(interaction.targetId)
+
+        const text = message.content;
+        const speaker = message.author;
+        const command_options = {
+            text: text,
+            speaker: speaker,
+            alias: null,
+        }
+        keyv.set(interaction.id, command_options);
+
         const quoteSelectRow = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
@@ -34,8 +36,6 @@ module.exports = {
                         },
                     ]),
             );
-
-        // TODO: store options for later use
 
         await interaction.reply({ content: 'Which quote do you want to add to? Only the most recent few quotes can be changed.', components: [quoteSelectRow], ephemeral: true });
     },
