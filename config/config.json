@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "development",
+    "dialect": "sqlite",
+    "storage": ".sqlite/development.sqlite"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "test",
+    "dialect": "sqlite",
+    "storage": ".sqlite/test.sqlite"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "pgsql"
+  }
+}
