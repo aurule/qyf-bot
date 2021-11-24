@@ -11,6 +11,7 @@ Node 17+
 BOT_TOKEN
 REDIS_URL
 NODE_ENV
+CLIENT_ID
 
 # Deploy process
 
