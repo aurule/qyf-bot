@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "prettier": "^2.4.1",
-    "sqlite": "^4.0.23"
     "sequelize-cli": "^6.3.0",
+    "sqlite3": "^5.0.2"
   },
   "name": "qyf-bot",
   "description": "Discord bot for interacting with Quote Your Friends",
