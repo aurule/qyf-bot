@@ -11,3 +11,9 @@ Node 17+
 BOT_TOKEN
 REDIS_URL
 NODE_ENV
+
+# Deploy process
+
+push code
+install squelize-cli
+run `npx sequelize db:migrate`
