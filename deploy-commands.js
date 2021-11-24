@@ -23,13 +23,13 @@ const rest = new REST({ version: "9" }).setToken(token);
 
 (async () => {
     try {
-        logger.info("Started refreshing application (/) commands.");
+        logger.info("Started refreshing application commands.");
 
         await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
             body: commands,
         });
 
-        logger.info("Successfully reloaded application (/) commands.");
+        logger.info("Successfully refreshed application commands.");
     } catch (error) {
         logger.error(error);
     }
