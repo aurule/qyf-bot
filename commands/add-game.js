@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { Guilds, Games } = require("../models");
+const { UniqueConstraintError } = require("sequelize");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,6 +14,21 @@ module.exports = {
     ),
   async execute(interaction) {
     const game_name = interaction.options.getString("name");
+
+    const guild = await Guilds.findOne({
+      where: { snowflake: interaction.guild.id },
+    });
+
+    try {
+      await Games.create({ name: game_name, guildId: guild.id });
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        await interaction.reply(`The game ${game_name} already exists!`);
+        return;
+      }
+      await interaction.reply("Something went wrong :-(");
+      return;
+    }
 
     await interaction.reply(`Added game "${game_name}"`);
   },
