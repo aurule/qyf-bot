@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       DefaultGames.belongsTo(models.Games);
     }
+
+    // static "constants" to ensure correct type enum values
+    static get TYPE_GUILD() { return 'guild'; }
+    static get TYPE_CHANNEL() { return 'channel'; }
   };
   DefaultGames.init({
     name: {
@@ -20,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['channel', 'guild'],
+      values: [DefaultGames.TYPE_CHANNEL, DefaultGames.TYPE_GUILD],
       allowNull: false
     },
     gameId: {
