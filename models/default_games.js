@@ -1,7 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class DefaultGames extends Model {
     /**
@@ -14,36 +14,43 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     // static "constants" to ensure correct type enum values
-    static get TYPE_GUILD() { return 'guild'; }
-    static get TYPE_CHANNEL() { return 'channel'; }
-  };
-  DefaultGames.init({
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    type: {
-      type: DataTypes.ENUM,
-      values: [DefaultGames.TYPE_CHANNEL, DefaultGames.TYPE_GUILD],
-      allowNull: false
-    },
-    gameId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: {
-          tableName: 'games'
+    static get TYPE_GUILD() {
+      return "guild";
+    }
+    static get TYPE_CHANNEL() {
+      return "channel";
+    }
+  }
+  DefaultGames.init(
+    {
+      name: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.ENUM,
+        values: [DefaultGames.TYPE_CHANNEL, DefaultGames.TYPE_GUILD],
+        allowNull: false,
+      },
+      gameId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: {
+            tableName: "games",
+          },
+          key: "id",
         },
-        key: 'id'
+      },
+      snowflake: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+        unique: true,
       },
     },
-    snowflake: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      unique: true
+    {
+      sequelize,
+      modelName: "DefaultGames",
     }
-  }, {
-    sequelize,
-    modelName: 'DefaultGames',
-  });
+  );
   return DefaultGames;
 };

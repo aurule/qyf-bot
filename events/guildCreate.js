@@ -5,12 +5,12 @@ module.exports = {
   async execute(discord_guild) {
     const [guild, _isNewGuild] = await Guilds.findOrCreate({
       where: {
-        snowflake: discord_guild.id
+        snowflake: discord_guild.id,
       },
       defaults: {
         name: discord_guild.name,
         snowflake: discord_guild.id,
-      }
+      },
     });
 
     const [game, _isNewGame] = await Games.findOrCreate({
@@ -21,17 +21,17 @@ module.exports = {
       defaults: {
         name: "No Game",
         guildId: guild.id,
-      }
+      },
     });
 
     DefaultGames.findOrCreate({
-      where: {snowflake: guild.snowflake},
+      where: { snowflake: guild.snowflake },
       defaults: {
         type: DefaultGames.TYPE_GUILD,
         name: guild.name,
         snowflake: guild.snowflake,
         gameId: game.id,
-      }
+      },
     });
   },
 };
