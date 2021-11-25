@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Games extends Model {
     /**
@@ -14,25 +12,34 @@ module.exports = (sequelize, DataTypes) => {
       Games.hasMany(models.Quotes);
       Games.hasMany(models.DefaultGames);
     }
-  };
-  Games.init({
-    name: {
-      allowNull: false,
-      type: DataTypes.TEXT
-    },
-    guildId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: {
-          tableName: 'guilds'
-        },
-        key: 'id'
+  }
+  Games.init(
+    {
+      name: {
+        allowNull: false,
+        type: DataTypes.TEXT,
       },
-      allowNull: false
+      guildId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: {
+            tableName: "guilds",
+          },
+          key: "id",
+        },
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Games",
+      indexes: [
+        {
+          unique: true,
+          fields: ["name", "guildId"],
+        },
+      ],
     }
-  }, {
-    sequelize,
-    modelName: 'Games',
-  });
+  );
   return Games;
 };
