@@ -5,17 +5,8 @@ const { Guilds, Games, DefaultGames } = require("../models");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("list-games")
-    .setDescription("Add a game to this server")
-    .addStringOption((option) =>
-      option
-        .setName("sort")
-        .setDescription("How to sort the games")
-        .addChoice("By name", "name")
-        .addChoice("By total quotes", "num_quotes")
-        .addChoice("By where it's default", "default_channel")
-    ),
+    .setDescription("Show the games for this server"),
   async execute(interaction) {
-    const sort = interaction.options.getString("sort");
 
     const guild = await Guilds.findOne({
       where: { snowflake: interaction.guild.id },
