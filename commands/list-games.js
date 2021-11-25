@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { channelMention } = require("@discordjs/builders");
+const { Guilds, Games, DefaultGames } = require("../models");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,8 +17,30 @@ module.exports = {
   async execute(interaction) {
     const sort = interaction.options.getString("sort");
 
-    const reply_text = `* First Game (server default)
-* **Game the Second** (${channelMention("912398399993679925")})`;
+    const guild = await Guilds.findOne({
+      where: { snowflake: interaction.guild.id },
+    });
+    const games = await Games.findAll({
+      where: { guildId: guild.id },
+      attributes: ["name"],
+      include: DefaultGames.name,
+    });
+
+    const reply_text = games
+      .map((game) => {
+        const defaults = game.DefaultGames.map((dg) => {
+          return dg.name;
+        }).join(", ");
+
+        let text = `* ${game.name}`;
+        if (defaults) {
+          text = text.concat(` (${defaults})`);
+        }
+
+        return text;
+      })
+      .join("\n");
+
     await interaction.reply(reply_text);
   },
 };
