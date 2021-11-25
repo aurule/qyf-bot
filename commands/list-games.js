@@ -20,6 +20,9 @@ module.exports = {
     const reply_text = games
       .map((game) => {
         const defaults = game.DefaultGames.map((dg) => {
+          if (dg.type == DefaultGames.TYPE_CHANNEL) {
+            return channelMention(dg.snowflake);
+          }
           return dg.name;
         }).join(", ");
 
