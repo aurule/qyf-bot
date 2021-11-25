@@ -1,4 +1,4 @@
-const { Guilds, Games } = require("../models");
+const { Guilds, Games, DefaultGames } = require("../models");
 
 module.exports = {
   name: "guildCreate",
@@ -11,6 +11,15 @@ module.exports = {
     await Games.upsert({
       name: "No Game",
       guildId: guild_record.id,
+
+    DefaultGames.findOrCreate({
+      where: {snowflake: guild.snowflake},
+      defaults: {
+        type: DefaultGames.TYPE_GUILD,
+        name: guild.name,
+        snowflake: guild.snowflake,
+        gameId: game.id,
+      }
     });
   },
 };
