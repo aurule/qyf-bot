@@ -7,14 +7,14 @@ module.exports = {
     .setName("list-games")
     .setDescription("Show the games for this server"),
   async execute(interaction) {
-
     const guild = await Guilds.findOne({
       where: { snowflake: interaction.guild.id },
     });
     const games = await Games.findAll({
       where: { guildId: guild.id },
       attributes: ["name"],
-      include: DefaultGames.name,
+      order: [["name", "ASC"]],
+      include: DefaultGames,
     });
 
     const reply_text = games
@@ -23,12 +23,8 @@ module.exports = {
           return dg.name;
         }).join(", ");
 
-        let text = `* ${game.name}`;
-        if (defaults) {
-          text = text.concat(` (${defaults})`);
-        }
-
-        return text;
+        const default_text = defaults ? ` (${defaults})` : '';
+        return `* ${game.name}${default_text}`;
       })
       .join("\n");
 
