@@ -1,5 +1,5 @@
 const Keyv = require("keyv");
-const logger = require("pino")();
+const { logger } = require('./logger')
 
 const redis_url = process.env.REDIS_URL;
 

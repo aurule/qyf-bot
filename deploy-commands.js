@@ -1,7 +1,7 @@
 // Load envvars
 require("dotenv").config();
 
-const logger = require('pino')()
+const { logger } = require('./util/logger')
 const fs = require("fs");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
