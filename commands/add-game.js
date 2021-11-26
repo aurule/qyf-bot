@@ -23,13 +23,11 @@ module.exports = {
       await Games.create({ name: game_name, guildId: guild.id });
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
-        await interaction.reply(`The game ${game_name} already exists!`);
-        return;
+        return interaction.reply(`The game "${game_name}" already exists!`);
       }
-      await interaction.reply("Something went wrong :-(");
-      return;
+      return interaction.reply("Something went wrong :-(");
     }
 
-    await interaction.reply(`Added game "${game_name}"`);
+    interaction.reply(`Added game "${game_name}"`);
   },
 };
