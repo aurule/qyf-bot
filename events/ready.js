@@ -1,4 +1,4 @@
-const logger = require("pino")();
+const { logger } = require('../util/logger')
 
 module.exports = {
   name: "ready",
