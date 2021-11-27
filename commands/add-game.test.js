@@ -3,28 +3,26 @@ const { Guilds, Games } = require("../models");
 const { UniqueConstraintError } = require("sequelize");
 
 const { truncate } = require("../testing/truncate");
+const { simpleflake } = require("simpleflakes");
 
 describe("execute", () => {
-  let interaction = {};
+  let interaction = {
+    options: {
+      getString: (key) => command_options[key],
+    },
+    guild: {},
+    reply: async (msg) => msg,
+  };
   let command_options = {};
   var guild;
 
-  beforeAll(async () => {
-    Object.assign(interaction, {
-      options: {
-        getString: (key) => command_options[key],
-      },
-      guild: {
-        id: 12345,
-      },
-      reply: async (msg) => msg,
-    });
-  });
-
   beforeEach(async () => {
     try {
-      await truncate();
-      guild = await Guilds.create({ name: "Test Guild", snowflake: 12345 });
+      guild = await Guilds.create({
+        name: "Test Guild",
+        snowflake: simpleflake(),
+      });
+      interaction.guild.id = guild.snowflake;
     } catch (err) {
       console.log(err);
     }
@@ -32,6 +30,15 @@ describe("execute", () => {
     command_options = {
       name: "new game",
       description: "a new game",
+    };
+  });
+
+  afterEach(async () => {
+    try {
+      await Games.destroy({ where: { guildId: guild.id } });
+      await guild.destroy();
+    } catch (err) {
+      console.log(err);
     }
   });
 

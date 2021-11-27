@@ -16,6 +16,7 @@
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "sequelize-cli": "^6.3.0",
+    "simpleflakes": "^2.2.2",
     "sqlite3": "^5.0.2"
   },
   "name": "qyf-bot",
@@ -23,7 +24,7 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "DOTENV_CONFIG_NODE_ENV=test jest --runInBand"
+    "test": "DOTENV_CONFIG_NODE_ENV=test jest"
   },
   "repository": {
     "type": "git",
