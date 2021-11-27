@@ -30,7 +30,7 @@ module.exports = {
         const quoteSelectRow = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
-                    .setCustomId('appendSelectQuote')
+                    .setCustomId('appendQuoteSelect')
                     .setPlaceholder('Pick a quote')
                     .addOptions([
                         {
