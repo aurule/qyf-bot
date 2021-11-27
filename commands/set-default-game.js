@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageSelectMenu } = require("discord.js");
 const { keyv } = require("../util/keyv.js");
+const { Guilds } = require("../models");
+const { transform } = require("../transformers/gameSelectTransformer");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,26 +32,18 @@ module.exports = {
         };
         keyv.set(interaction.id, command_options);
 
+        const guild = await Guilds.findByInteraction(interaction);
+        const games = await guild.getGames();
+
         const gameSelectRow = new MessageActionRow().addComponents(
             new MessageSelectMenu()
                 .setCustomId("defaultGameSelect")
                 .setPlaceholder("Pick a game")
-                .addOptions([
-                    {
-                        label: "First game",
-                        description: "The first of the games",
-                        value: "1",
-                    },
-                    {
-                        label: "Second game",
-                        description: "The second mighty game",
-                        value: "2",
-                    },
-                ])
+                .addOptions(transform(games))
         );
 
         await interaction.reply({
-            content: `Which game do you want to set as the default for ${scope}?`,
+            content: `Which game do you want to set as the default for ${scope_text}?`,
             components: [gameSelectRow],
             ephemeral: true,
         });
