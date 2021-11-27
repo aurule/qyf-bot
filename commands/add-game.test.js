@@ -2,18 +2,12 @@ const add_game_command = require("./add-game");
 const { Guilds, Games } = require("../models");
 const { UniqueConstraintError } = require("sequelize");
 
+const { Interaction } = require("../testing/interaction");
 const { simpleflake } = require("simpleflakes");
 
 describe("execute", () => {
-  let interaction = {
-    options: {
-      getString: (key) => command_options[key],
-    },
-    guild: {},
-    reply: async (msg) => msg,
-  };
-  let command_options = {};
   var guild;
+  var interaction;
 
   beforeEach(async () => {
     try {
@@ -21,15 +15,13 @@ describe("execute", () => {
         name: "Test Guild",
         snowflake: simpleflake(),
       });
-      interaction.guild.id = guild.snowflake;
+      interaction = new Interaction(guild.snowflake)
     } catch (err) {
       console.log(err);
     }
 
-    command_options = {
-      name: "new game",
-      description: "a new game",
-    };
+    interaction.command_options.name = "new game";
+    interaction.command_options.description = "a new game";
   });
 
   afterEach(async () => {
