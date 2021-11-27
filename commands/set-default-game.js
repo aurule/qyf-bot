@@ -17,14 +17,15 @@ module.exports = {
         const channel_option = interaction.options.getChannel('channel');
         const target_channel = channel_option ? channel_option : current_channel;
         const server_wide = interaction.options.getBoolean('server');
+        const scope_text = server_wide ? 'the server' : target_channel;
 
         const command_options = {
             target_channel: target_channel,
-            server_wide: server_wide
+            server_wide: server_wide,
+            scope_text: scope_text
         }
         keyv.set(interaction.id, command_options);
 
-        const scope = server_wide ? 'the server' : target_channel;
         const gameSelectRow = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
