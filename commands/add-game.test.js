@@ -6,12 +6,13 @@ const { truncate } = require("../testing/truncate");
 
 describe("execute", () => {
   let interaction = {};
+  let command_options = {};
   var guild;
 
   beforeAll(async () => {
     Object.assign(interaction, {
       options: {
-        getString: (key) => "new game",
+        getString: (key) => command_options[key],
       },
       guild: {
         id: 12345,
@@ -26,6 +27,11 @@ describe("execute", () => {
       guild = await Guilds.create({ name: "Test Guild", snowflake: 12345 });
     } catch (err) {
       console.log(err);
+    }
+
+    command_options = {
+      name: "new game",
+      description: "a new game",
     }
   });
 
@@ -42,6 +48,7 @@ describe("execute", () => {
       expect(spy).toHaveBeenCalledWith({
         name: "new game",
         guildId: guild.id,
+        description: "a new game",
       });
     });
 
