@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.TEXT,
       },
+      description: DataTypes.TEXT,
       guildId: {
         type: DataTypes.INTEGER,
         references: {
