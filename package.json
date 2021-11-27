@@ -23,7 +23,7 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "DOTENV_CONFIG_NODE_ENV=test jest"
+    "test": "DOTENV_CONFIG_NODE_ENV=test jest --runInBand"
   },
   "repository": {
     "type": "git",
