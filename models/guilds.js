@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Guilds.hasMany(models.Games);
     }
+
+    static async findByInteraction(interaction) {
+      return Guilds.findOne({
+        where: { snowflake: interaction.guild.id },
+      });
+    }
   };
   Guilds.init({
     snowflake: {
