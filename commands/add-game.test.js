@@ -2,7 +2,6 @@ const add_game_command = require("./add-game");
 const { Guilds, Games } = require("../models");
 const { UniqueConstraintError } = require("sequelize");
 
-const { truncate } = require("../testing/truncate");
 const { simpleflake } = require("simpleflakes");
 
 describe("execute", () => {
