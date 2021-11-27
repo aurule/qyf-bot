@@ -5,6 +5,8 @@ const { logger } = require('./util/logger')
 const fs = require("fs");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
+const { jsNoTests } = require("./util/filters");
+
 const token = process.env.BOT_TOKEN;
 const clientId = process.env.CLIENT_ID;
 const guildId = process.env.GUILD_ID;
@@ -12,7 +14,7 @@ const guildId = process.env.GUILD_ID;
 const commands = [];
 const commandFiles = fs
     .readdirSync("./commands")
-    .filter((file) => file.endsWith(".js"));
+    .filter(jsNoTests);
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
