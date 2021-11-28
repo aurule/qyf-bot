@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageSelectMenu } = require("discord.js");
 const { keyv } = require("../util/keyv.js");
-const { Guilds } = require("../models");
+const { Guilds, Games, DefaultGames } = require("../models");
 const { transform } = require("../transformers/gameSelectTransformer");
 
 module.exports = {
@@ -23,29 +23,37 @@ module.exports = {
             ? channel_option
             : current_channel;
         const server_wide = interaction.options.getBoolean("server");
-        const scope_text = server_wide ? "the server" : target_channel;
 
-        const command_options = {
-            target_channel: target_channel,
-            server_wide: server_wide,
-            scope_text: scope_text,
-        };
+        const command_options = this.followupOptions(target_channel, server_wide);
         keyv.set(interaction.id, command_options);
 
-        const guild = await Guilds.findByInteraction(interaction);
-        const games = await guild.getGames();
+        const guild = await Guilds.findByInteraction(interaction, {include: Games});
 
         const gameSelectRow = new MessageActionRow().addComponents(
             new MessageSelectMenu()
                 .setCustomId("defaultGameSelect")
                 .setPlaceholder("Pick a game")
-                .addOptions(transform(games))
+                .addOptions(transform(guild.Games))
         );
 
-        await interaction.reply({
-            content: `Which game do you want to set as the default for ${scope_text}?`,
+        return interaction.reply({
+            content: `Which game do you want to set as the default for ${command_options.scope_text}?`,
             components: [gameSelectRow],
             ephemeral: true,
         });
     },
+    followupOptions(target_channel, server_wide) {
+        if (server_wide) {
+            return {
+                scope_text: "the server",
+                target_type: DefaultGames.TYPE_GUILD,
+                target_snowflake: target_channel.guild.id.toString(),
+            }
+        }
+        return {
+            scope_text: target_channel.name,
+            target_type: DefaultGames.TYPE_CHANNEL,
+            target_snowflake: target_channel.id.toString(),
+        }
+    }
 };
