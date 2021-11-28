@@ -45,12 +45,14 @@ module.exports = {
   followupOptions(target_channel, server_wide) {
     if (server_wide) {
       return {
+        name: target_channel.guild.name,
         scope_text: "the server",
         target_type: DefaultGames.TYPE_GUILD,
         target_snowflake: target_channel.guild.id.toString(),
       };
     }
     return {
+      name: target_channel.name,
       scope_text: target_channel.name,
       target_type: DefaultGames.TYPE_CHANNEL,
       target_snowflake: target_channel.id.toString(),

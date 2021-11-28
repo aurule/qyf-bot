@@ -19,7 +19,7 @@ beforeEach(async () => {
     });
     interaction = new Interaction(guild.snowflake);
     interaction.channel.id = simpleflake();
-    interaction.channel.guild = { id: guild.snowflake };
+    interaction.channel.guild = { id: guild.snowflake, name: guild.name };
     interaction.channel.name = "test channel";
   } catch (err) {
     console.log(err);
@@ -40,6 +40,13 @@ describe("followupOptions", () => {
     beforeEach(() => {
       interaction.command_options.server = true;
     });
+
+    it("sets name to the server name", async () => {
+      await set_default_game_command.execute(interaction);
+      const stored_options = await keyv.get(interaction.id);
+
+      expect(stored_options.name).toBe("Test Guild");
+    })
 
     it("sets scope text to the server", async () => {
       await set_default_game_command.execute(interaction);
@@ -66,6 +73,17 @@ describe("followupOptions", () => {
   });
 
   describe("when server wide flag is false", () => {
+    beforeEach(() => {
+      interaction.command_options.server = false;
+    });
+
+    it("sets name to the channel name", async () => {
+      await set_default_game_command.execute(interaction);
+      const stored_options = await keyv.get(interaction.id);
+
+      expect(stored_options.name).toBe("test channel");
+    })
+
     it("sets scope text to chosen channel reference", async () => {
       await set_default_game_command.execute(interaction);
       const stored_options = await keyv.get(interaction.id);
