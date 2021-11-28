@@ -14,10 +14,15 @@ class Interaction {
         this.guild = {
             id: snowflake,
         },
-        this.channel = {}
+        this.channel = {},
+        this.message = {}
     }
 
     async reply(msg) {
+        return msg;
+    }
+
+    async update(msg) {
         return msg;
     }
 }
