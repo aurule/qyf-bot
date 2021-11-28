@@ -17,7 +17,12 @@ module.exports = {
       include: DefaultGames,
     });
 
-    const reply_text = games
+    const reply_text = this.buildGamesList(games);
+
+    await interaction.reply(reply_text);
+  },
+  buildGamesList(games) {
+    return games
       .map((game) => {
         const defaults = game.DefaultGames.map((dg) => {
           if (dg.type == DefaultGames.TYPE_CHANNEL) {
@@ -29,8 +34,6 @@ module.exports = {
         const default_text = defaults ? ` (${defaults})` : '';
         return `* ${game.name}${default_text}`;
       })
-      .join("\n");
-
-    await interaction.reply(reply_text);
+      .join("\n")
   },
 };
