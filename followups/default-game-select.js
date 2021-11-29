@@ -20,6 +20,7 @@ module.exports = {
     }
 
     const game = await Games.findOne({where: {id: game_id}});
-    return interaction.update({ content: `${game.name} is now the default for ${options.name}.`, components: [] });
+    await interaction.update({ content: `Picked ${game.name}!`, components: [] });
+    return interaction.followUp(`${game.name} is now the default for ${options.name}.`);
   },
 };
