@@ -88,19 +88,35 @@ it("creates a new default game record if none exists", async () => {
   expect(record).toBeTruthy();
 });
 
-it("replies that the game was set as default", async() => {
-  const channel_snowflake = simpleflake();
+it("updates with the chosen game", async() => {
+  const channel_snowflake = simpleflake().toString();
   const options = {
     name: "test channel",
     scope_text: "test channel",
     target_type: DefaultGames.TYPE_CHANNEL,
-    target_snowflake: channel_snowflake.toString(),
+    target_snowflake: channel_snowflake,
+  };
+  await keyv.set(old_interaction_id, options);
+  const updateSpy = await jest.spyOn(interaction, 'update')
+
+  await default_game_select_followup.execute(interaction);
+
+  expect(updateSpy).toHaveBeenCalled()
+});
+
+it("replies that the game was set as default", async() => {
+  const channel_snowflake = simpleflake().toString();
+  const options = {
+    name: "test channel",
+    scope_text: "test channel",
+    target_type: DefaultGames.TYPE_CHANNEL,
+    target_snowflake: channel_snowflake,
   };
   await keyv.set(old_interaction_id, options);
 
   const reply = await default_game_select_followup.execute(interaction);
 
-  expect(reply.content).toMatch("test game is now the default for test channel.");
+  expect(reply).toMatch("test game is now the default for test channel.");
 });
 
 it("replies that there was an error when there was an", async () => {
