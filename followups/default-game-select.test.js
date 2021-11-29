@@ -14,7 +14,7 @@ beforeEach(async () => {
   try {
     guild = await Guilds.create({
       name: "Test Guild",
-      snowflake: simpleflake(),
+      snowflake: simpleflake().toString(),
     });
 
     game = await Games.create({
@@ -22,7 +22,7 @@ beforeEach(async () => {
       guildId: guild.id,
     });
 
-    old_interaction_id = simpleflake();
+    old_interaction_id = simpleflake().toString();
     interaction = new Interaction(guild.snowflake);
     interaction.message = {
       interaction: {
@@ -47,35 +47,40 @@ afterEach(async () => {
 });
 
 it("updates an existing default game record if one exists", async () => {
-  const channel_snowflake = simpleflake();
+  const channel_snowflake = simpleflake().toString();
   const record = await DefaultGames.create({
     name: "test channel",
     gameId: game.id,
     type: DefaultGames.TYPE_CHANNEL,
-    snowflake: channel_snowflake.toString(),
+    snowflake: channel_snowflake,
   });
 
+  const game2 = await Games.create({
+    name: 'second game',
+    guildId: guild.id,
+  })
+  interaction.values[0] = game2.id;
   const options = {
     name: 'another test channel',
     scope_text: "another test channel",
     target_type: DefaultGames.TYPE_CHANNEL,
-    target_snowflake: simpleflake().toString(),
+    target_snowflake: channel_snowflake,
   };
   await keyv.set(old_interaction_id, options);
 
   await default_game_select_followup.execute(interaction);
 
   await record.reload();
-  expect(record.snowflake).not.toEqual(channel_snowflake);
+  expect(record.gameId).toEqual(game2.id);
 });
 
 it("creates a new default game record if none exists", async () => {
-  const channel_snowflake = simpleflake();
+  const channel_snowflake = simpleflake().toString();
   const options = {
     name: "test channel",
     scope_text: "test channel",
     target_type: DefaultGames.TYPE_CHANNEL,
-    target_snowflake: channel_snowflake.toString(),
+    target_snowflake: channel_snowflake,
   };
   await keyv.set(old_interaction_id, options);
 
@@ -119,15 +124,15 @@ it("replies that the game was set as default", async() => {
   expect(reply).toMatch("test game is now the default for test channel.");
 });
 
-it("replies that there was an error when there was an", async () => {
+it("replies that there was an error when there was an error", async () => {
   jest.spyOn(DefaultGames, 'upsert').mockImplementation(() => {throw new Error();});
 
-  const channel_snowflake = simpleflake();
+  const channel_snowflake = simpleflake().toString();
   const options = {
     name: "test channel",
     scope_text: "test channel",
     target_type: DefaultGames.TYPE_CHANNEL,
-    target_snowflake: channel_snowflake.toString(),
+    target_snowflake: channel_snowflake,
   };
   await keyv.set(old_interaction_id, options);
 

@@ -12,7 +12,7 @@ beforeEach(async () => {
   try {
     guild = await Guilds.create({
       name: "Test Guild",
-      snowflake: simpleflake(),
+      snowflake: simpleflake().toString(),
     });
     interaction = new Interaction(guild.snowflake);
   } catch (err) {
@@ -59,7 +59,7 @@ describe("execute", () => {
   it("excludes games from other guilds", async () => {
     const wrong_guild = await Guilds.create({
       name: "wrong guild",
-      snowflake: simpleflake(),
+      snowflake: simpleflake().toString(),
     });
     const wrong_game = await Games.create({
       name: "wrong game",
@@ -137,7 +137,7 @@ describe("buildGamesList", () => {
       name: 'Some Channel',
       type: DefaultGames.TYPE_CHANNEL,
       gameId: game.id,
-      snowflake: simpleflake()
+      snowflake: simpleflake().toString()
     })
 
     const gamesList = await Games.findAll({

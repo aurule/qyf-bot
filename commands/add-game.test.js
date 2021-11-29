@@ -13,7 +13,7 @@ describe("execute", () => {
     try {
       guild = await Guilds.create({
         name: "Test Guild",
-        snowflake: simpleflake(),
+        snowflake: simpleflake().toString(),
       });
       interaction = new Interaction(guild.snowflake)
     } catch (err) {

@@ -15,10 +15,10 @@ beforeEach(async () => {
   try {
     guild = await Guilds.create({
       name: "Test Guild",
-      snowflake: simpleflake(),
+      snowflake: simpleflake().toString(),
     });
     interaction = new Interaction(guild.snowflake);
-    interaction.channel.id = simpleflake();
+    interaction.channel.id = simpleflake().toString();
     interaction.channel.guild = { id: guild.snowflake, name: guild.name };
     interaction.channel.name = "test channel";
   } catch (err) {
