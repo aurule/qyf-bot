@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     snowflake: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
       unique: true
     }
   }, {
