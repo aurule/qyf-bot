@@ -25,6 +25,10 @@ class Interaction {
     async update(msg) {
         return msg;
     }
+
+    async followUp(msg) {
+        return msg;
+    }
 }
 
 module.exports = {
