@@ -7,9 +7,7 @@ module.exports = {
     .setName("list-games")
     .setDescription("Show the games for this server"),
   async execute(interaction) {
-    const guild = await Guilds.findOne({
-      where: { snowflake: interaction.guild.id },
-    });
+    const guild = await Guilds.findByInteraction(interaction);
     const games = await Games.findAll({
       where: { guildId: guild.id },
       attributes: ["name"],
