@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv.js")
 const { Guilds, Games } = require("../models")
-const { transform } = require("../transformers/gameSelectTransformer")
+const { transform } = require("../transformers/game-select-transformer")
 const { explicitScope } = require("../services/default-game-scope")
 
 module.exports = {

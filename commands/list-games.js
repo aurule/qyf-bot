@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Guilds, Games, DefaultGames } = require("../models")
-const { transform } = require("../transformers/gameListTransformer")
+const { transform } = require("../transformers/game-list-transformer")
 
 module.exports = {
   data: new SlashCommandBuilder()

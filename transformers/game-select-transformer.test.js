@@ -1,6 +1,6 @@
 "use strict"
 
-const { transform } = require("./gameSelectTransformer")
+const { transform } = require("./game-select-transformer")
 
 it("creates an array of suitable objects", () => {
   const games = [

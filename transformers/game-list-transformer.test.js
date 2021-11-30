@@ -1,7 +1,7 @@
 "use strict"
 
 const { Guilds, Games, DefaultGames } = require("../models")
-const { transform } = require("./gameListTransformer")
+const { transform } = require("./game-list-transformer")
 
 const { simpleflake } = require("simpleflakes")
 const {

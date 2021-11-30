@@ -3,7 +3,7 @@
 const set_default_game_command = require("./set-default-game")
 const { Guilds, Games } = require("../models")
 const { keyv } = require("../util/keyv.js")
-const GameSelectTransformer = require("../transformers/gameSelectTransformer")
+const GameSelectTransformer = require("../transformers/game-select-transformer")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
