@@ -1,5 +1,6 @@
 const { keyv } = require("../util/keyv.js");
 const { DefaultGames, Games } = require("../models");
+const { logger } = require('../util/logger')
 
 module.exports = {
   name: "defaultGameSelect",
@@ -15,7 +16,7 @@ module.exports = {
         gameId: game_id,
       })
     } catch(error) {
-      console.log(error);
+      logger.debug(error);
       return interaction.update({ content: "Something went wrong :-(", components: [] });
     }
 

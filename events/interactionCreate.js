@@ -1,3 +1,5 @@
+const { logger } = require('../util/logger')
+
 module.exports = {
     name: 'interactionCreate',
     execute(interaction) {
@@ -9,7 +11,7 @@ module.exports = {
             try {
                 command.execute(interaction);
             } catch (error) {
-                console.error(error);
+                logger.debug(error);
                 interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             }
         }
@@ -22,7 +24,7 @@ module.exports = {
             try {
                 followup.execute(interaction);
             } catch (error) {
-                console.error(error);
+                logger.debug(error);
                 interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             }
         }
