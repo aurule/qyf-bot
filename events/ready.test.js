@@ -1,18 +1,18 @@
-const ready = require("./ready");
+const ready = require("./ready")
 
-const { logger } = require("../util/logger");
-const { Client } = require("discord.js");
-jest.mock("discord.js");
+const { logger } = require("../util/logger")
+const { Client } = require("discord.js")
+jest.mock("discord.js")
 
 describe("properties", () => {
   it("attaches to the event name 'ready'", () => {
-    expect(ready.name).toBe("ready");
-  });
+    expect(ready.name).toBe("ready")
+  })
 
   it("runs once", () => {
-    expect(ready.once).toBe(true);
-  });
-});
+    expect(ready.once).toBe(true)
+  })
+})
 
 describe("execute", () => {
   beforeAll(() => {
@@ -21,15 +21,15 @@ describe("execute", () => {
         user: {
           tag: "qyf-bot",
         },
-      };
-    });
-  });
+      }
+    })
+  })
 
   it("logs a ready notice", () => {
-    const spy = jest.spyOn(logger, "info");
+    const spy = jest.spyOn(logger, "info")
 
-    ready.execute(new Client());
+    ready.execute(new Client())
 
-    expect(spy).toHaveBeenCalled();
-  });
-});
+    expect(spy).toHaveBeenCalled()
+  })
+})

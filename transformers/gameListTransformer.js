@@ -1,7 +1,7 @@
-"use strict";
+"use strict"
 
-const { channelMention } = require("@discordjs/builders");
-const { DefaultGames } = require("../models");
+const { channelMention } = require("@discordjs/builders")
+const { DefaultGames } = require("../models")
 
 module.exports = {
   // This is meant to be called with an array of games whose query has
@@ -11,14 +11,14 @@ module.exports = {
       .map((game) => {
         const defaults = game.DefaultGames.map((dg) => {
           if (dg.type == DefaultGames.TYPE_CHANNEL) {
-            return channelMention(dg.snowflake);
+            return channelMention(dg.snowflake)
           }
-          return dg.name;
-        }).join(", ");
+          return dg.name
+        }).join(", ")
 
-        const default_text = defaults ? ` (${defaults})` : '';
-        return `* ${game.name}${default_text}`;
+        const default_text = defaults ? ` (${defaults})` : ""
+        return `* ${game.name}${default_text}`
       })
       .join("\n")
   },
-};
+}

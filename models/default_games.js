@@ -1,6 +1,6 @@
-"use strict";
+"use strict"
 
-const { Model } = require("sequelize");
+const { Model } = require("sequelize")
 
 module.exports = (sequelize, DataTypes) => {
   class DefaultGames extends Model {
@@ -10,15 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      DefaultGames.belongsTo(models.Games);
+      DefaultGames.belongsTo(models.Games)
     }
 
     // static "constants" to ensure correct type enum values
     static get TYPE_GUILD() {
-      return "guild";
+      return "guild"
     }
     static get TYPE_CHANNEL() {
-      return "channel";
+      return "channel"
     }
   }
   DefaultGames.init(
@@ -51,6 +51,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "DefaultGames",
     }
-  );
-  return DefaultGames;
-};
+  )
+  return DefaultGames
+}

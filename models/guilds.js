@@ -1,7 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict"
+
+const { Model } = require("sequelize")
+
 module.exports = (sequelize, DataTypes) => {
   class Guilds extends Model {
     /**
@@ -10,29 +10,32 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Guilds.hasMany(models.Games);
+      Guilds.hasMany(models.Games)
     }
 
     static async findByInteraction(interaction, options = {}) {
       return Guilds.findOne({
         where: { snowflake: interaction.guild.id },
-        ...options
-      });
+        ...options,
+      })
     }
-  };
-  Guilds.init({
-    snowflake: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+  }
+  Guilds.init(
+    {
+      snowflake: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      name: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
     },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false
+    {
+      sequelize,
+      modelName: "Guilds",
     }
-  }, {
-    sequelize,
-    modelName: 'Guilds',
-  });
-  return Guilds;
-};
+  )
+  return Guilds
+}

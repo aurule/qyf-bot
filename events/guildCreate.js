@@ -1,4 +1,4 @@
-const { Guilds, Games, DefaultGames } = require("../models");
+const { Guilds, Games, DefaultGames } = require("../models")
 
 module.exports = {
   name: "guildCreate",
@@ -11,7 +11,7 @@ module.exports = {
         name: discord_guild.name,
         snowflake: discord_guild.id,
       },
-    });
+    })
 
     const [game, _isNewGame] = await Games.findOrCreate({
       where: {
@@ -22,7 +22,7 @@ module.exports = {
         name: "No Game",
         guildId: guild.id,
       },
-    });
+    })
 
     DefaultGames.findOrCreate({
       where: { snowflake: guild.snowflake },
@@ -32,6 +32,6 @@ module.exports = {
         snowflake: guild.snowflake,
         gameId: game.id,
       },
-    });
+    })
   },
-};
+}

@@ -1,7 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict"
+
+const { Model } = require("sequelize")
+
 module.exports = (sequelize, DataTypes) => {
   class Lines extends Model {
     /**
@@ -10,42 +10,45 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Lines.belongsTo(models.Quotes);
-      Lines.belongsTo(models.Speakers);
+      Lines.belongsTo(models.Quotes)
+      Lines.belongsTo(models.Speakers)
     }
-  };
-  Lines.init({
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    speakerId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: {
-          tableName: 'speakers'
+  }
+  Lines.init(
+    {
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      speakerId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: {
+            tableName: "speakers",
+          },
+          key: "id",
         },
-        key: 'id'
-      }
-    },
-    speakerAlias: DataTypes.TEXT,
-    quoteId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: {
-          tableName: 'quotes'
+      },
+      speakerAlias: DataTypes.TEXT,
+      quoteId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: "quotes",
+          },
+          key: "id",
         },
-        key: 'id'
-      }
+      },
+      lineOrder: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    lineOrder: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+    {
+      sequelize,
+      modelName: "Lines",
     }
-  }, {
-    sequelize,
-    modelName: 'Lines',
-  });
-  return Lines;
-};
+  )
+  return Lines
+}

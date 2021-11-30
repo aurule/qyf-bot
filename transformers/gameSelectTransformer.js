@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 module.exports = {
   transform: (games) => {
@@ -7,7 +7,7 @@ module.exports = {
         label: game.name,
         description: game.description,
         value: game.id.toString(),
-      };
-    });
+      }
+    })
   },
-};
+}

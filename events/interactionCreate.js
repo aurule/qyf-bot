@@ -1,32 +1,38 @@
-const { logger } = require('../util/logger')
+const { logger } = require("../util/logger")
 
 module.exports = {
-    name: 'interactionCreate',
-    execute(interaction) {
-        if (interaction.isCommand() || interaction.isApplicationCommand()) {
-            const command = interaction.client.commands.get(interaction.commandName);
+  name: "interactionCreate",
+  execute(interaction) {
+    if (interaction.isCommand() || interaction.isApplicationCommand()) {
+      const command = interaction.client.commands.get(interaction.commandName)
 
-            if (!command) return;
+      if (!command) return
 
-            try {
-                command.execute(interaction);
-            } catch (error) {
-                logger.debug(error);
-                interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-            }
-        }
+      try {
+        command.execute(interaction)
+      } catch (error) {
+        logger.debug(error)
+        interaction.reply({
+          content: "There was an error while executing this command!",
+          ephemeral: true,
+        })
+      }
+    }
 
-        if (interaction.isSelectMenu()) {
-            const followup = interaction.client.followups.get(interaction.customId);
+    if (interaction.isSelectMenu()) {
+      const followup = interaction.client.followups.get(interaction.customId)
 
-            if (!followup) return;
+      if (!followup) return
 
-            try {
-                followup.execute(interaction);
-            } catch (error) {
-                logger.debug(error);
-                interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-            }
-        }
-    },
-};
+      try {
+        followup.execute(interaction)
+      } catch (error) {
+        logger.debug(error)
+        interaction.reply({
+          content: "There was an error while executing this command!",
+          ephemeral: true,
+        })
+      }
+    }
+  },
+}

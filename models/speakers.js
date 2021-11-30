@@ -1,7 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict"
+
+const { Model } = require("sequelize")
+
 module.exports = (sequelize, DataTypes) => {
   class Speakers extends Model {
     /**
@@ -10,21 +10,24 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Speakers.hasMany(models.Lines);
+      Speakers.hasMany(models.Lines)
     }
-  };
-  Speakers.init({
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false
+  }
+  Speakers.init(
+    {
+      name: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      snowflake: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
     },
-    snowflake: {
-      type: DataTypes.STRING,
-      unique: true
+    {
+      sequelize,
+      modelName: "Speakers",
     }
-  }, {
-    sequelize,
-    modelName: 'Speakers',
-  });
-  return Speakers;
-};
+  )
+  return Speakers
+}

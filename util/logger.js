@@ -1,5 +1,5 @@
-const Pino = require("pino");
+const Pino = require("pino")
 
 module.exports = {
-    logger: Pino(),
+  logger: Pino(),
 }
