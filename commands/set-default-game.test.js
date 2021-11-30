@@ -1,12 +1,13 @@
 "use strict"
 
 const set_default_game_command = require("./set-default-game")
-const { Guilds, Games, DefaultGames } = require("../models")
+const { Guilds, Games } = require("../models")
 const { keyv } = require("../util/keyv.js")
 const GameSelectTransformer = require("../transformers/gameSelectTransformer")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
+const { explicitScope } = require("../services/default-game-scope")
 
 var guild
 var interaction
@@ -21,6 +22,7 @@ beforeEach(async () => {
     interaction.channel.id = simpleflake().toString()
     interaction.channel.guild = { id: guild.snowflake, name: guild.name }
     interaction.channel.name = "test channel"
+    interaction.command_options["server"] = false
   } catch (err) {
     console.log(err)
   }
@@ -35,78 +37,13 @@ afterEach(async () => {
   }
 })
 
-describe("followupOptions", () => {
-  describe("when server wide flag is true", () => {
-    beforeEach(() => {
-      interaction.command_options.server = true
-    })
+it("stores options", async () => {
+  const keyvSpy = jest.spyOn(keyv, "set")
+  const expectedScope = explicitScope(interaction.channel, false)
 
-    it("sets name to the server name", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
+  await set_default_game_command.execute(interaction)
 
-      expect(stored_options.name).toBe("Test Guild")
-    })
-
-    it("sets scope text to the server", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.scope_text).toBe("the server")
-    })
-
-    it("sets the target type to guild", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.target_type).toBe(DefaultGames.TYPE_GUILD)
-    })
-
-    it("stores the server snowflake", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.target_snowflake).toEqual(
-        guild.snowflake.toString()
-      )
-    })
-  })
-
-  describe("when server wide flag is false", () => {
-    beforeEach(() => {
-      interaction.command_options.server = false
-    })
-
-    it("sets name to the channel name", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.name).toBe("test channel")
-    })
-
-    it("sets scope text to chosen channel reference", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.scope_text).toEqual(interaction.channel.name)
-    })
-
-    it("sets the target type to channel", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.target_type).toBe(DefaultGames.TYPE_CHANNEL)
-    })
-
-    it("stores the channel snowflake", async () => {
-      await set_default_game_command.execute(interaction)
-      const stored_options = await keyv.get(interaction.id)
-
-      expect(stored_options.target_snowflake).toEqual(
-        interaction.channel.id.toString()
-      )
-    })
-  })
+  expect(keyvSpy).toHaveBeenCalledWith(interaction.id.toString(), expectedScope)
 })
 
 describe("reply", () => {
