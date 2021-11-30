@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { channelMention } = require("@discordjs/builders");
 const { Guilds, Games, DefaultGames } = require("../models");
+const { transform } = require("../transformers/gameListTransformer");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,23 +15,8 @@ module.exports = {
       include: DefaultGames,
     });
 
-    const reply_text = this.buildGamesList(games);
+    const reply_text = transform(games);
 
-    await interaction.reply(reply_text);
-  },
-  buildGamesList(games) {
-    return games
-      .map((game) => {
-        const defaults = game.DefaultGames.map((dg) => {
-          if (dg.type == DefaultGames.TYPE_CHANNEL) {
-            return channelMention(dg.snowflake);
-          }
-          return dg.name;
-        }).join(", ");
-
-        const default_text = defaults ? ` (${defaults})` : '';
-        return `* ${game.name}${default_text}`;
-      })
-      .join("\n")
+    return interaction.reply(reply_text);
   },
 };
