@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { explicitScope } = require("../services/default-game-scope")
+const { DefaultGames } = require('../models')
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,11 +16,12 @@ module.exports = {
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
-
     const server_wide = interaction.options.getBoolean("server")
 
-    const scope = server_wide ? "the server" : target_channel
+    const scope = explicitScope(target_channel, server_wide)
 
-    await interaction.reply(`Removed default game from ${scope}`)
+    await DefaultGames.destroy({where: {snowflake: scope.target_snowflake}})
+
+    return interaction.reply(`Removed default game from ${scope.scope_text}`)
   },
 }
