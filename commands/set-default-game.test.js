@@ -37,13 +37,33 @@ afterEach(async () => {
   }
 })
 
-it("stores options", async () => {
+it("gets the scope for the optioned channel", async () => {
+  const target_channel = { id: simpleflake(), name: "other channel" }
+  interaction.command_options["channel"] = target_channel
+  const keyvSpy = jest.spyOn(keyv, "set")
+  const expectedScope = explicitScope(target_channel, false)
+
+  const reply = await set_default_game_command.execute(interaction)
+
+  expect(keyvSpy).toHaveBeenCalledWith(interaction.id.toString(), expectedScope)
+})
+
+it("gets the scope for the current channel when no explicit option", async () => {
   const keyvSpy = jest.spyOn(keyv, "set")
   const expectedScope = explicitScope(interaction.channel, false)
 
   await set_default_game_command.execute(interaction)
 
   expect(keyvSpy).toHaveBeenCalledWith(interaction.id.toString(), expectedScope)
+})
+
+it("stores options", async () => {
+  const keyvSpy = jest.spyOn(keyv, "set")
+  const expectedScope = explicitScope(interaction.channel, false)
+
+  await set_default_game_command.execute(interaction)
+
+  expect(keyvSpy).toHaveBeenCalled()
 })
 
 describe("reply", () => {

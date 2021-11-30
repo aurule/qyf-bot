@@ -5,7 +5,6 @@ const { Guilds, Games, DefaultGames } = require("../models")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
-const { explicitScope } = require("../services/default-game-scope")
 
 var guild
 var interaction
@@ -36,6 +35,21 @@ afterEach(async () => {
   } catch (err) {
     console.log(err)
   }
+})
+
+it("gets the scope for the optioned channel", async () => {
+  const target_channel = { id: simpleflake(), name: "other channel" }
+  interaction.command_options["channel"] = target_channel
+
+  const reply = await remove_default_game_command.execute(interaction)
+
+  expect(reply).toMatch(target_channel.name)
+})
+
+it("gets the scope for the current channel when no explicit option", async () => {
+  const reply = await remove_default_game_command.execute(interaction)
+
+  expect(reply).toMatch(interaction.channel.name)
 })
 
 it("does nothing if there is no default for the scope snowflake", async () => {
