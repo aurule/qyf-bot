@@ -16,11 +16,13 @@ const clientId = process.env.CLIENT_ID
 const rest = new REST({ version: "9" }).setToken(token)
 
 const commandsDir = `${__dirname}/../commands`
-const commands = []
 
-function buildCommands() {
-  if (commands.length) return commands
-
+/**
+ * Build the command json to send to Discord
+ * @return {string} JSON data about our slash commands
+ */
+function buildCommandJSON() {
+  const commands = []
   const commandFiles = fs.readdirSync(commandsDir).filter(jsNoTests)
 
   for (const file of commandFiles) {
@@ -31,9 +33,14 @@ function buildCommands() {
   return commands
 }
 
+/**
+ * Push the command JSON to a specific guild
+ * @param  {Guild} guild  The guild object to receive the command data
+ * @return {Promise}      Promise for the http call
+ */
 async function deployToGuild(guild) {
   logger.info(`Pushing commands to guild ${guild.name}`)
-  buildCommands()
+  const commands = buildCommandJSON()
 
   return rest
     .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
@@ -47,6 +54,10 @@ async function deployToGuild(guild) {
     })
 }
 
+/**
+ * Push the command JSON to all guilds in our database
+ * @return {null} No return value
+ */
 async function deployToAllGuilds() {
   const guilds = await Guilds.findAll()
 
@@ -57,8 +68,7 @@ async function deployToAllGuilds() {
 }
 
 module.exports = {
-  commands,
-  buildCommands,
+  buildCommandJSON,
   deployToGuild,
   deployToAllGuilds,
 }
