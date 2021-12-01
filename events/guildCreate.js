@@ -23,15 +23,5 @@ module.exports = {
         guildId: guild.id,
       },
     })
-
-    DefaultGames.findOrCreate({
-      where: { snowflake: guild.snowflake },
-      defaults: {
-        type: DefaultGames.TYPE_GUILD,
-        name: guild.name,
-        snowflake: guild.snowflake,
-        gameId: game.id,
-      },
-    })
   },
 }
