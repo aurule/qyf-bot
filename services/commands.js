@@ -41,6 +41,7 @@ function buildCommandJSON(guild) {
  */
 async function deployToGuild(guild) {
   logger.info(`Pushing commands to guild ${guild.name}`)
+  guild.Games = await guild.getGames()
   const commands = buildCommandJSON(guild)
 
   return rest
