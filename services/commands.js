@@ -47,8 +47,8 @@ async function deployToGuild(guild) {
     .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
       body: commands,
     })
-    .catch(() => {
-      logger.warning(`Error pushing commands to guild ${guild.name}: ${error}`)
+    .catch((error) => {
+      logger.warn(`Error pushing commands to guild ${guild.name}: ${error}`)
     })
     .finally(() => {
       logger.info(`Pushed to guild ${guild.name}`)
