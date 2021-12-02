@@ -8,7 +8,7 @@ const { REST } = require("@discordjs/rest")
 const { Routes } = require("discord-api-types/v9")
 const { jsNoTests } = require("../util/filters")
 
-const { Guilds } = require("../models")
+const { Guilds, Games } = require("../models")
 
 const token = process.env.BOT_TOKEN
 const clientId = process.env.CLIENT_ID
@@ -19,15 +19,16 @@ const commandsDir = `${__dirname}/../commands`
 
 /**
  * Build the command json to send to Discord
+ * @param  {Guild} guild  The guild object to use for building the commands
  * @return {string} JSON data about our slash commands
  */
-function buildCommandJSON() {
+function buildCommandJSON(guild) {
   const commands = []
   const commandFiles = fs.readdirSync(commandsDir).filter(jsNoTests)
 
   for (const file of commandFiles) {
     const command = require(`${commandsDir}/${file}`)
-    commands.push(command.data.toJSON())
+    commands.push(command.data(guild).toJSON())
   }
 
   return commands
@@ -40,7 +41,7 @@ function buildCommandJSON() {
  */
 async function deployToGuild(guild) {
   logger.info(`Pushing commands to guild ${guild.name}`)
-  const commands = buildCommandJSON()
+  const commands = buildCommandJSON(guild)
 
   return rest
     .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
@@ -59,7 +60,7 @@ async function deployToGuild(guild) {
  * @return {null} No return value
  */
 async function deployToAllGuilds() {
-  const guilds = await Guilds.findAll()
+  const guilds = await Guilds.findAll({include: Games})
 
   logger.info("Pushing commands to all guilds")
   Promise.all(guilds.map((g) => deployToGuild(g))).finally(() => {

@@ -6,7 +6,7 @@ const { transform } = require("../transformers/game-select-transformer")
 const { explicitScope } = require("../services/default-game-scope")
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  data: (guild) => new SlashCommandBuilder()
     .setName("set-default-game")
     .setDescription("Set the default game for this channel")
     .addChannelOption((option) =>

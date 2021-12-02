@@ -3,7 +3,7 @@ const { explicitScope } = require("../services/default-game-scope")
 const { DefaultGames } = require('../models')
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  data: (guild) => new SlashCommandBuilder()
     .setName("remove-default-game")
     .setDescription("Remove the default game for this channel")
     .addChannelOption((option) =>

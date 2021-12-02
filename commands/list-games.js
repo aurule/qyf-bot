@@ -3,7 +3,7 @@ const { Guilds, Games, DefaultGames } = require("../models")
 const { transform } = require("../transformers/game-list-transformer")
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  data: (guild) => new SlashCommandBuilder()
     .setName("list-games")
     .setDescription("Show the games for this server"),
   async execute(interaction) {

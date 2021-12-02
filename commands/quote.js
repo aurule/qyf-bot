@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  data: (guild) => new SlashCommandBuilder()
     .setName("quote")
     .setDescription("Record a quote!")
     .addStringOption((option) =>
