@@ -38,10 +38,10 @@ describe("explicitScope", () => {
       expect(results.target_type).toBe(DefaultGames.TYPE_GUILD)
     })
 
-    xit("stores the server snowflake", async () => {
+    it("stores the server snowflake", async () => {
       const results = Service.explicitScope(channel, true)
 
-      expect(results.target_snowflake).toEqual(guild.id)
+      expect(results.target_snowflake).toEqual(channel.guild.id)
     })
   })
 
