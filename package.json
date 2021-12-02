@@ -26,7 +26,7 @@
   "scripts": {
     "test": "DOTENV_CONFIG_NODE_ENV=test jest",
     "test:watch": "DOTENV_CONFIG_NODE_ENV=test jest --watch",
-    "deployCommands": "node scripts/deploy-commands.js"
+    "commands:deploy": "node scripts/deploy-commands.js"
   },
   "repository": {
     "type": "git",
