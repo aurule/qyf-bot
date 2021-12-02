@@ -2,8 +2,9 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv.js")
 const { Guilds, Games } = require("../models")
-const { transform } = require("../transformers/game-select-transformer")
+const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { explicitScope } = require("../services/default-game-scope")
+const { transform } = require("../transformers/game-choices-transformer")
 
 module.exports = {
   data: (guild) => new SlashCommandBuilder()
@@ -16,6 +17,13 @@ module.exports = {
       option
         .setName("server")
         .setDescription("Apply default to the whole server")
+    )
+    .addIntegerOption((option) =>
+      option
+        .setName("game")
+        .setDescription("The game to use")
+        .setRequired(true)
+        .addChoices(transform(guild.Games))
     ),
   async execute(interaction) {
     const current_channel = interaction.channel
@@ -34,7 +42,7 @@ module.exports = {
       new MessageSelectMenu()
         .setCustomId("defaultGameSelect")
         .setPlaceholder("Pick a game")
-        .addOptions(transform(guild.Games))
+        .addOptions(GameSelectTransformer.transform(guild.Games))
     )
 
     return interaction.reply({
