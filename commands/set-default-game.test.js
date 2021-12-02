@@ -1,7 +1,7 @@
 "use strict"
 
 const set_default_game_command = require("./set-default-game")
-const { Guilds, Games } = require("../models")
+const { Guilds, Games, DefaultGames } = require("../models")
 const { keyv } = require("../util/keyv.js")
 const GameSelectTransformer = require("../transformers/game-select-transformer")
 
@@ -11,6 +11,7 @@ const { explicitScope } = require("../services/default-game-scope")
 
 var guild
 var interaction
+var game
 
 beforeEach(async () => {
   try {
@@ -18,11 +19,16 @@ beforeEach(async () => {
       name: "Test Guild",
       snowflake: simpleflake().toString(),
     })
+    game = await Games.create({
+      name: "Test Game",
+      guildId: guild.id,
+    })
     interaction = new Interaction(guild.snowflake)
     interaction.channel.id = simpleflake().toString()
     interaction.channel.guild = { id: guild.snowflake, name: guild.name }
     interaction.channel.name = "test channel"
     interaction.command_options["server"] = false
+    interaction.command_options["game"] = game.id
   } catch (err) {
     console.log(err)
   }
@@ -30,6 +36,8 @@ beforeEach(async () => {
 
 afterEach(async () => {
   try {
+    const games = await Games.findAll({ where: { guildId: guild.id } })
+    await DefaultGames.destroy({ where: { gameId: games.map((g) => g.id) } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
   } catch (err) {
@@ -40,49 +48,60 @@ afterEach(async () => {
 it("gets the scope for the optioned channel", async () => {
   const target_channel = { id: simpleflake(), name: "other channel" }
   interaction.command_options["channel"] = target_channel
-  const keyvSpy = jest.spyOn(keyv, "set")
-  const expectedScope = explicitScope(target_channel, false)
 
   const reply = await set_default_game_command.execute(interaction)
 
-  expect(keyvSpy).toHaveBeenCalledWith(interaction.id.toString(), expectedScope)
+  expect(reply).toMatch(target_channel.name)
 })
 
 it("gets the scope for the current channel when no explicit option", async () => {
-  const keyvSpy = jest.spyOn(keyv, "set")
-  const expectedScope = explicitScope(interaction.channel, false)
+  const reply = await set_default_game_command.execute(interaction)
 
-  await set_default_game_command.execute(interaction)
-
-  expect(keyvSpy).toHaveBeenCalledWith(interaction.id.toString(), expectedScope)
+  expect(reply).toMatch(interaction.channel.name)
 })
 
-it("stores options", async () => {
-  const keyvSpy = jest.spyOn(keyv, "set")
-  const expectedScope = explicitScope(interaction.channel, false)
+it("updates an existing default game record if one exists", async () => {
+  const game2 = await Games.create({
+    name: "second game",
+    guildId: guild.id,
+  })
+  const record = await DefaultGames.create({
+    name: "test channel",
+    gameId: game2.id,
+    type: DefaultGames.TYPE_CHANNEL,
+    snowflake: interaction.channel.id.toString(),
+  })
 
   await set_default_game_command.execute(interaction)
 
-  expect(keyvSpy).toHaveBeenCalled()
+  await record.reload()
+  expect(record.gameId).toEqual(game.id)
+})
+
+it("creates a new default game record if none exists", async () => {
+  await set_default_game_command.execute(interaction)
+
+  const record = await DefaultGames.findOne({
+    where: { snowflake: interaction.channel.id },
+  })
+
+  expect(record).toBeTruthy()
 })
 
 describe("reply", () => {
-  it("includes an action row", async () => {
+  it("replies that the game was set as default", async () => {
     const reply = await set_default_game_command.execute(interaction)
 
-    expect(reply.components).not.toBeFalsy()
+    expect(reply).toMatch("Test Game is now the default for test channel.")
   })
 
-  it("shows a select for the guild's games", async () => {
-    const game = await Games.create({
-      name: "test game",
-      guildId: guild.id,
+  it("replies that there was an error when there was an error", async () => {
+    jest.spyOn(DefaultGames, "upsert").mockImplementation(() => {
+      throw new Error()
     })
-    const transformSpy = jest.spyOn(GameSelectTransformer, "transform")
 
     const reply = await set_default_game_command.execute(interaction)
-    const selectOptions = reply.components[0].components[0].options
 
-    expect(selectOptions[0].label).toEqual(game.name)
+    expect(reply.content).toMatch("Something went wrong")
   })
 })

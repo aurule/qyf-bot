@@ -10,6 +10,7 @@ class Interaction {
       getString: (key) => this.command_options[key].toString(),
       getBoolean: (key) => !!this.command_options[key],
       getChannel: (key) => this.command_options[key],
+      getInteger: (key) => this.command_options[key],
     }
     this.guild = {
       id: snowflake,

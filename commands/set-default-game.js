@@ -1,16 +1,24 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv.js")
-const { Guilds, Games } = require("../models")
+const { Guilds, Games, DefaultGames } = require("../models")
 const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { explicitScope } = require("../services/default-game-scope")
-const { transform } = require("../transformers/game-choices-transformer")
+const GameChoicesTransformer = require("../transformers/game-choices-transformer")
+const { logger } = require("../util/logger")
 
 module.exports = {
   name: "set-default-game",
   data: (guild) => new SlashCommandBuilder()
     .setName("set-default-game")
     .setDescription("Set the default game for this channel")
+    .addIntegerOption((option) =>
+      option
+        .setName("game")
+        .setDescription("The game to use")
+        .setRequired(true)
+        .addChoices(GameChoicesTransformer.transform(guild.Games))
+    )
     .addChannelOption((option) =>
       option.setName("channel").setDescription("The target channel")
     )
@@ -18,38 +26,35 @@ module.exports = {
       option
         .setName("server")
         .setDescription("Apply default to the whole server")
-    )
-    .addIntegerOption((option) =>
-      option
-        .setName("game")
-        .setDescription("The game to use")
-        .setRequired(true)
-        .addChoices(transform(guild.Games))
     ),
   async execute(interaction) {
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
     const server_wide = interaction.options.getBoolean("server")
+    const game_id = interaction.options.getInteger("game")
 
     const command_options = explicitScope(target_channel, server_wide)
-    keyv.set(interaction.id.toString(), command_options)
 
-    const guild = await Guilds.findByInteraction(interaction, {
-      include: Games,
-    })
+    try {
+      await DefaultGames.upsert({
+        name: command_options.name,
+        type: command_options.target_type,
+        snowflake: command_options.target_snowflake,
+        gameId: game_id,
+      })
+    } catch (error) {
+      logger.debug(error)
+      return interaction.update({
+        content: "Something went wrong :-(",
+        components: [],
+      })
+    }
 
-    const gameSelectRow = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId("defaultGameSelect")
-        .setPlaceholder("Pick a game")
-        .addOptions(GameSelectTransformer.transform(guild.Games))
+    const game = await Games.findOne({ where: { id: game_id } })
+
+    return interaction.reply(
+      `${game.name} is now the default for ${command_options.name}.`
     )
-
-    return interaction.reply({
-      content: `Which game do you want to set as the default for ${command_options.scope_text}?`,
-      components: [gameSelectRow],
-      ephemeral: true,
-    })
   },
 }
