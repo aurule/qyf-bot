@@ -3,6 +3,7 @@ const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
 
 module.exports = {
+  name: "add-game",
   data: (guild) => new SlashCommandBuilder()
     .setName("add-game")
     .setDescription("Add a game to this server")

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
 module.exports = {
+  name: "list-quotes",
   data: (guild) => new SlashCommandBuilder()
     .setName("list-quotes")
     .setDescription("Show the most recent quotes from the current game")

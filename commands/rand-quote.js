@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
 module.exports = {
+  name: "rand-quote",
   data: (guild) => new SlashCommandBuilder()
     .setName("rand-quote")
     .setDescription("Show a random quote from the current game")

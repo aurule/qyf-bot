@@ -3,6 +3,7 @@ const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv.js")
 
 module.exports = {
+  name: "append-quote",
   data: (guild) => new SlashCommandBuilder()
     .setName("append-quote")
     .setDescription("Add a line to a quote")

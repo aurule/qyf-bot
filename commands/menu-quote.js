@@ -2,6 +2,7 @@ const { ContextMenuCommandBuilder } = require("@discordjs/builders")
 const { ApplicationCommandType } = require("discord-api-types/v9")
 
 module.exports = {
+  name: "Quote Message",
   data: (guild) => new ContextMenuCommandBuilder()
     .setName("Quote Message")
     .setType(ApplicationCommandType.Message),

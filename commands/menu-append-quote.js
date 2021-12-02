@@ -3,6 +3,7 @@ const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 
 module.exports = {
+  name: "Add to quote",
   data: (guild) => new ContextMenuCommandBuilder()
     .setName("Add to quote")
     .setType(ApplicationCommandType.Message),
