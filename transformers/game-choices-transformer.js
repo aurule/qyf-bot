@@ -2,10 +2,10 @@
 
 module.exports = {
   /**
-   * Transforms a collection of games into an array of label/value objects
-   * suitable for use in a Discord select menu interaction reply.
+   * Transforms a collection of games into an array of label/value pairs
+   * suitable for the choices of a Discord integeter option
    * @param  {Collection} games The games to transform
-   * @return {Array[Obj]}       Array of select menu option objects
+   * @return {Array[Array]}       Array of option choices
    */
   transform: (games) => {
     return games.map((game) => {
