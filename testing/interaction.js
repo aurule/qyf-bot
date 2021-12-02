@@ -11,10 +11,13 @@ class Interaction {
       getBoolean: (key) => !!this.command_options[key],
       getChannel: (key) => this.command_options[key],
       getInteger: (key) => this.command_options[key],
+      getUser: (key) => this.command_options[key],
     }
     this.guild = {
       id: snowflake,
+      members: []
     }
+    this.guild.members.fetch = (user) => user;
     this.channel = {}
     this.message = {}
   }
