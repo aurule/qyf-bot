@@ -5,11 +5,11 @@ module.exports = {
   async execute(discord_guild) {
     const [guild, _isNewGuild] = await Guilds.findOrCreate({
       where: {
-        snowflake: discord_guild.id,
+        snowflake: discord_guild.id.toString(),
       },
       defaults: {
         name: discord_guild.name,
-        snowflake: discord_guild.id,
+        snowflake: discord_guild.id.toString(),
       },
     })
 
