@@ -15,9 +15,14 @@ class Interaction {
     }
     this.guild = {
       id: snowflake,
-      members: []
+      members: [],
+      channels: {
+        fetch: (key) => {
+          id: key
+        },
+      },
     }
-    this.guild.members.fetch = (user) => user;
+    this.guild.members.fetch = (user) => user
     this.channel = {
       id: simpleflake(),
       isThread: () => false,
@@ -25,6 +30,10 @@ class Interaction {
       parentId: simpleflake(),
     }
     this.message = {}
+    this.user = {
+      id: simpleflake(),
+      name: "Test User",
+    }
   }
 
   async reply(msg) {
