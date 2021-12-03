@@ -76,15 +76,17 @@ describe("explicitScope", () => {
 })
 
 describe("gameForChannel", () => {
+  let default_game
+
   beforeEach(async () => {
     const serverId = simpleflake()
     guild = await Guilds.create({
       name: "Test Guild",
-      snowflake: serverId.toString()
+      snowflake: serverId.toString(),
     })
     game = await Games.create({
       name: "Test Game",
-      guildId: guild.id
+      guildId: guild.id,
     })
 
     channel = {
@@ -95,6 +97,11 @@ describe("gameForChannel", () => {
       guild: {
         id: game.snowflake,
         name: "Test Guild",
+        channels: {
+          fetch: (key) => {
+            id: key
+          },
+        },
       },
       isThread: () => false,
     }
@@ -112,14 +119,16 @@ describe("gameForChannel", () => {
   })
 
   describe("channel has a default game", () => {
-    it("returns the channel's game", async () => {
-      const default_game = await DefaultGames.create({
+    beforeEach(async () => {
+      default_game = await DefaultGames.create({
         name: channel.name,
         gameId: game.id,
         snowflake: channel.id.toString(),
         type: DefaultGames.TYPE_CHANNEL,
       })
+    })
 
+    it("returns the channel's game", async () => {
       const result = await Service.gameForChannel(channel)
 
       expect(result.id).toEqual(game.id)
@@ -127,21 +136,15 @@ describe("gameForChannel", () => {
 
     describe("server also has a default game", () => {
       it("returns the channel's game", async () => {
-        const channel_default = await DefaultGames.create({
-          name: channel.name,
-          gameId: game.id,
-          snowflake: channel.id.toString(),
-        type: DefaultGames.TYPE_CHANNEL,
-        })
         const game2 = await Games.create({
           name: "Test Game 2",
-          guildId: guild.id
+          guildId: guild.id,
         })
         const server_default = await DefaultGames.create({
           name: guild.name,
           gameId: game.id,
           snowflake: guild.id.toString(),
-        type: DefaultGames.TYPE_GUILD,
+          type: DefaultGames.TYPE_GUILD,
         })
 
         const result = await Service.gameForChannel(channel)
@@ -153,20 +156,96 @@ describe("gameForChannel", () => {
 
   describe("channel has no default game", () => {
     describe("topic has a default game", () => {
-      it.todo("returns the topic's game")
+      beforeEach(async () => {
+        default_game = await DefaultGames.create({
+          name: channel.name,
+          gameId: game.id,
+          snowflake: channel.parentId.toString(),
+          type: DefaultGames.TYPE_CHANNEL,
+        })
+      })
+
+      it("returns the topic's game", async () => {
+        const result = await Service.gameForChannel(channel)
+
+        expect(result.id).toEqual(game.id)
+      })
+
       describe("server also has a default game", () => {
-        it.todo("returns the topic's game")
+        it("returns the topic's game", async () => {
+          const game2 = await Games.create({
+            name: "Test Game 2",
+            guildId: guild.id,
+          })
+          const server_default = await DefaultGames.create({
+            name: guild.name,
+            gameId: game.id,
+            snowflake: guild.id.toString(),
+            type: DefaultGames.TYPE_GUILD,
+          })
+
+          const result = await Service.gameForChannel(channel)
+
+          expect(result.id).toEqual(game.id)
+        })
       })
     })
 
     describe("topic has no default game", () => {
       describe("server has a default game", () => {
-        it.todo("returns the server's game")
+        it("returns the server's game", async () => {
+          default_game = await DefaultGames.create({
+            name: guild.name,
+            gameId: game.id,
+            snowflake: channel.guildId.toString(),
+            type: DefaultGames.TYPE_GUILD,
+          })
+
+          const result = await Service.gameForChannel(channel)
+
+          expect(result.id).toEqual(game.id)
+        })
       })
 
       describe("server has no default game", () => {
-        it.todo("returns null")
+        it("returns null", async () => {
+          const result = await Service.gameForChannel(channel)
+
+          expect(result).toBeNull()
+        })
       })
+    })
+  })
+
+  describe("channel is a thread", () => {
+    beforeEach(() => {
+      channel.isThread = () => true
+    })
+
+    it("returns the thread default if one exists", async () => {
+      default_game = await DefaultGames.create({
+        name: channel.name,
+        gameId: game.id,
+        snowflake: channel.id.toString(),
+        type: DefaultGames.TYPE_CHANNEL,
+      })
+
+      const result = await Service.gameForChannel(channel)
+
+      expect(result.id).toEqual(game.id)
+    })
+
+    it("returns the other defaults when there is no thread default", async () => {
+      default_game = await DefaultGames.create({
+        name: channel.name,
+        gameId: game.id,
+        snowflake: channel.parentId.toString(),
+        type: DefaultGames.TYPE_CHANNEL,
+      })
+
+      const result = await Service.gameForChannel(channel)
+
+      expect(result.id).toEqual(game.id)
     })
   })
 })
