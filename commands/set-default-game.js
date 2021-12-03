@@ -44,10 +44,11 @@ module.exports = {
         gameId: game_id,
       })
     } catch (error) {
-      logger.debug(error)
-      return interaction.update({
+      logger.warn(error)
+      return interaction.reply({
         content: "Something went wrong :-(",
         components: [],
+        ephemeral: true
       })
     }
 
