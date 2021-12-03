@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
+const { determineName } = require("../services/speaker-name")
+const { gameForChannel } = require("../services/default-game-scope")
+
 module.exports = {
   name: "quote",
   data: (guild) =>
@@ -27,9 +30,8 @@ module.exports = {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
 
-    const member_name = interaction.guild.members.fetch(speaker).nickname
-    const speaker_name = member_name ? member_name : speaker.username
-    const name = alias ? alias : speaker_name
+    const speaker_name = determineName(interaction.guild.members.fetch(speaker).nickname, speaker.username, alias)
+    const game = gameForChannel(interaction.channel)
 
     // get default game for current scope (channel, channel parent, possibly channel parent parent, guild)
     //    offload to scope service
@@ -38,6 +40,6 @@ module.exports = {
     //    that followup will need to retrieve the stored info, save for game, post a message, and ask if it should save the chosen game as the default for this channel
     //    the followup after that either saves the game as default or scraps it, replies either way
 
-    return interaction.reply(`The quote: "${text}" ~ ${name}`)
+    return interaction.reply(`The quote: "${text}" ~ ${speaker_name}`)
   },
 }

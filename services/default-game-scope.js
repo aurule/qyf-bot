@@ -60,4 +60,19 @@ module.exports = {
       target_snowflake: target_channel.id.toString(),
     })
   },
+
+  /**
+   * Gets the default game for a channel based on its parents:
+   *
+   * Searches by channel's snowflake, then parent's snowflake, then server.
+   *
+   * @param  {Channel} current_channel The discord channel to find a game for
+   * @return {Game|null}               The default game for the channel, or null if none can be found.
+   */
+  gameForChannel: (current_channel) => {
+    // TODO deal with threads. Need to look up channel from guild.channels.fetch(parentId)
+    const search_ids = [current_channel.id, current_channel.parentId, current_channel.guildId]
+    console.log(search_ids)
+    // get default game for current scope (channel, channel parent, possibly channel parent parent, guild)
+  }
 }
