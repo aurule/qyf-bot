@@ -27,7 +27,9 @@
   "scripts": {
     "test": "DOTENV_CONFIG_NODE_ENV=test jest",
     "test:watch": "DOTENV_CONFIG_NODE_ENV=test jest --watch",
-    "commands:deploy": "node scripts/deploy-commands.js"
+    "commands:deploy": "node scripts/deploy-commands.js",
+    "migrate": "sequelize-cli db:migrate",
+    "migrate:test": "NODE_ENV=test sequelize-cli db:migrate"
   },
   "repository": {
     "type": "git",
