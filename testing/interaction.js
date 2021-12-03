@@ -18,7 +18,12 @@ class Interaction {
       members: []
     }
     this.guild.members.fetch = (user) => user;
-    this.channel = {}
+    this.channel = {
+      id: simpleflake(),
+      isThread: () => false,
+      guildId: snowflake,
+      parentId: simpleflake(),
+    }
     this.message = {}
   }
 
