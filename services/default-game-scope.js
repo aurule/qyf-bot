@@ -1,6 +1,6 @@
 "use strict"
 
-const { DefaultGames } = require("../models")
+const { DefaultGames, Games } = require("../models")
 
 class DefaultGameScope {
   constructor(options) {
@@ -69,10 +69,23 @@ module.exports = {
    * @param  {Channel} current_channel The discord channel to find a game for
    * @return {Game|null}               The default game for the channel, or null if none can be found.
    */
-  gameForChannel: (current_channel) => {
-    // TODO deal with threads. Need to look up channel from guild.channels.fetch(parentId)
-    const search_ids = [current_channel.id, current_channel.parentId, current_channel.guildId]
-    console.log(search_ids)
-    // get default game for current scope (channel, channel parent, possibly channel parent parent, guild)
+  gameForChannel: async (current_channel) => {
+    const search_ids = []
+    var target_channel
+
+    if(current_channel.isThread()) {
+      search_ids.push(current_channel.id.toString())
+      target_channel = await current_channel.guild.channels.fetch(current_channel.parentId)
+    } else {
+      target_channel = current_channel
+    }
+
+    search_ids.push(current_channel.id.toString())
+    search_ids.push(current_channel.parentId.toString())
+    search_ids.push(current_channel.guildId.toString())
+
+    const default_game = await DefaultGames.findOne({where: {snowflake: search_ids}, include: Games})
+    if(!default_game) return null
+    return default_game.Game
   }
 }
