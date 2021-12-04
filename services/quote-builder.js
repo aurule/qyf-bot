@@ -1,6 +1,7 @@
 "use strict"
 
 const { Quotes, Lines, Speakers } = require("../models")
+const { logger } = require("../util/logger")
 
 module.exports = {
   /**
@@ -36,7 +37,7 @@ module.exports = {
 
       return the_quote
     } catch(error) {
-      console.log(error)
+      logger.warn(error)
     }
   },
 }

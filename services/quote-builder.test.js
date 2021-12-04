@@ -4,6 +4,7 @@ const QuoteBuilder = require("./quote-builder")
 
 const { Guilds, Games, Quotes, Lines, Speakers } = require("../models")
 const { simpleflake } = require("simpleflakes")
+const { logger } = require("../util/logger")
 
 describe("makeQuote", () => {
   var guild
@@ -76,11 +77,116 @@ describe("makeQuote", () => {
     expect(speaker).toBeTruthy()
   })
 
-  it.todo("creates a new Quote for the game")
+  it("creates a new Quote for the game", async () => {
+    const speaker = await Speakers.create({
+      name: "Test Speaker",
+      snowflake: simpleflake().toString(),
+    })
+
+    const user = {
+      username: "New Name",
+      id: speaker.snowflake,
+    }
+
+    const quote = await QuoteBuilder.makeQuote(
+      "test text",
+      "some guy",
+      game,
+      user
+    )
+
+    expect(quote).toBeTruthy()
+  })
+
   describe("creates a new line", () => {
-    it.todo("stores the text")
-    it.todo("uses the speaker object")
-    it.todo("sets the alias to attribution text")
-    it.todo("sets lineOrder to zero")
+    let speaker
+    let user
+
+    beforeEach(async () => {
+      speaker = await Speakers.create({
+        name: "Test Speaker",
+        snowflake: simpleflake().toString(),
+      })
+
+      user = {
+        username: "New Name",
+        id: speaker.snowflake,
+      }
+    })
+
+    it("stores the text", async () => {
+      const quote = await QuoteBuilder.makeQuote(
+        "test text",
+        "some guy",
+        game,
+        user
+      )
+
+      const lines = await quote.getLines()
+
+      expect(lines[0].content).toMatch("test text")
+    })
+
+    it("uses the speaker object", async () => {
+      const quote = await QuoteBuilder.makeQuote(
+        "test text",
+        "some guy",
+        game,
+        user
+      )
+
+      const lines = await quote.getLines()
+
+      expect(lines[0].speakerId).toEqual(speaker.id)
+    })
+
+    it("sets the alias to attribution text", async () => {
+      const quote = await QuoteBuilder.makeQuote(
+        "test text",
+        "some guy",
+        game,
+        user
+      )
+
+      const lines = await quote.getLines()
+
+      expect(lines[0].speakerAlias).toMatch("some guy")
+    })
+
+    it("sets lineOrder to zero", async () => {
+      const quote = await QuoteBuilder.makeQuote(
+        "test text",
+        "some guy",
+        game,
+        user
+      )
+
+      const lines = await quote.getLines()
+
+      expect(lines[0].lineOrder).toEqual(0)})
+  })
+
+  it("logs any errors", async () => {
+    const speaker = await Speakers.create({
+      name: "Test Speaker",
+      snowflake: simpleflake().toString(),
+    })
+
+    const user = {
+      username: "New Name",
+      id: speaker.snowflake,
+    }
+
+    jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
+    const loggerSpy = jest.spyOn(logger, 'warn')
+
+    await QuoteBuilder.makeQuote(
+      "test text",
+      "some guy",
+      game,
+      user
+    )
+
+    expect(loggerSpy).toHaveBeenCalled()
   })
 })
