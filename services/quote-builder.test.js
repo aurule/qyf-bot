@@ -180,7 +180,7 @@ describe("makeQuote", () => {
     jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
     const loggerSpy = jest.spyOn(logger, 'warn')
 
-    await QuoteBuilder.makeQuote(
+    const result = await QuoteBuilder.makeQuote(
       "test text",
       "some guy",
       game,
@@ -188,5 +188,6 @@ describe("makeQuote", () => {
     )
 
     expect(loggerSpy).toHaveBeenCalled()
+    expect(result).toBeNull()
   })
 })

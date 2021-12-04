@@ -38,6 +38,7 @@ module.exports = {
       return the_quote
     } catch(error) {
       logger.warn(error)
+      return null
     }
   },
 }
