@@ -42,13 +42,12 @@ module.exports = {
     const game = await gameForChannel(interaction.channel)
 
     if (game) {
-      try {
-        await makeQuote(text, speaker_name, game, speaker_user)
-      } catch (error) {
-        logger.warn(error)
+      const result = await makeQuote(text, speaker_name, game, speaker_user)
+      if(result instanceof Quotes) {
+        return interaction.reply(`${user.name} quoted ${speaker_name}: ${text}`)
+      } else {
         return interaction.reply("Something went wrong :-(")
       }
-      return interaction.reply(`${user.name} quoted ${speaker_name}: ${text}`)
     }
 
     // if no default game, store quote info and prompt for game

@@ -10,6 +10,7 @@ const {
   Speakers,
 } = require("../models")
 const DefaultGameScopeService = require("../services/default-game-scope")
+const QuoteBuilder = require("../services/quote-builder")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -82,7 +83,7 @@ describe("with a default game", () => {
     beforeEach(() => {
       jest
         .spyOn(DefaultGameScopeService, "gameForChannel")
-        .mockImplementation((chan) => game)
+        .mockReturnValue(game)
     })
 
     it("says who saved the quote", async () => {
@@ -101,6 +102,14 @@ describe("with a default game", () => {
       const reply = await quote_command.execute(interaction)
 
       expect(reply).toMatch(interaction.command_options.alias)
+    })
+
+    it("notifies if there is an error", async () => {
+      jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
+
+      const reply = await quote_command.execute(interaction)
+
+      expect(reply).toMatch("Something went wrong")
     })
   })
 })
