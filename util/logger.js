@@ -1,16 +1,17 @@
 const Pino = require("pino")
 const pretty = require('pino-pretty')
+const devnull = require('dev-null')
+
 require("dotenv").config()
 
 const options = {}
-const stream = pickStream()
+const logStream = pickStream()
 
 function pickStream() {
-  if (process.env.NODE_ENV != "production") {
-    return pretty()
-  }
+  if (process.env.NODE_ENV == "development") return pretty()
+  if (process.env.NODE_ENV == "test") return devnull()
 }
 
 module.exports = {
-  logger: Pino(stream),
+  logger: Pino(logStream),
 }
