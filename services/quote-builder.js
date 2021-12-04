@@ -12,31 +12,31 @@ module.exports = {
    * @return {Quotes}                     The created quote object
    */
   makeQuote: async (text, attribution, game, speaker_user) => {
-    let speaker, _isNewSpeaker, quote
     try {
-      [speaker, _isNewSpeaker] = await Speakers.findOrCreate({
+      const the_quote = await Quotes.create({
+        gameId: game.id,
+        saidAt: Date.now(),
+      })
+
+      const [found_speaker, _isNewSpeaker] = await Speakers.findOrCreate({
         where: { snowflake: speaker_user.id.toString() },
         defaults: {
           name: speaker_user.username,
           snowflake: speaker_user.id.toString(),
         },
       })
-      quote = await Quotes.create({
-        gameId: game.id,
-        saidAt: Date.now(),
+
+      await Lines.create({
+        quoteId: the_quote.id,
+        content: text,
+        lineOrder: 0,
+        speakerAlias: attribution,
+        speakerId: found_speaker.id,
       })
+
+      return the_quote
     } catch(error) {
       console.log(error)
     }
-
-    await Lines.create({
-      quoteId: quote.id,
-      content: text,
-      lineOrder: 0,
-      speakerAlias: attribution,
-      speakerId: speaker.id,
-    })
-
-    return quote
   },
 }

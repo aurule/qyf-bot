@@ -42,11 +42,16 @@ describe("makeQuote", () => {
     })
 
     const user = {
-      username: "Wrong Name",
-      id: speaker.snowflake
+      username: "New Name",
+      id: speaker.snowflake,
     }
 
-    const quote = await QuoteBuilder.makeQuote("test text", "some guy", game, user)
+    const quote = await QuoteBuilder.makeQuote(
+      "test text",
+      "some guy",
+      game,
+      user
+    )
 
     expect(await speaker.countLines()).toEqual(1)
   })
@@ -54,15 +59,21 @@ describe("makeQuote", () => {
   it("creates a new speaker", async () => {
     const user = {
       username: "Test Speaker",
-      id: simpleflake()
+      id: simpleflake(),
     }
 
-    const quote = await QuoteBuilder.makeQuote("test text", "some guy", game, user)
+    const quote = await QuoteBuilder.makeQuote(
+      "test text",
+      "some guy",
+      game,
+      user
+    )
 
-    await quote.reload({include: {model: Lines, include: Speakers}})
-    const line = quote.Lines[0]
+    const speaker = await Speakers.findOne({
+      where: { snowflake: user.id.toString() },
+    })
 
-    expect(line.Speaker.id).toBeTruthy()
+    expect(speaker).toBeTruthy()
   })
 
   it.todo("creates a new Quote for the game")
