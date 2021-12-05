@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
@@ -50,10 +51,18 @@ module.exports = {
       }
     }
 
-    // if no default game, store quote info and prompt for game
-    //    that followup will need to retrieve the stored info, save for game, post a message, and ask if it should save the chosen game as the default for this channel
-    //    the followup after that either saves the game as default or scraps it, replies either way
+    // store info
 
-    return interaction.reply(`The quote: "${text}" ~ ${speaker_name}`)
+    const guild = Guilds.findByInteraction(interaction)
+    const games = Games.findAll({where: {guildId: guild.id}})
+    const gameSelectRow = new MessageActionRow()
+      .addComponents(
+        new MessageSelectMenu()
+          .setCustomId("newQuoteGameSelect")
+          .setPlaceholder("Pick a game")
+          .addOptions(GameSelectTransformer.transform(games))
+      )
+
+    return interaction.reply({content: "Which game is this quote from?", components: [gameSelectRow], ephemeral: true})
   },
 }
