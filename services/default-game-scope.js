@@ -32,7 +32,7 @@ class DefaultGameScope {
 }
 
 module.exports = {
-  DefaultGameScope: DefaultGameScope,
+  DefaultGameScope,
 
   /**
    * Get the default game scope information based on an explicit channel obj
