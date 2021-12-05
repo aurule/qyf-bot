@@ -3,6 +3,28 @@
 const { Quotes, Lines, Speakers } = require("../models")
 const { logger } = require("../util/logger")
 
+class QuoteData {
+  constructor(options) {
+    /**
+     * The content of the quote
+     * @type string
+     */
+    this.text
+
+    /**
+     * The name of who said it
+     * @type string
+     */
+    this.speaker_name
+
+    /**
+     * The discord user for who said it. Only needs id and username attributes.
+     * @type Object{id,username}
+     */
+    this.speaker_user
+  }
+}
+
 module.exports = {
   /**
    * Create a new quote with a single line
