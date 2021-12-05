@@ -26,6 +26,8 @@ class QuoteData {
 }
 
 module.exports = {
+  QuoteData,
+
   /**
    * Create a new quote with a single line
    * @param  {string}       text          The content of the first line
