@@ -2,10 +2,10 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const { keyv } = require("../util/keyv")
 
+const { Guilds, Games, Quotes, Lines, Speakers } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
-const { Quotes, Lines, Speakers } = require("../models")
-const { logger } = require("../util/logger")
+const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { makeQuote, QuoteData } = require("../services/quote-builder")
 
 module.exports = {
@@ -61,14 +61,13 @@ module.exports = {
       })
     )
 
-    const guild = Guilds.findByInteraction(interaction)
-    const games = Games.findAll({where: {guildId: guild.id}})
+    const guild = await Guilds.findByInteraction(interaction, {include: Games})
     const gameSelectRow = new MessageActionRow()
       .addComponents(
         new MessageSelectMenu()
           .setCustomId("newQuoteGameSelect")
           .setPlaceholder("Pick a game")
-          .addOptions(GameSelectTransformer.transform(games))
+          .addOptions(GameSelectTransformer.transform(guild.Games))
       )
 
     return interaction.reply({content: "Which game is this quote from?", components: [gameSelectRow], ephemeral: true})

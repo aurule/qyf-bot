@@ -14,6 +14,7 @@ const QuoteBuilder = require("../services/quote-builder")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
+const { keyv } = require("../util/keyv")
 
 var guild
 var interaction
@@ -115,7 +116,17 @@ describe("with a default game", () => {
 })
 
 describe("with no default game", () => {
-  it.todo("stores the quote info for later followup")
+  it("stores the quote info for later followup", async () => {
+    const keyvSpy = jest.spyOn(keyv, "set")
 
-  it.todo("replies with a game prompt")
+    const reply = await quote_command.execute(interaction)
+
+    expect(keyvSpy).toHaveBeenCalled()
+  })
+
+  it("replies with a game prompt", async () => {
+    const reply = await quote_command.execute(interaction)
+
+    expect(reply.content).toMatch("Which game")
+  })
 })
