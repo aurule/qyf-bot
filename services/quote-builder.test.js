@@ -75,24 +75,24 @@ describe("makeQuote", () => {
   })
 
   it("assigns an existing speaker", async () => {
-    const speaker = await Users.create({
+    const user = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })
 
-    const user = {
+    const discord_user = {
       username: "New Name",
-      id: speaker.snowflake,
+      id: user.snowflake,
     }
 
     const quote = await QuoteBuilder.makeQuote(
       "test text",
       "some guy",
       game,
-      user
+      discord_user
     )
 
-    expect(await speaker.countLines()).toEqual(1)
+    expect(await user.countLines()).toEqual(1)
   })
 
   it("creates a new speaker", async () => {

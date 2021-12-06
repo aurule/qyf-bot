@@ -72,14 +72,10 @@ describe("execute", () => {
 
     it("saves the quote for the default game", async () => {
       await quote_command.execute(interaction)
-      try {
-        const quote = await Quotes.findOne({
-          where: { gameId: game.id },
-          include: Lines,
-        })
-      } catch(err) {
-        console.log(err)
-      }
+      const quote = await Quotes.findOne({
+        where: { gameId: game.id },
+        include: Lines,
+      })
 
       expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
     })
