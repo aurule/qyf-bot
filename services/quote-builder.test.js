@@ -2,7 +2,7 @@
 
 const QuoteBuilder = require("./quote-builder")
 
-const { Guilds, Games, Quotes, Lines, Speakers } = require("../models")
+const { Guilds, Games, Quotes, Lines, Users } = require("../models")
 const { simpleflake } = require("simpleflakes")
 const { logger } = require("../util/logger")
 
@@ -68,14 +68,14 @@ describe("makeQuote", () => {
     const speaker_ids = lines.map((line) => line.speakerId)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
-    await Speakers.destroy({ where: { id: speaker_ids } })
+    await Users.destroy({ where: { id: speaker_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
     await game.destroy()
     await guild.destroy()
   })
 
   it("assigns an existing speaker", async () => {
-    const speaker = await Speakers.create({
+    const speaker = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })
@@ -108,7 +108,7 @@ describe("makeQuote", () => {
       user
     )
 
-    const speaker = await Speakers.findOne({
+    const speaker = await Users.findOne({
       where: { snowflake: user.id.toString() },
     })
 
@@ -116,7 +116,7 @@ describe("makeQuote", () => {
   })
 
   it("creates a new Quote for the game", async () => {
-    const speaker = await Speakers.create({
+    const speaker = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })
@@ -141,7 +141,7 @@ describe("makeQuote", () => {
     let user
 
     beforeEach(async () => {
-      speaker = await Speakers.create({
+      speaker = await Users.create({
         name: "Test Speaker",
         snowflake: simpleflake().toString(),
       })
@@ -205,7 +205,7 @@ describe("makeQuote", () => {
   })
 
   it("logs any errors", async () => {
-    const speaker = await Speakers.create({
+    const speaker = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })

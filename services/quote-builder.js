@@ -1,6 +1,6 @@
 "use strict"
 
-const { Quotes, Lines, Speakers } = require("../models")
+const { Quotes, Lines, Users } = require("../models")
 const { logger } = require("../util/logger")
 
 class QuoteData {
@@ -46,7 +46,7 @@ module.exports = {
         saidAt: Date.now(),
       })
 
-      const [found_speaker, _isNewSpeaker] = await Speakers.findOrCreate({
+      const [found_speaker, _isNewSpeaker] = await Users.findOrCreate({
         where: { snowflake: speaker_user.id.toString() },
         defaults: {
           name: speaker_user.username,

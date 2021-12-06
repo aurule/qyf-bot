@@ -7,7 +7,6 @@ const {
   DefaultGames,
   Quotes,
   Lines,
-  Speakers,
 } = require("../models")
 const DefaultGameScopeService = require("../services/default-game-scope")
 const QuoteBuilder = require("../services/quote-builder")
@@ -73,10 +72,14 @@ describe("execute", () => {
 
     it("saves the quote for the default game", async () => {
       await quote_command.execute(interaction)
-      const quote = await Quotes.findOne({
-        where: { gameId: game.id },
-        include: Lines,
-      })
+      try {
+        const quote = await Quotes.findOne({
+          where: { gameId: game.id },
+          include: Lines,
+        })
+      } catch(err) {
+        console.log(err)
+      }
 
       expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
     })

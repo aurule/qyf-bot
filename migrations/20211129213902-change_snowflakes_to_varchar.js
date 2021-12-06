@@ -8,18 +8,14 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    return queryInterface.sequelize.transaction(t => {
-      return Promise.all([
-        queryInterface.changeColumn('DefaultGames', 'snowflake', {
-          type: Sequelize.STRING,
-        }, { t }),
-        queryInterface.changeColumn('Guilds', 'snowflake', {
-          type: Sequelize.STRING,
-        }, { t }),
-        queryInterface.changeColumn('Speakers', 'snowflake', {
-          type: Sequelize.STRING,
-        }, { t }),
-      ])
+    await queryInterface.changeColumn('DefaultGames', 'snowflake', {
+      type: Sequelize.STRING,
+    })
+    await queryInterface.changeColumn('Guilds', 'snowflake', {
+      type: Sequelize.STRING,
+    })
+    await queryInterface.changeColumn('Speakers', 'snowflake', {
+      type: Sequelize.STRING,
     })
   },
 
@@ -30,18 +26,14 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    return queryInterface.sequelize.transaction(t => {
-      return Promise.all([
-        queryInterface.changeColumn('DefaultGames', 'snowflake', {
-          type: Sequelize.BIGINT,
-        }, { t }),
-        queryInterface.changeColumn('Guilds', 'snowflake', {
-          type: Sequelize.BIGINT,
-        }, { t }),
-        queryInterface.changeColumn('Speakers', 'snowflake', {
-          type: Sequelize.BIGINT,
-        }, { t }),
-      ])
+    await queryInterface.changeColumn('DefaultGames', 'snowflake', {
+      type: Sequelize.BIGINT,
+    })
+    await queryInterface.changeColumn('Guilds', 'snowflake', {
+      type: Sequelize.BIGINT,
+    })
+    await queryInterface.changeColumn('Speakers', 'snowflake', {
+      type: Sequelize.BIGINT,
     })
   }
 };

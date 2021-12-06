@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Lines.belongsTo(models.Quotes)
-      Lines.belongsTo(models.Speakers)
+      Lines.belongsTo(models.Users, { as: "speaker", foreignKey: "speakerId" })
     }
   }
   Lines.init(
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         references: {
           model: {
-            tableName: "speakers",
+            tableName: "users",
           },
           key: "id",
         },
