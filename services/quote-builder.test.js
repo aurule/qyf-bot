@@ -6,6 +6,44 @@ const { Guilds, Games, Quotes, Lines, Speakers } = require("../models")
 const { simpleflake } = require("simpleflakes")
 const { logger } = require("../util/logger")
 
+describe("QuoteData", () => {
+  describe("constructor", () => {
+    const options = {
+      text: "test text",
+      attribution: "some guy",
+      speaker_user: {
+        id: 1,
+        username: "That Guy",
+        something: "else",
+        another: "thing",
+      }
+    }
+
+    it("saves text as-is", () => {
+      const data = new QuoteBuilder.QuoteData(options)
+
+      expect(data.text).toEqual(options.text)
+    })
+
+    it("saves attribution as-is", () => {
+      const data = new QuoteBuilder.QuoteData(options)
+
+      expect(data.attribution).toEqual(options.attribution)
+    })
+
+    it("saves only the id and username of speaker_user", () => {
+      const data = new QuoteBuilder.QuoteData(options)
+
+      const expected_user = {
+        id: "1",
+        username: "That Guy",
+      }
+
+      expect(data.speaker_user).toEqual(expected_user)
+    })
+  })
+})
+
 describe("makeQuote", () => {
   var guild
   var game

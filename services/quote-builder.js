@@ -9,19 +9,22 @@ class QuoteData {
      * The content of the quote
      * @type string
      */
-    this.text
+    this.text = options.text
 
     /**
      * The name of who said it
      * @type string
      */
-    this.speaker_name
+    this.attribution = options.attribution
 
     /**
      * The discord user for who said it. Only needs id and username attributes.
      * @type Object{id,username}
      */
-    this.speaker_user
+    this.speaker_user = {
+      id: options.speaker_user.id.toString(),
+      username: options.speaker_user.username,
+    }
   }
 }
 
