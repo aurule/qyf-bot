@@ -46,7 +46,7 @@ module.exports = {
     if (game) {
       const result = await makeQuote(text, speaker_name, game, speaker_user)
       if(result instanceof Quotes) {
-        return interaction.reply(`${user.name} quoted ${speaker_name}: ${text}`)
+        return interaction.reply(`${user.username} quoted ${speaker_name}: ${text}`)
       } else {
         return interaction.reply("Something went wrong :-(")
       }

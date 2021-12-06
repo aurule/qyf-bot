@@ -32,7 +32,7 @@ class Interaction {
     this.message = {}
     this.user = {
       id: simpleflake(),
-      name: "Test User",
+      username: "Test User",
     }
   }
 

@@ -90,7 +90,7 @@ describe("execute", () => {
       it("says who saved the quote", async () => {
         const reply = await quote_command.execute(interaction)
 
-        expect(reply).toMatch(interaction.user.name)
+        expect(reply).toMatch(interaction.user.username)
       })
 
       it("displays the quote text", async () => {
