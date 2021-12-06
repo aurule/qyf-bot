@@ -1,11 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { keyv } = require("../util/keyv")
 
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
 const { Quotes, Lines, Speakers } = require("../models")
-const { makeQuote } = require("../services/quote-builder")
 const { logger } = require("../util/logger")
+const { makeQuote, QuoteData } = require("../services/quote-builder")
 
 module.exports = {
   name: "quote",
@@ -51,7 +52,14 @@ module.exports = {
       }
     }
 
-    // store info
+    keyv.set(
+      interaction.id,
+      new QuoteData({
+        text: text,
+        attribution: speaker_name,
+        speaker_user: speaker_user,
+      })
+    )
 
     const guild = Guilds.findByInteraction(interaction)
     const games = Games.findAll({where: {guildId: guild.id}})
