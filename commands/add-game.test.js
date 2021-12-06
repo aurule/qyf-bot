@@ -36,60 +36,73 @@ afterEach(async () => {
   }
 })
 
-describe("without errors", () => {
-  it("creates a new game", async () => {
-    const spy = jest.spyOn(Games, "create")
+describe("execute", () => {
+  describe("without errors", () => {
+    it("creates a new game", async () => {
+      const spy = jest.spyOn(Games, "create")
 
-    try {
-      await add_game_command.execute(interaction)
-    } catch (error) {
-      console.log(error)
-    }
+      try {
+        await add_game_command.execute(interaction)
+      } catch (error) {
+        console.log(error)
+      }
 
-    expect(spy).toHaveBeenCalledWith({
-      name: "new game",
-      guildId: guild.id,
-      description: "a new game",
+      expect(spy).toHaveBeenCalledWith({
+        name: "new game",
+        guildId: guild.id,
+        description: "a new game",
+      })
+    })
+
+    it("replies that the game was added", async () => {
+      const reply = await add_game_command.execute(interaction)
+
+      expect(reply).toMatch('Added game "new game"')
+    })
+
+    it("updates the guild's commands", async () => {
+      try {
+        await add_game_command.execute(interaction)
+      } catch (error) {
+        console.log(error)
+      }
+
+      expect(commandSpy).toHaveBeenCalled()
     })
   })
 
-  it("replies that the game was added", async () => {
-    const reply = await add_game_command.execute(interaction)
+  describe("with a duplicate name", () => {
+    it("replies that the game already exists", async () => {
+      jest.spyOn(Games, "create").mockImplementation(async (args) => {
+        throw new UniqueConstraintError()
+      })
 
-    expect(reply).toMatch('Added game "new game"')
+      const reply = await add_game_command.execute(interaction)
+
+      expect(reply).toMatch('The game "new game" already exists!')
+    })
   })
 
-  it("updates the guild's commands", async () => {
-    try {
-      await add_game_command.execute(interaction)
-    } catch (error) {
-      console.log(error)
-    }
+  describe("with an error", () => {
+    it("replies with a boring message", async () => {
+      jest.spyOn(Games, "create").mockImplementation(async (args) => {
+        throw new Error("test error")
+      })
 
-    expect(commandSpy).toHaveBeenCalled()
+      const reply = await add_game_command.execute(interaction)
+
+      expect(reply).toMatch("Something went wrong :-(")
+    })
   })
 })
 
-describe("with a duplicate name", () => {
-  it("replies that the game already exists", async () => {
-    jest.spyOn(Games, "create").mockImplementation(async (args) => {
-      throw new UniqueConstraintError()
-    })
+describe("data", () => {
+  // This test is very bare-bones because we're really just
+  // testing that the various calls to discord.js functions
+  // were executed properly.
+  it("returns something", () => {
+    const command_data = add_game_command.data({})
 
-    const reply = await add_game_command.execute(interaction)
-
-    expect(reply).toMatch('The game "new game" already exists!')
-  })
-})
-
-describe("with an error", () => {
-  it("replies with a boring message", async () => {
-    jest.spyOn(Games, "create").mockImplementation(async (args) => {
-      throw new Error("test error")
-    })
-
-    const reply = await add_game_command.execute(interaction)
-
-    expect(reply).toMatch("Something went wrong :-(")
+    expect(command_data).toBeTruthy()
   })
 })

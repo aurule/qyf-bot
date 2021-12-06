@@ -69,3 +69,14 @@ describe("execute", () => {
     await wrong_guild.destroy()
   })
 })
+
+describe("data", () => {
+  // This test is very bare-bones because we're really just
+  // testing that the various calls to discord.js functions
+  // were executed properly.
+  it("returns something", () => {
+    const command_data = list_games_command.data({})
+
+    expect(command_data).toBeTruthy()
+  })
+})

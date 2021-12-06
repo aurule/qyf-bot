@@ -37,59 +37,72 @@ afterEach(async () => {
   }
 })
 
-it("gets the scope for the optioned channel", async () => {
-  const target_channel = { id: simpleflake(), name: "other channel" }
-  interaction.command_options["channel"] = target_channel
+describe("execute", () => {
+  it("gets the scope for the optioned channel", async () => {
+    const target_channel = { id: simpleflake(), name: "other channel" }
+    interaction.command_options["channel"] = target_channel
 
-  const reply = await remove_default_game_command.execute(interaction)
+    const reply = await remove_default_game_command.execute(interaction)
 
-  expect(reply).toMatch(target_channel.name)
-})
-
-it("gets the scope for the current channel when no explicit option", async () => {
-  const reply = await remove_default_game_command.execute(interaction)
-
-  expect(reply).toMatch(interaction.channel.name)
-})
-
-it("does nothing if there is no default for the scope snowflake", async () => {
-  const wrong_game = await Games.create({
-    name: "Wrong Game",
-    guildId: guild.id,
-  })
-  const default_game = await DefaultGames.create({
-    snowflake: guild.snowflake,
-    gameId: wrong_game.id,
-    type: DefaultGames.TYPE_GUILD,
-    name: "Test Guild",
+    expect(reply).toMatch(target_channel.name)
   })
 
-  await remove_default_game_command.execute(interaction)
-  const post_delete_find = await DefaultGames.findByPk(default_game.id)
+  it("gets the scope for the current channel when no explicit option", async () => {
+    const reply = await remove_default_game_command.execute(interaction)
 
-  expect(post_delete_find).toBeTruthy()
-})
-
-it("removes the default game for the provided snowflake", async () => {
-  const right_game = await Games.create({
-    name: "Right Game",
-    guildId: guild.id,
-  })
-  const default_game = await DefaultGames.create({
-    snowflake: interaction.channel.id.toString(),
-    gameId: right_game.id,
-    type: DefaultGames.TYPE_CHANNEL,
-    name: "Test Channel",
+    expect(reply).toMatch(interaction.channel.name)
   })
 
-  await remove_default_game_command.execute(interaction)
-  const post_delete_find = await DefaultGames.findByPk(default_game.id)
+  it("does nothing if there is no default for the scope snowflake", async () => {
+    const wrong_game = await Games.create({
+      name: "Wrong Game",
+      guildId: guild.id,
+    })
+    const default_game = await DefaultGames.create({
+      snowflake: guild.snowflake,
+      gameId: wrong_game.id,
+      type: DefaultGames.TYPE_GUILD,
+      name: "Test Guild",
+    })
 
-  expect(post_delete_find).toBeFalsy()
+    await remove_default_game_command.execute(interaction)
+    const post_delete_find = await DefaultGames.findByPk(default_game.id)
+
+    expect(post_delete_find).toBeTruthy()
+  })
+
+  it("removes the default game for the provided snowflake", async () => {
+    const right_game = await Games.create({
+      name: "Right Game",
+      guildId: guild.id,
+    })
+    const default_game = await DefaultGames.create({
+      snowflake: interaction.channel.id.toString(),
+      gameId: right_game.id,
+      type: DefaultGames.TYPE_CHANNEL,
+      name: "Test Channel",
+    })
+
+    await remove_default_game_command.execute(interaction)
+    const post_delete_find = await DefaultGames.findByPk(default_game.id)
+
+    expect(post_delete_find).toBeFalsy()
+  })
+
+  it("notifies the user", async () => {
+    const result = await remove_default_game_command.execute(interaction)
+
+    expect(result).toMatch("Removed default game from Test Channel")
+  })
 })
 
-it("notifies the user", async () => {
-  const result = await remove_default_game_command.execute(interaction)
+describe("data", () => {
+  // This test is very bare-bones because we're really just
+  // testing that the various calls to discord.js functions
+  // were executed properly.
+  it("returns something", () => {
+    const command_data = remove_default_game_command.data({})
 
-  expect(result).toMatch("Removed default game from Test Channel")
+    expect(command_data).toBeTruthy()
+  })
 })

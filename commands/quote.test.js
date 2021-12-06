@@ -60,73 +60,86 @@ afterEach(async () => {
   }
 })
 
-describe("with a default game", () => {
-  beforeEach(async () => {
-    await DefaultGames.create({
-      name: guild.name,
-      snowflake: guild.snowflake,
-      type: DefaultGames.TYPE_GUILD,
-      gameId: game.id,
+describe("execute", () => {
+  describe("with a default game", () => {
+    beforeEach(async () => {
+      await DefaultGames.create({
+        name: guild.name,
+        snowflake: guild.snowflake,
+        type: DefaultGames.TYPE_GUILD,
+        gameId: game.id,
+      })
+    })
+
+    it("saves the quote for the default game", async () => {
+      await quote_command.execute(interaction)
+      const quote = await Quotes.findOne({
+        where: { gameId: game.id },
+        include: Lines,
+      })
+
+      expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+    })
+
+    describe("reply", () => {
+      beforeEach(() => {
+        jest
+          .spyOn(DefaultGameScopeService, "gameForChannel")
+          .mockReturnValue(game)
+      })
+
+      it("says who saved the quote", async () => {
+        const reply = await quote_command.execute(interaction)
+
+        expect(reply).toMatch(interaction.user.name)
+      })
+
+      it("displays the quote text", async () => {
+        const reply = await quote_command.execute(interaction)
+
+        expect(reply).toMatch(interaction.command_options.text)
+      })
+
+      it("displays the quote speaker", async () => {
+        const reply = await quote_command.execute(interaction)
+
+        expect(reply).toMatch(interaction.command_options.alias)
+      })
+
+      it("notifies if there is an error", async () => {
+        jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
+
+        const reply = await quote_command.execute(interaction)
+
+        expect(reply).toMatch("Something went wrong")
+      })
     })
   })
 
-  it("saves the quote for the default game", async () => {
-    await quote_command.execute(interaction)
-    const quote = await Quotes.findOne({
-      where: { gameId: game.id },
-      include: Lines,
-    })
-
-    expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
-  })
-
-  describe("reply", () => {
-    beforeEach(() => {
-      jest
-        .spyOn(DefaultGameScopeService, "gameForChannel")
-        .mockReturnValue(game)
-    })
-
-    it("says who saved the quote", async () => {
-      const reply = await quote_command.execute(interaction)
-
-      expect(reply).toMatch(interaction.user.name)
-    })
-
-    it("displays the quote text", async () => {
-      const reply = await quote_command.execute(interaction)
-
-      expect(reply).toMatch(interaction.command_options.text)
-    })
-
-    it("displays the quote speaker", async () => {
-      const reply = await quote_command.execute(interaction)
-
-      expect(reply).toMatch(interaction.command_options.alias)
-    })
-
-    it("notifies if there is an error", async () => {
-      jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
+  describe("with no default game", () => {
+    it("stores the quote info for later followup", async () => {
+      const keyvSpy = jest.spyOn(keyv, "set")
 
       const reply = await quote_command.execute(interaction)
 
-      expect(reply).toMatch("Something went wrong")
+      expect(keyvSpy).toHaveBeenCalled()
+    })
+
+    it("replies with a game prompt", async () => {
+      const reply = await quote_command.execute(interaction)
+
+      expect(reply.content).toMatch("Which game")
     })
   })
 })
 
-describe("with no default game", () => {
-  it("stores the quote info for later followup", async () => {
-    const keyvSpy = jest.spyOn(keyv, "set")
+describe("data", () => {
+  // This test is very bare-bones because we're really just
+  // testing that the various calls to discord.js functions
+  // were executed properly.
+  it("returns something", () => {
+    const command_data = quote_command.data({})
 
-    const reply = await quote_command.execute(interaction)
-
-    expect(keyvSpy).toHaveBeenCalled()
-  })
-
-  it("replies with a game prompt", async () => {
-    const reply = await quote_command.execute(interaction)
-
-    expect(reply.content).toMatch("Which game")
+    expect(command_data).toBeTruthy()
   })
 })
