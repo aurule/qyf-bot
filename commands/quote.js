@@ -53,7 +53,7 @@ module.exports = {
     }
 
     keyv.set(
-      interaction.id,
+      interaction.id.toString(),
       new QuoteData({
         text: text,
         attribution: speaker_name,
