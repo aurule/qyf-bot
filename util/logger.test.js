@@ -6,7 +6,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   jest.resetModules()
-  process.env = {...old_env}
+  process.env = { ...old_env }
 })
 
 afterAll(() => {
