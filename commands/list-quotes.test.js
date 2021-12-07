@@ -45,9 +45,12 @@ afterEach(async () => {
     const game_ids = games.map((g) => g.id)
     const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
     const quote_ids = quotes.map((q) => q.id)
+    const lines = await Lines.findAll({where: {quoteId: quote_ids}, include: 'speaker' })
+    const line_speaker_ids = lines.map(line => line.speaker.id)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
+    await Users.destroy({ where: {id: line_speaker_ids}})
     await DefaultGames.destroy({ where: { gameId: game_ids } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
@@ -66,10 +69,6 @@ describe("execute", () => {
     })
   })
 
-  afterEach(async () => {
-    await speaker.destroy()
-  })
-
   it("gets quotes from finder", async () => {
     const finderSpy = jest.spyOn(QuoteFinder, "findAll")
 
@@ -86,7 +85,9 @@ describe("execute", () => {
       await list_quotes_command.execute(interaction)
 
       // finderSpy was called with an object including limit:5
-      expect(finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]).toMatchObject({limit: 5})
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ limit: 5 })
     })
 
     it("shows the requested number of quotes", async () => {
@@ -96,7 +97,9 @@ describe("execute", () => {
       await list_quotes_command.execute(interaction)
 
       // finderSpy was called with an object including limit:5
-      expect(finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]).toMatchObject({limit: 6})
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ limit: 6 })
     })
 
     it("shows at most ten quotes", async () => {
@@ -106,23 +109,30 @@ describe("execute", () => {
       await list_quotes_command.execute(interaction)
 
       // finderSpy was called with an object including limit:5
-      expect(finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]).toMatchObject({limit: 10})
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ limit: 10 })
     })
   })
 
   it("replies with the quote line text", async () => {
-    await Quotes.create({
-      saidAt: Date.now(),
-      gameId: game.id,
-      lines: [
-        {
-          content: "Quote text is cool",
-          speakerId: speaker.id,
-          speakerAlias: "Some Dude",
-          lineOrder: 0,
-        },
-      ],
-    })
+    await Quotes.create(
+      {
+        saidAt: Date.now(),
+        gameId: game.id,
+        Lines: [
+          {
+            content: "Quote text is cool",
+            speakerId: speaker.id,
+            speakerAlias: "Some Dude",
+            lineOrder: 0,
+          },
+        ],
+      },
+      {
+        include: Lines
+      }
+    )
 
     const reply = await list_quotes_command.execute(interaction)
 
