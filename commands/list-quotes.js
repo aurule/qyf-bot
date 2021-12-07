@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
-const { Guilds, Games, Quotes, Lines } = require("../models")
+const { Guilds, Games, Quotes, Lines, DefaultGames } = require("../models")
+const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 
 module.exports = {
   name: "list-quotes",
@@ -17,8 +18,11 @@ module.exports = {
       .addStringOption((option) =>
         option.setName("text").setDescription("Containing some text")
       )
-      .addStringOption((option) =>
-        option.setName("game").setDescription("From a game. Uses channel default.")
+      .addIntegerOption((option) =>
+        option
+          .setName("game")
+          .setDescription("Game the quote is from. Defaults to channel's current game")
+          .addChoices(GameChoicesTransformer.transform(guild.Games))
       )
       .addIntegerOption((option) =>
         option
@@ -29,7 +33,7 @@ module.exports = {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
-    const game = interaction.options.getString("game")
+    const game_id = interaction.options.getInteger("game")
     const arg_amount = interaction.options.getInteger("amount")
 
     const amount = arg_amount ? arg_amount : 5
