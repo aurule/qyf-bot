@@ -69,12 +69,60 @@ describe("execute", () => {
     })
   })
 
-  it("gets quotes from finder", async () => {
-    const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+  describe("game selection", () => {
+    it("replies with the game name", async () => {
+      interaction.command_options.game = game.id
 
-    await list_quotes_command.execute(interaction)
+      const reply = await list_quotes_command.execute(interaction)
 
-    expect(finderSpy).toHaveBeenCalled()
+      expect(reply).toMatch(game.name)
+    })
+
+    it("sends the chosen game to the finder", async () => {
+      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      interaction.command_options.game = game.id
+
+      await list_quotes_command.execute(interaction)
+
+      // finderSpy was called with an object including gameId:game.id
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ gameId: game.id })
+    })
+  })
+
+  describe("quote contents", () => {
+    it("gets quotes from finder", async () => {
+      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+
+      await list_quotes_command.execute(interaction)
+
+      expect(finderSpy).toHaveBeenCalled()
+    })
+
+    it("replies with the quote line text", async () => {
+      await Quotes.create(
+        {
+          saidAt: Date.now(),
+          gameId: game.id,
+          Lines: [
+            {
+              content: "Quote text is cool",
+              speakerId: speaker.id,
+              speakerAlias: "Some Dude",
+              lineOrder: 0,
+            },
+          ],
+        },
+        {
+          include: Lines
+        }
+      )
+
+      const reply = await list_quotes_command.execute(interaction)
+
+      expect(reply).toMatch("Quote text is cool")
+    })
   })
 
   describe("amount", () => {
@@ -96,7 +144,7 @@ describe("execute", () => {
 
       await list_quotes_command.execute(interaction)
 
-      // finderSpy was called with an object including limit:5
+      // finderSpy was called with an object including limit:6
       expect(
         finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
       ).toMatchObject({ limit: 6 })
@@ -108,35 +156,62 @@ describe("execute", () => {
 
       await list_quotes_command.execute(interaction)
 
-      // finderSpy was called with an object including limit:5
+      // finderSpy was called with an object including limit:10
       expect(
         finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
       ).toMatchObject({ limit: 10 })
     })
+
+    it("replies with the total quotes", async () => {
+      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      interaction.command_options.amount = 5
+
+      const reply = await list_quotes_command.execute(interaction)
+
+      // finderSpy was called with an object including limit:5
+      expect(reply).toMatch("5 most recent quotes")
+    })
+  })
+})
+
+describe("getGameOrDefault", () => {
+  describe("with a selected game", () => {
+    it("returns the chosen game", async () => {
+      const result = await list_quotes_command.getGameOrDefault(game.id, interaction.channel)
+
+      expect(result).toMatchObject({id: game.id})
+    })
   })
 
-  it("replies with the quote line text", async () => {
-    await Quotes.create(
-      {
-        saidAt: Date.now(),
+  describe("with only a default game", () => {
+    beforeEach(async () => {
+      await DefaultGames.create({
         gameId: game.id,
-        Lines: [
-          {
-            content: "Quote text is cool",
-            speakerId: speaker.id,
-            speakerAlias: "Some Dude",
-            lineOrder: 0,
-          },
-        ],
-      },
-      {
-        include: Lines
-      }
-    )
+        snowflake: guild.snowflake,
+        name: guild.name,
+        type: DefaultGames.TYPE_GUILD,
+      })
+    })
 
-    const reply = await list_quotes_command.execute(interaction)
+    it("returns the default game", async () => {
+      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
 
-    expect(reply).toMatch("Quote text is cool")
+      expect(result).toMatchObject({id: game.id})
+    })
+  })
+
+  describe("without a default or chosen game", () => {
+    it("returns a null id", async () => {
+      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
+
+      expect(result).toMatchObject({id: null})
+    })
+
+    it("returns 'all games' text for game name", async () => {
+      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
+
+      expect(result).toMatchObject({name: "all games"})
+    })
   })
 })
 
