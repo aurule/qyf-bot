@@ -18,7 +18,7 @@ module.exports = {
         option.setName("text").setDescription("Containing some text")
       )
       .addStringOption((option) =>
-        option.setName("game").setDescription("From a game")
+        option.setName("game").setDescription("From a game. Uses channel default.")
       )
       .addIntegerOption((option) =>
         option
@@ -34,9 +34,10 @@ module.exports = {
 
     const amount = arg_amount ? arg_amount : 5
 
-    // need quotes whose game ID matches guild.games.ids
-    const guild = await Guilds.findByInteraction(interaction, {include: [Games]})
-    const quotes = await Quotes.findAll({where: {gameId: guild.Games}})
+    const guild = await Guilds.findByInteraction(interaction, { include: Games })
+    const game_ids = guild.Games.map(g => g.id)
+    const quotes = await Quotes.findAll({where: {gameId: game_ids}})
+
     console.log(quotes)
 
     await interaction.reply(`Showing ${amount} quotes`)
