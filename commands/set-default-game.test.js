@@ -2,12 +2,9 @@
 
 const set_default_game_command = require("./set-default-game")
 const { Guilds, Games, DefaultGames } = require("../models")
-const { keyv } = require("../util/keyv.js")
-const GameSelectTransformer = require("../transformers/game-select-transformer")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
-const { explicitScope } = require("../services/default-game-scope")
 
 var guild
 var interaction

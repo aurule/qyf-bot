@@ -1,8 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageActionRow, MessageSelectMenu } = require("discord.js")
-const { keyv } = require("../util/keyv.js")
 const { Guilds, Games, DefaultGames } = require("../models")
-const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { explicitScope } = require("../services/default-game-scope")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
