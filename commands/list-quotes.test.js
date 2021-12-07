@@ -111,7 +111,7 @@ describe("execute", () => {
   })
 
   it("replies with the quote line text", async () => {
-    await Quotes.Create({
+    await Quotes.create({
       saidAt: Date.now(),
       gameId: game.id,
       lines: [
@@ -126,7 +126,7 @@ describe("execute", () => {
 
     const reply = await list_quotes_command.execute(interaction)
 
-    expect(reply).toMatch("Some Dude")
+    expect(reply).toMatch("Quote text is cool")
   })
 })
 
