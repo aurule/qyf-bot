@@ -33,7 +33,7 @@ class Options {
  * @param  {Options}        options Search criteria and limit object
  * @return {Array<Quotes>}          Array of Quote objects matching the criteria
  */
-async function findAll(options) {
+async function findAll(options, query_options = {}) {
   // build a query
   //
 
@@ -44,7 +44,7 @@ async function findAll(options) {
   //   limit: amount,
   //   order: [['saidAt', 'DESC']],
   // })
-  return Quotes.findAll()
+  return Quotes.findAll(query_options)
 }
 
 module.exports = {

@@ -67,9 +67,9 @@ module.exports = {
       text: text,
       guild: guild,
     })
-    const quotes = await QuoteFinder.findAll(finder_options)
+    const quotes = await QuoteFinder.findAll(finder_options, { include: Lines })
     const reply_text = QuoteSnippetTransformer.transform(quotes)
 
-    return interaction.reply(`Showing ${amount} quotes`)
+    return interaction.reply(reply_text)
   },
 }
