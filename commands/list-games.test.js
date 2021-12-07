@@ -79,4 +79,10 @@ describe("data", () => {
 
     expect(command_data).toBeTruthy()
   })
+
+  it("uses the command's name", () => {
+    const command_data = list_games_command.data(guild)
+
+    expect(command_data.name).toEqual(list_games_command.name)
+  })
 })

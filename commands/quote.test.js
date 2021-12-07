@@ -141,4 +141,10 @@ describe("data", () => {
 
     expect(command_data).toBeTruthy()
   })
+
+  it("uses the command's name", () => {
+    const command_data = quote_command.data(guild)
+
+    expect(command_data.name).toEqual(quote_command.name)
+  })
 })

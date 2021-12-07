@@ -106,10 +106,7 @@ describe("execute", () => {
 })
 
 describe("data", () => {
-  // This test is very bare-bones because we're really just
-  // testing that the various calls to discord.js functions
-  // were executed properly.
-  it("returns something", async () => {
+  beforeEach(async () => {
     await Games.bulkCreate(
       [
         {name: "Test Game 1", guildId: guild.id},
@@ -117,9 +114,20 @@ describe("data", () => {
       ]
     )
     await guild.reload({include: Games})
+  })
 
+  // This test is very bare-bones because we're really just
+  // testing that the various calls to discord.js functions
+  // were executed properly.
+  it("returns something", async () => {
     const command_data = set_default_game_command.data(guild)
 
     expect(command_data).toBeTruthy()
+  })
+
+  it("uses the command's name", () => {
+    const command_data = set_default_game_command.data(guild)
+
+    expect(command_data.name).toEqual(set_default_game_command.name)
   })
 })
