@@ -31,8 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       speakerAlias: DataTypes.TEXT,
       quoteId: {
+        // This is allowed to be null in validation, but has a NOT NULL
+        // constraint in the database. This allows lines to be created alongside
+        // quotes in one step.
         type: DataTypes.INTEGER,
-        allowNull: false,
         references: {
           model: {
             tableName: "quotes",
