@@ -19,7 +19,7 @@ describe("execute", () => {
     Client.mockImplementation(() => {
       return {
         user: {
-          tag: "qyf-bot",
+          tag: "test-bot",
         },
       }
     })
