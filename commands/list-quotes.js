@@ -95,7 +95,7 @@ module.exports = {
     const game = await getGameOrDefault(game_arg, interaction.channel)
 
     const finder_options = new QuoteFinder.SearchOptions({
-      speaker: speaker,
+      speaker: speaker?.id.toString(),
       alias: alias,
       gameId: game.id,
       text: text,

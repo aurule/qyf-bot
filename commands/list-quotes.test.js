@@ -29,7 +29,7 @@ beforeEach(async () => {
       guildId: guild.id,
     })
     interaction = new Interaction(guild.snowflake)
-    interaction.command_options.speaker = {}
+    interaction.command_options.speaker = undefined
     interaction.command_options.alias = ""
     interaction.command_options.text = ""
     interaction.command_options.game = null
@@ -87,7 +87,7 @@ describe("execute", () => {
       // finderSpy was called with an object including gameId:game.id
       expect(
         finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
-      ).toMatchObject({ gameId: game.id })
+      ).toMatchObject({ gameId: [game.id] })
     })
   })
 
@@ -168,7 +168,6 @@ describe("execute", () => {
 
       const reply = await list_quotes_command.execute(interaction)
 
-      // finderSpy was called with an object including limit:5
       expect(reply).toMatch("5 most recent quotes")
     })
   })
