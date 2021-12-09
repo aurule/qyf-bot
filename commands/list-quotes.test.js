@@ -134,7 +134,7 @@ describe("execute", () => {
 
       // finderSpy was called with an object including limit:5
       expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
       ).toMatchObject({ limit: 5 })
     })
 
@@ -146,7 +146,7 @@ describe("execute", () => {
 
       // finderSpy was called with an object including limit:6
       expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
       ).toMatchObject({ limit: 6 })
     })
 
@@ -158,7 +158,7 @@ describe("execute", () => {
 
       // finderSpy was called with an object including limit:10
       expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
       ).toMatchObject({ limit: 10 })
     })
 

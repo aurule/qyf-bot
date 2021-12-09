@@ -19,21 +19,15 @@ class Options {
      * @type {Guild}
      */
     this.guild = options.guild
-
-    /**
-     * How many quotes to show
-     * @type {Number}
-     */
-    this.limit = options.limit
   }
 }
 
 /**
  * Find all quotes that match the given criteria
- * @param  {Options}        options Search criteria and limit object
- * @return {Array<Quotes>}          Array of Quote objects matching the criteria
+ * @param  {SearchOptions}  search_options  Search criteria
+ * @return {Array<Quotes>}                  Array of Quote objects matching the criteria
  */
-async function findAll(options, query_options = {}) {
+async function findAll(search_options, query_options = {}) {
   // build a query
   //
 
@@ -48,6 +42,6 @@ async function findAll(options, query_options = {}) {
 }
 
 module.exports = {
-  Options,
+  SearchOptions,
   findAll,
 }

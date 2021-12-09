@@ -94,15 +94,14 @@ module.exports = {
 
     const game = await getGameOrDefault(game_arg, interaction.channel)
 
-    const finder_options = new QuoteFinder.Options({
-      limit: limit,
+    const finder_options = new QuoteFinder.SearchOptions({
       speaker: speaker,
       alias: alias,
       gameId: game.id,
       text: text,
       guild: guild,
     })
-    const quotes = await QuoteFinder.findAll(finder_options, { include: Lines })
+    const quotes = await QuoteFinder.findAll(finder_options, { include: Lines, limit: limit })
     const quote_text = QuoteSnippetTransformer.transform(quotes)
 
     return interaction.reply(`Showing the ${limit} most recent quotes from ${game.name}:\n\n${quote_text}`)
