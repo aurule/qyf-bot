@@ -1,44 +1,84 @@
-const { Quotes, Lines } = require("../models")
+const { Quotes, Lines, Games } = require("../models")
+const { forceArray } = require("../util/force-array")
 
-class Options {
-  constructor(options) {
-    // translate discord speaker to User object
-    this.speaker = options.speaker
+const { Op } = require("sequelize");
 
-    // accept either a number or an array of numbers
-    this.gameId = options.gameId
+class SearchOptions {
+  /**
+   * Create a search options object
+   *
+   * Accepted options:
+   *   speaker  String          Stringified snowflake of a discord user
+   *   userId   Int|Array<Int>  One or more IDs for User objects
+   *   gameId   Int|Array<Int>  One or more IDs for Game objects
+   *   alias    String          Text to find within a speaker alias
+   *   guild
+   *
+   * @param  {[type]} options [description]
+   * @return {[type]}         [description]
+   */
+  constructor(options = {}) {
+    if (options.speaker) {
+      this.speaker = options.speaker
+    }
 
-    /**
-     * Displayed attribution of at least one line
-     * @type {String}
-     */
+    if (options.userId) {
+      this.userId = forceArray(options.userId)
+    }
+
+    if (options.gameId) {
+      this.gameId = forceArray(options.gameId)
+    }
+
     this.alias = options.alias
 
-    /**
-     * Guild containing the quotes
-     * @type {Guild}
-     */
     this.guild = options.guild
+  }
+
+  build() {
+
+    const quote_options = {where: {}, include: []}
+    const game_options = {model: Games, where: {}, required: true}
+    const line_options = {model: Lines, where: {}, required: true}
+
+    if(this.speaker) {
+      // line include user as speaker where snowflake: speaker
+    }
+
+    if(this.gameId) quote_options.where.gameId = this.gameId
+
+    if(this.guild) game_options.where.guildId = this.guild.id
+
+    if(this.userId) line_options.where.speakerId = this.userId
+
+    if(this.alias) line_options.where[Op.like] = this.alias
+
+    quote_options.include.push(game_options)
+    quote_options.include.push(line_options)
+
+    return quote_options
   }
 }
 
 /**
  * Find all quotes that match the given criteria
- * @param  {SearchOptions}  search_options  Search criteria
- * @return {Array<Quotes>}                  Array of Quote objects matching the criteria
+ * @param  {SearchOptions}  search_options      Search criteria object
+ * @param  {Obj}            passthrough_options Object of options to send directly to Quotes.findAll(). Items
+ *                                              in where and incliude will overwrite the generated clauses
+ *                                              from search_options.
+ * @return {Promise<Array<Quotes>>}             Promise resolveing to an array of Quote objects matching the criteria
  */
-async function findAll(search_options, query_options = {}) {
-  // build a query
-  //
+async function findAll(search_options, passthrough_options = {}) {
+  const defaults = {order: [['saidAt', 'DESC']]}
+  const options = search_options.build()
 
-  // const game_ids = guild.Games.map((g) => g.id)
-  // const quotes = await Quotes.findAll({
-  //   where: { gameId: game_ids },
-  //   include: Lines,
-  //   limit: amount,
-  //   order: [['saidAt', 'DESC']],
-  // })
-  return Quotes.findAll(query_options)
+  const final = {
+    ...defaults,
+    ...options,
+    ...passthrough_options,
+  }
+
+  return Quotes.findAll(final)
 }
 
 module.exports = {
