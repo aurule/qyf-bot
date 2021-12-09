@@ -101,7 +101,7 @@ module.exports = {
       text: text,
       guild: guild,
     })
-    const quotes = await QuoteFinder.findAll(finder_options, { include: Lines, limit: limit })
+    const quotes = await QuoteFinder.findAll(finder_options, { limit: limit })
     const quote_text = QuoteSnippetTransformer.transform(quotes)
 
     return interaction.reply(`Showing the ${limit} most recent quotes from ${game.name}:\n\n${quote_text}`)
