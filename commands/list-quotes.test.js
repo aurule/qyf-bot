@@ -45,12 +45,15 @@ afterEach(async () => {
     const game_ids = games.map((g) => g.id)
     const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
     const quote_ids = quotes.map((q) => q.id)
-    const lines = await Lines.findAll({where: {quoteId: quote_ids}, include: 'speaker' })
-    const line_speaker_ids = lines.map(line => line.speaker.id)
+    const lines = await Lines.findAll({
+      where: { quoteId: quote_ids },
+      include: "speaker",
+    })
+    const line_speaker_ids = lines.map((line) => line.speaker.id)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
-    await Users.destroy({ where: {id: line_speaker_ids}})
+    await Users.destroy({ where: { id: line_speaker_ids } })
     await DefaultGames.destroy({ where: { gameId: game_ids } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
@@ -70,14 +73,6 @@ describe("execute", () => {
   })
 
   describe("game selection", () => {
-    it("replies with the game name", async () => {
-      interaction.command_options.game = game.id
-
-      const reply = await list_quotes_command.execute(interaction)
-
-      expect(reply).toMatch(game.name)
-    })
-
     it("sends the chosen game to the finder", async () => {
       const finderSpy = jest.spyOn(QuoteFinder, "findAll")
       interaction.command_options.game = game.id
@@ -115,7 +110,7 @@ describe("execute", () => {
           ],
         },
         {
-          include: Lines
+          include: Lines,
         }
       )
 
@@ -161,24 +156,18 @@ describe("execute", () => {
         finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
       ).toMatchObject({ limit: 10 })
     })
-
-    it("replies with the total quotes", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
-      interaction.command_options.amount = 5
-
-      const reply = await list_quotes_command.execute(interaction)
-
-      expect(reply).toMatch("5 most recent quotes")
-    })
   })
 })
 
 describe("getGameOrDefault", () => {
   describe("with a selected game", () => {
     it("returns the chosen game", async () => {
-      const result = await list_quotes_command.getGameOrDefault(game.id, interaction.channel)
+      const result = await list_quotes_command.getGameOrDefault(
+        game.id,
+        interaction.channel
+      )
 
-      expect(result).toMatchObject({id: game.id})
+      expect(result).toMatchObject({ id: game.id })
     })
   })
 
@@ -193,24 +182,106 @@ describe("getGameOrDefault", () => {
     })
 
     it("returns the default game", async () => {
-      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
+      const result = await list_quotes_command.getGameOrDefault(
+        null,
+        interaction.channel
+      )
 
-      expect(result).toMatchObject({id: game.id})
+      expect(result).toMatchObject({ id: game.id })
     })
   })
 
   describe("without a default or chosen game", () => {
     it("returns a null id", async () => {
-      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
+      const result = await list_quotes_command.getGameOrDefault(
+        null,
+        interaction.channel
+      )
 
-      expect(result).toMatchObject({id: null})
+      expect(result).toMatchObject({ id: null })
     })
 
     it("returns 'all games' text for game name", async () => {
-      const result = await list_quotes_command.getGameOrDefault(null, interaction.channel)
+      const result = await list_quotes_command.getGameOrDefault(
+        null,
+        interaction.channel
+      )
 
-      expect(result).toMatchObject({name: "all games"})
+      expect(result).toMatchObject({ name: "all games" })
     })
+  })
+})
+
+describe("describeResults", () => {
+  describe("total quotes", () => {
+    it("with a total over 1, it describes the total quotes", () => {
+      const result = list_quotes_command.describeResults(2, game, "things")
+
+      expect(result).toMatch("the 2 most recent quotes")
+    })
+
+    it("with a total of one, it describes the single quote", () => {
+      const result = list_quotes_command.describeResults(1, game, "things")
+
+      expect(result).toMatch("the most recent quote")
+    })
+
+    it("with a total of zero, it describes the lack of quotes", () => {
+      const result = list_quotes_command.describeResults(0, game, "things")
+
+      expect(result).toMatch("No quotes found")
+    })
+  })
+
+  it("shows the game name", () => {
+    const result = list_quotes_command.describeResults(3, game, "things")
+
+    expect(result).toMatch("from Test Game")
+  })
+
+  it("includes the quote contents", () => {
+    const result = list_quotes_command.describeResults(
+      3,
+      game,
+      "things that were said"
+    )
+
+    expect(result).toMatch("things that were said")
+  })
+
+  it("with an alias, says 'by alias'", () => {
+    const result = list_quotes_command.describeResults(3, game, "things", {
+      alias: "alias",
+    })
+
+    expect(result).toMatch("by alias")
+  })
+
+  it("with an alias and a speaker, says 'by speaker as alias'", () => {
+    const speaker = { id: simpleflake().toString() }
+    const result = list_quotes_command.describeResults(0, game, "things", {
+      speaker: speaker,
+      alias: "alias",
+    })
+
+    expect(result).toMatch(`by <@${speaker.id}> as alias`)
+  })
+
+  it("with a speaker, says 'by speaker'", () => {
+    const speaker = { id: simpleflake().toString() }
+    const result = list_quotes_command.describeResults(0, game, "things", {
+      speaker: speaker,
+    })
+
+    expect(result).toMatch(`by <@${speaker.id}>`)
+  })
+
+  it("with search text, shows the text", () => {
+    const result = list_quotes_command.describeResults(1, game, "things", {
+      text: "search text",
+    })
+
+    expect(result).toMatch('including "search text"')
   })
 })
 

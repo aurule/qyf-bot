@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
+const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 
 const { Guilds, Games, Quotes, Lines, DefaultGames } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -41,13 +41,58 @@ async function getGameOrDefault(game_arg, channel) {
   }
 
   var game
-  if(game_arg) {
+  if (game_arg) {
     game = await Games.findByPk(game_arg)
   } else {
     game = await gameForChannel(channel)
   }
 
   return game || null_game
+}
+
+/**
+ * Build a string that represents the filters and options to the command
+ * @param  {Int}              total           Total quotes found
+ * @param  {Games}            game            The game object the qutoes are from
+ * @param  {String}           quote_contents  The quotes themselves, already formatted
+ * @param  {String|null}      options.alias   The alias used to find quotes
+ * @param  {DiscordUser|null} options.speaker The speaker object used to find quotes
+ * @param  {String|null}      options.text    The text searched for in the quotes
+ * @return {String}                           The final human-readable output
+ */
+function describeResults(
+  total,
+  game,
+  quote_contents,
+  { alias, speaker, text } = {}
+) {
+  const desc_lines = []
+
+  if (total) {
+    desc_lines.push("Showing the")
+  } else {
+    desc_lines.push("No quotes found")
+  }
+
+  if (total > 1) {
+    desc_lines.push(`${total} most recent quotes`)
+  } else if (total == 1) {
+    desc_lines.push(`most recent quote`)
+  }
+
+  desc_lines.push(`from ${game.name}`)
+
+  if (alias) {
+    desc_lines.push("by")
+    if (speaker) desc_lines.push(`${userMention(speaker.id)} as`)
+    desc_lines.push(`${alias}`)
+  } else if (speaker) desc_lines.push(`by ${userMention(speaker.id)}`)
+
+  if (text) desc_lines.push(`including "${text}"`)
+
+  const description = desc_lines.join(" ")
+
+  return `${description}:\n\n${quote_contents}`
 }
 
 module.exports = {
@@ -102,9 +147,19 @@ module.exports = {
       guild: guild,
     })
     const quotes = await QuoteFinder.findAll(finder_options, { limit: limit })
-    const quote_text = QuoteSnippetTransformer.transform(quotes)
+    const quote_contents = QuoteSnippetTransformer.transform(quotes)
 
-    return interaction.reply(`Showing the ${limit} most recent quotes from ${game.name}:\n\n${quote_text}`)
+    const reply_text = describeResults(
+      quotes.length,
+      game,
+      quote_contents,
+      alias,
+      speaker,
+      text
+    )
+
+    return interaction.reply(`${reply_text}:\n\n${quote_contents}`)
   },
   getGameOrDefault,
+  describeResults,
 }
