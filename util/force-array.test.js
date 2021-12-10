@@ -11,3 +11,9 @@ it("passes through an array", () => {
 
   expect(result).toEqual([1])
 })
+
+it("returns an empty array with null arg", () => {
+  const result = forceArray(null)
+
+  expect(result).toEqual([])
+})
