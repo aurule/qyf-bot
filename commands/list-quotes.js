@@ -153,12 +153,12 @@ module.exports = {
       quotes.length,
       game,
       quote_contents,
-      alias,
-      speaker,
-      text
+      {alias: alias,
+      speaker: speaker,
+      text: text}
     )
 
-    return interaction.reply(`${reply_text}:\n\n${quote_contents}`)
+    return interaction.reply(reply_text)
   },
   getGameOrDefault,
   describeResults,

@@ -61,6 +61,12 @@ describe("SearchOptions", () => {
 
       expect(opts.speaker).toEqual("something")
     })
+
+    it("populates the text", () => {
+      const opts = new QuoteFinder.SearchOptions({ text: "Text" })
+
+      expect(opts.text).toEqual("Text")
+    })
   })
 
   describe("build", () => {
@@ -121,6 +127,14 @@ describe("SearchOptions", () => {
       const result = opts.build()
 
       expect(result.include[1].where).toMatchObject({ [Op.like]: "something" })
+    })
+
+    it("with text, adds where clause at lines level", () => {
+      const opts = new QuoteFinder.SearchOptions({ text: "text" })
+
+      const result = opts.build()
+
+      expect(result.include[1].where).toMatchObject({ [Op.like]: "text" })
     })
 
     it("with speaker, adds include and where at lines level", () => {
@@ -198,6 +212,13 @@ describe("findAll", () => {
         },
         { include: Lines }
       )
+      text_quote = await Quotes.create(
+        {
+          gameId: game1.id,
+          Lines: [{ content: "specific text", lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
 
       other_guild = await Guilds.create({
         name: "Other Test Guild",
@@ -223,6 +244,7 @@ describe("findAll", () => {
       user_quote.id,
       alias_quote.id,
       guild_quote.id,
+      text_quote.id,
     ]
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroyByPk(quote_ids)
@@ -294,5 +316,14 @@ describe("findAll", () => {
     const result_ids = result.map((quote) => quote.id)
 
     expect(result_ids).toEqual([alias_quote.id])
+  })
+
+  it("with text, returns the quote where a line's content matches the text", async () => {
+    const opts = new QuoteFinder.SearchOptions({ text: "specific" })
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([text_quote.id])
   })
 })

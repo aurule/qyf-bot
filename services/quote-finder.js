@@ -12,27 +12,25 @@ class SearchOptions {
    *   userId   Int|Array<Int>  One or more IDs for User objects
    *   gameId   Int|Array<Int>  One or more IDs for Game objects
    *   alias    String          Text to find within a speaker alias
-   *   guild
+   *   guild    {[type]}
+   *   text     {[type]}
    *
    * @param  {[type]} options [description]
    * @return {[type]}         [description]
    */
-  constructor({speaker, userId, gameId, alias, guild} = {}) {
+  constructor({speaker, userId, gameId, alias, guild, text} = {}) {
     if (speaker) {
       this.speaker = speaker
     }
-
     if (userId) {
       this.userId = forceArray(userId)
     }
-
     if (gameId) {
       this.gameId = forceArray(gameId)
     }
-
     this.alias = alias
-
     this.guild = guild
+    this.text = text
   }
 
   build() {
@@ -59,6 +57,9 @@ class SearchOptions {
 
     if (this.alias) {
       line_options.where.speakerAlias = { [Op.substring]: this.alias }
+    }
+    if (this.text) {
+      line_options.where.content = { [Op.substring]: this.text }
     }
 
     quote_options.include.push(game_options)
