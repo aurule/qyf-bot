@@ -28,6 +28,7 @@ class Interaction {
       isThread: () => false,
       guildId: snowflake,
       parentId: simpleflake(),
+      messages: {},
     }
     this.message = {}
     this.user = {
