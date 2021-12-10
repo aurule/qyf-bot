@@ -40,7 +40,6 @@ function buildCommandJSON(guild) {
  * @return {Promise}      Promise for the http call
  */
 async function deployToGuild(guild) {
-  logger.info(`Pushing commands to guild ${guild.name}`)
   guild.Games = await guild.getGames()
   const commands = buildCommandJSON(guild)
 
@@ -49,10 +48,10 @@ async function deployToGuild(guild) {
       body: commands,
     })
     .catch((error) => {
-      logger.warn(`Error pushing commands to guild ${guild.name}: ${error}`)
+      logger.warn(`Error deploying commands to guild ${guild.name}: ${error}`)
     })
     .finally(() => {
-      logger.info(`Pushed to guild ${guild.name}`)
+      logger.info(`Deployed to guild ${guild.name}`)
     })
 }
 
@@ -63,7 +62,7 @@ async function deployToGuild(guild) {
 async function deployToAllGuilds() {
   const guilds = await Guilds.findAll({include: Games})
 
-  logger.info("Pushing commands to all guilds")
+  logger.info("Deploying commands to all guilds")
   Promise.all(guilds.map((g) => deployToGuild(g))).finally(() => {
     logger.info("Done with all guilds")
   })
