@@ -189,8 +189,65 @@ describe("findAll", () => {
     await Guilds.destroyByPk([main_guild.id, other_game.id])
   })
 
-  it("runs", async () => {
+  it("with no options, returns all quotes", async () => {
     const opts = new QuoteFinder.SearchOptions()
-    await QuoteFinder.findAll(opts)
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual(
+      expect.arrayContaining([
+        game_quote.id,
+        speaker_quote.id,
+        user_quote.id,
+        alias_quote.id,
+        guild_quote.id,
+      ])
+    )
+  })
+
+  it("with a game, returns the quote from that game", async () => {
+    const opts = new QuoteFinder.SearchOptions({gameId: game2.id})
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([game_quote.id])
+  })
+
+  it("with a guild, returns the quote from the guild", async () => {
+    const opts = new QuoteFinder.SearchOptions({guild: other_guild})
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([guild_quote.id])
+  })
+
+  it("with a speaker, returns the quote where the speaker is associated with a line", async () => {
+    const opts = new QuoteFinder.SearchOptions({speaker: speaker.snowflake})
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([speaker_quote.id])
+  })
+
+  it("with a user, returns the quote where the user is associated with a line", async () => {
+    const opts = new QuoteFinder.SearchOptions({userId: user.id})
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([user_quote.id])
+  })
+
+  it("with an alias, returns the quote where a line's attribution matches the alias text", async () => {
+    const opts = new QuoteFinder.SearchOptions({alias: "lia"})
+
+    const result = await QuoteFinder.findAll(opts)
+    const result_ids = result.map((quote) => quote.id)
+
+    expect(result_ids).toEqual([alias_quote.id])
   })
 })
