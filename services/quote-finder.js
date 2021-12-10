@@ -90,7 +90,29 @@ async function findAll(search_options, passthrough_options = {}) {
   return Quotes.findAll(final)
 }
 
+/**
+ * Find one quote that matches the given criteria
+ * @param  {SearchOptions}  search_options      Search criteria object
+ * @param  {Obj}            passthrough_options Object of options to send directly to Quotes.findOne(). Items
+ *                                              in where and incliude will overwrite the generated clauses
+ *                                              from search_options.
+ * @return {Promise<Quotes>}             Promise resolveing to a Quote object matching the criteria
+ */
+async function findOne(search_options, passthrough_options = {}) {
+  const defaults = {}
+  const options = search_options.build()
+
+  const final = {
+    ...defaults,
+    ...options,
+    ...passthrough_options,
+  }
+
+  return Quotes.findOne(final)
+}
+
 module.exports = {
   SearchOptions,
   findAll,
+  findOne,
 }

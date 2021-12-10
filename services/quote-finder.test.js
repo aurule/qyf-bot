@@ -152,7 +152,7 @@ describe("SearchOptions", () => {
   })
 })
 
-describe("findAll", () => {
+describe("finders", () => {
   let main_guild
   let game1
   let game2
@@ -256,103 +256,146 @@ describe("findAll", () => {
     await Guilds.destroyByPk([main_guild.id, other_game.id])
   })
 
-  it("with no options, returns all quotes", async () => {
-    const opts = new QuoteFinder.SearchOptions()
+  describe("findAll", () => {
+    it("with no options, returns all quotes", async () => {
+      const opts = new QuoteFinder.SearchOptions()
 
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
 
-    expect(result_ids).toEqual(
-      expect.arrayContaining([
-        game_quote.id,
-        speaker_quote.id,
-        user_quote.id,
-        alias_quote.id,
-        guild_quote.id,
-      ])
-    )
-  })
-
-  it("with a game, returns the quote from that game", async () => {
-    const opts = new QuoteFinder.SearchOptions({ gameId: game2.id })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([game_quote.id])
-  })
-
-  it("with a guild, returns the quote from the guild", async () => {
-    const opts = new QuoteFinder.SearchOptions({ guild: other_guild })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([guild_quote.id])
-  })
-
-  it("with a speaker, returns the quote where the speaker is associated with a line", async () => {
-    const opts = new QuoteFinder.SearchOptions({ speaker: speaker.snowflake })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([speaker_quote.id])
-  })
-
-  it("with a user, returns the quote where the user is associated with a line", async () => {
-    const opts = new QuoteFinder.SearchOptions({ userId: user.id })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([user_quote.id])
-  })
-
-  it("with an alias, returns the quote where a line's attribution matches the alias text", async () => {
-    const opts = new QuoteFinder.SearchOptions({ alias: "lia" })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([alias_quote.id])
-  })
-
-  it("with text, returns the quote where a line's content matches the text", async () => {
-    const opts = new QuoteFinder.SearchOptions({ text: "specific" })
-
-    const result = await QuoteFinder.findAll(opts)
-    const result_ids = result.map((quote) => quote.id)
-
-    expect(result_ids).toEqual([text_quote.id])
-  })
-
-  it("with a speaker, game, and guild, it finds the right quote with a limit", async () => {
-    // THIS FUNCTIONALITY DOES NOT WORK
-    // When there is no limit option, it works fine. As soon as there is a limit (regardless of the
-    // presence of the default order option), sequelize generates faulty sql which throws a
-    // `SQLITE_ERROR: no such column: Lines.speakerId` error. The column Lines.speakerId is for some
-    // reason not found within a subquery. Until Sequelize is fixed, it is impossible to use this
-    // querier to find a limited number of quotes from a speaker by snowflake.
-    const opts = new QuoteFinder.SearchOptions({
-      speaker: speaker.snowflake,
-      gameId: [game1.id],
-      alias: null,
-      text: null,
-      guild: main_guild,
+      expect(result_ids).toEqual(
+        expect.arrayContaining([
+          game_quote.id,
+          speaker_quote.id,
+          user_quote.id,
+          alias_quote.id,
+          guild_quote.id,
+        ])
+      )
     })
 
-    var result
+    it("with a game, returns the quote from that game", async () => {
+      const opts = new QuoteFinder.SearchOptions({ gameId: game2.id })
 
-    try {
-      result = await QuoteFinder.findAll(opts, { limit: 5 })
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([game_quote.id])
+    })
+
+    it("with a guild, returns the quote from the guild", async () => {
+      const opts = new QuoteFinder.SearchOptions({ guild: other_guild })
+
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([guild_quote.id])
+    })
+
+    it("with a speaker, returns the quote where the speaker is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ speaker: speaker.snowflake })
+
+      const result = await QuoteFinder.findAll(opts)
       const result_ids = result.map((quote) => quote.id)
 
       expect(result_ids).toEqual([speaker_quote.id])
-    } catch (error) {
-      // console.log(error)
-    }
+    })
 
-    expect(result).toBeFalsy()
+    it("with a user, returns the quote where the user is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ userId: user.id })
+
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([user_quote.id])
+    })
+
+    it("with an alias, returns the quote where a line's attribution matches the alias text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ alias: "lia" })
+
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([alias_quote.id])
+    })
+
+    it("with text, returns the quote where a line's content matches the text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ text: "specific" })
+
+      const result = await QuoteFinder.findAll(opts)
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([text_quote.id])
+    })
+
+    it("with a speaker, game, and guild, it finds the right quote with a limit", async () => {
+      // THIS FUNCTIONALITY DOES NOT WORK
+      //
+      // When there is no limit option, it works fine. As soon as there is a limit (regardless of
+      // the presence of the default order option), sequelize generates faulty sql which throws a
+      // `SQLITE_ERROR: no such column: Lines.speakerId` error. The column Lines.speakerId is for
+      // some reason not found within a subquery. Until Sequelize is fixed, it is impossible to use
+      // this querier to find a limited number of quotes from a speaker by snowflake.
+      const opts = new QuoteFinder.SearchOptions({
+        speaker: speaker.snowflake,
+        gameId: [game1.id],
+        alias: null,
+        text: null,
+        guild: main_guild,
+      })
+
+      var result
+
+      try {
+        result = await QuoteFinder.findAll(opts, { limit: 5 })
+        const result_ids = result.map((quote) => quote.id)
+
+        expect(result_ids).toEqual([speaker_quote.id])
+      } catch (error) {
+        // console.log(error)
+      }
+
+      expect(result).toBeFalsy()
+    })
+  })
+
+  describe("findOne", () => {
+    it("returns a single quote", async () => {
+      const opts = new QuoteFinder.SearchOptions()
+
+      const result = await QuoteFinder.findOne(opts)
+
+      expect(result instanceof Quotes).toEqual(true)
+    })
+
+    it("with a speaker, game, and guild, it finds the right quote with an order", async () => {
+      // THIS FUNCTIONALITY DOES NOT WORK
+      //
+      // When there is no order option, it works fine. As soon as there is an order, sequelize
+      // generates faulty sql which throws a `SQLITE_ERROR: no such column: Lines.speakerId` error.
+      // The column Lines.speakerId is for some reason not found within a subquery. Until Sequelize
+      // is fixed, it is impossible to use this querier to find a limited number of quotes from a
+      // speaker by snowflake.
+      const opts = new QuoteFinder.SearchOptions({
+        speaker: speaker.snowflake,
+        gameId: [game1.id],
+        alias: null,
+        text: null,
+        guild: main_guild,
+      })
+
+      var result
+
+      try {
+        result = await QuoteFinder.findOne(opts, { order: [["saidAt", "DESC"]] })
+        const result_ids = result.map((quote) => quote.id)
+
+        expect(result_ids).toEqual([speaker_quote.id])
+      } catch (error) {
+        // console.log(error)
+      }
+
+      expect(result).toBeFalsy()
+    })
   })
 })
