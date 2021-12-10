@@ -34,6 +34,9 @@ fs.readdirSync(__dirname)
       sequelize,
       Sequelize.DataTypes
     )
+    model.destroyByPk = async (ids) => {
+      return model.destroy({where: {id: ids}})
+    }
     db[model.name] = model
   })
 
