@@ -1,6 +1,6 @@
 const QuoteFinder = require("./quote-finder")
 
-const { Quotes, Lines, Games } = require("../models")
+const { Quotes, Lines, Games, Users } = require("../models")
 
 const { Op } = require("sequelize");
 
@@ -9,6 +9,7 @@ describe("SearchOptions", () => {
     it("leaves everything undefined by default", () => {
       const opts = new QuoteFinder.SearchOptions()
 
+      expect(opts.speaker).toEqual(undefined)
       expect(opts.userId).toEqual(undefined)
       expect(opts.gameId).toEqual(undefined)
       expect(opts.alias).toEqual(undefined)
@@ -119,6 +120,19 @@ describe("SearchOptions", () => {
       const result = opts.build()
 
       expect(result.include[1].where).toMatchObject({[Op.like]: "something"})
+    })
+
+    it("with speaker, adds include and where at lines level", () => {
+      const opts = new QuoteFinder.SearchOptions({speaker: "snowflake"})
+
+      const result = opts.build()
+
+      expect(result.include[1].include).toMatchObject({
+        model: Users,
+        where: {
+          snowflake: "snowflake"
+        }
+      })
     })
   })
 })

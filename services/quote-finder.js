@@ -1,4 +1,4 @@
-const { Quotes, Lines, Games } = require("../models")
+const { Quotes, Lines, Games, Users } = require("../models")
 const { forceArray } = require("../util/force-array")
 
 const { Op } = require("sequelize");
@@ -42,7 +42,14 @@ class SearchOptions {
     const line_options = {model: Lines, where: {}, required: true}
 
     if(this.speaker) {
-      // line include user as speaker where snowflake: speaker
+      line_options.include = {
+        model: Users,
+        as: "speaker",
+        required: true,
+        where: {
+          snowflake: this.speaker
+        }
+      }
     }
 
     if(this.gameId) quote_options.where.gameId = this.gameId
