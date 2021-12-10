@@ -68,7 +68,7 @@ describe("makeQuote", () => {
     const speaker_ids = lines.map((line) => line.speakerId)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
-    await Users.destroy({ where: { id: speaker_ids } })
+    await Users.destroyByPk(speaker_ids)
     await Quotes.destroy({ where: { gameId: game_ids } })
     await game.destroy()
     await guild.destroy()

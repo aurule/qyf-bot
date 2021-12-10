@@ -53,7 +53,7 @@ afterEach(async () => {
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
-    await Users.destroy({ where: { id: line_speaker_ids } })
+    await Users.destroyByPk(line_speaker_ids)
     await DefaultGames.destroy({ where: { gameId: game_ids } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
