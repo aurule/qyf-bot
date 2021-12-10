@@ -1,6 +1,13 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 
-const { Guilds, Games, Quotes, Lines, DefaultGames } = require("../models")
+const {
+  Guilds,
+  Games,
+  Quotes,
+  Lines,
+  DefaultGames,
+  Users,
+} = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 const { clamp } = require("../util/clamp")
@@ -92,7 +99,11 @@ function describeResults(
 
   const description = desc_lines.join(" ")
 
-  return `${description}:\n\n${quote_contents}`
+  if (total) {
+    return `${description}:\n\n${quote_contents}`
+  } else {
+    return description
+  }
 }
 
 module.exports = {
@@ -172,16 +183,13 @@ module.exports = {
     const quotes = await QuoteFinder.findAll(finder_options, { limit: limit })
     const quote_contents = QuoteSnippetTransformer.transform(quotes)
 
-    const reply_text = describeResults(
-      quotes.length,
-      game,
-      quote_contents,
-      {alias: alias,
-      speaker: speaker,
-      text: text}
+    return interaction.reply(
+      describeResults(quotes.length, game, quote_contents, {
+        alias: alias,
+        speaker: speaker,
+        text: text,
+      })
     )
-
-    return interaction.reply(reply_text)
   },
   getGameOrDefault,
   describeResults,

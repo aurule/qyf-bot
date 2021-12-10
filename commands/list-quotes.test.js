@@ -253,6 +253,18 @@ describe("describeResults", () => {
 
       expect(result).toMatch("No quotes found")
     })
+
+    it("with a positive total, it shows the quote contents", () => {
+      const result = list_quotes_command.describeResults(1, game, "things")
+
+      expect(result).toMatch("things")
+    })
+
+    it("with a zero total, it does not show the quote contents", () => {
+      const result = list_quotes_command.describeResults(0, game, "things")
+
+      expect(result).not.toMatch("things")
+    })
   })
 
   it("shows the game name", () => {
