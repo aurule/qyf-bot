@@ -4,7 +4,7 @@ const { Quotes, Lines, Users } = require("../models")
 const { logger } = require("../util/logger")
 
 class QuoteData {
-  constructor({ text, attribution, speaker_user }) {
+  constructor({ text, attribution, speaker }) {
     /**
      * The content of the quote
      * @type string
@@ -21,9 +21,9 @@ class QuoteData {
      * The discord user for who said it. Only needs id and username attributes.
      * @type Object{id,username}
      */
-    this.speaker_user = {
-      id: speaker_user.id.toString(),
-      username: speaker_user.username,
+    this.speaker = {
+      id: speaker.id.toString(),
+      username: speaker.username,
     }
   }
 }
@@ -36,21 +36,21 @@ module.exports = {
    * @param  {string}       text          The content of the first line
    * @param  {string}       attribution   The name to use for the line's speakerAlias
    * @param  {Games}        game          Game object the quote is associated with
-   * @param  {discord User} speaker_user  User object from discord of the user who said the quote
+   * @param  {discord User} speaker  User object from discord of the user who said the quote
    * @return {Quotes}                     The created quote object
    */
-  makeQuote: async ({ text, attribution, game, speaker_user }) => {
+  makeQuote: async ({ text, attribution, game, speaker }) => {
     try {
       const the_quote = await Quotes.create({
         gameId: game.id,
         saidAt: Date.now(),
       })
 
-      const [found_speaker, _isNewSpeaker] = await Users.findOrCreate({
-        where: { snowflake: speaker_user.id.toString() },
+      const [user, _isNewUser] = await Users.findOrCreate({
+        where: { snowflake: speaker.id.toString() },
         defaults: {
-          name: speaker_user.username,
-          snowflake: speaker_user.id.toString(),
+          name: speaker.username,
+          snowflake: speaker.id.toString(),
         },
       })
 
@@ -59,7 +59,7 @@ module.exports = {
         content: text,
         lineOrder: 0,
         speakerAlias: attribution,
-        speakerId: found_speaker.id,
+        speakerId: user.id,
       })
 
       return the_quote

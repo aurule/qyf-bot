@@ -32,13 +32,13 @@ module.exports = {
       ),
   async execute(interaction) {
     const text = interaction.options.getString("text")
-    const speaker_user = interaction.options.getUser("speaker")
+    const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const user = interaction.user
 
     const speaker_name = determineName({
-      username: interaction.guild.members.fetch(speaker_user).nickname,
-      nickname: speaker_user.username,
+      username: interaction.guild.members.fetch(speaker).nickname,
+      nickname: speaker.username,
       alias: alias,
     })
     const game = await gameForChannel(interaction.channel)
@@ -48,7 +48,7 @@ module.exports = {
         text: text,
         attribution: speaker_name,
         game: game,
-        speaker_user: speaker_user,
+        speaker: speaker,
       })
       if (result instanceof Quotes) {
         return interaction.reply(
@@ -64,7 +64,7 @@ module.exports = {
       new QuoteData({
         text: text,
         attribution: speaker_name,
-        speaker_user: speaker_user,
+        speaker: speaker,
       })
     )
 

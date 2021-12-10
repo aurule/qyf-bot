@@ -11,7 +11,7 @@ describe("QuoteData", () => {
     const options = {
       text: "test text",
       attribution: "some guy",
-      speaker_user: {
+      speaker: {
         id: 1,
         username: "That Guy",
         something: "else",
@@ -31,7 +31,7 @@ describe("QuoteData", () => {
       expect(data.attribution).toEqual(options.attribution)
     })
 
-    it("saves only the id and username of speaker_user", () => {
+    it("saves only the id and username of speaker", () => {
       const data = new QuoteBuilder.QuoteData(options)
 
       const expected_user = {
@@ -39,7 +39,7 @@ describe("QuoteData", () => {
         username: "That Guy",
       }
 
-      expect(data.speaker_user).toEqual(expected_user)
+      expect(data.speaker).toEqual(expected_user)
     })
   })
 })
@@ -89,14 +89,14 @@ describe("makeQuote", () => {
       text: "test text",
       attribution: "some guy",
       game: game,
-      speaker_user: discord_user,
+      speaker: discord_user,
     })
 
     expect(await user.countLines()).toEqual(1)
   })
 
   it("creates a new speaker", async () => {
-    const user = {
+    const speaker = {
       username: "Test Speaker",
       id: simpleflake(),
     }
@@ -105,32 +105,32 @@ describe("makeQuote", () => {
       text: "test text",
       attribution: "some guy",
       game: game,
-      speaker_user: user,
+      speaker: speaker,
     })
 
-    const speaker = await Users.findOne({
-      where: { snowflake: user.id.toString() },
+    const user = await Users.findOne({
+      where: { snowflake: speaker.id.toString() },
     })
 
-    expect(speaker).toBeTruthy()
+    expect(user).toBeTruthy()
   })
 
   it("creates a new Quote for the game", async () => {
-    const speaker = await Users.create({
+    const user = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })
 
-    const user = {
+    const speaker = {
       username: "New Name",
-      id: speaker.snowflake,
+      id: user.snowflake,
     }
 
     const quote = await QuoteBuilder.makeQuote({
       text: "test text",
       attribution: "some guy",
       game: game,
-      speaker_user: user,
+      speaker: speaker,
     })
 
     expect(quote).toBeTruthy()
@@ -141,14 +141,14 @@ describe("makeQuote", () => {
     let user
 
     beforeEach(async () => {
-      speaker = await Users.create({
+      user = await Users.create({
         name: "Test Speaker",
         snowflake: simpleflake().toString(),
       })
 
-      user = {
+      speaker = {
         username: "New Name",
-        id: speaker.snowflake,
+        id: user.snowflake,
       }
     })
 
@@ -157,7 +157,7 @@ describe("makeQuote", () => {
         text: "test text",
         attribution: "some guy",
         game: game,
-        speaker_user: user,
+        speaker: speaker,
       })
 
       const lines = await quote.getLines()
@@ -170,12 +170,12 @@ describe("makeQuote", () => {
         text: "test text",
         attribution: "some guy",
         game: game,
-        speaker_user: user,
+        speaker: speaker,
       })
 
       const lines = await quote.getLines()
 
-      expect(lines[0].speakerId).toEqual(speaker.id)
+      expect(lines[0].speakerId).toEqual(user.id)
     })
 
     it("sets the alias to attribution text", async () => {
@@ -183,7 +183,7 @@ describe("makeQuote", () => {
         text: "test text",
         attribution: "some guy",
         game: game,
-        speaker_user: user,
+        speaker: speaker,
       })
 
       const lines = await quote.getLines()
@@ -196,7 +196,7 @@ describe("makeQuote", () => {
         text: "test text",
         attribution: "some guy",
         game: game,
-        speaker_user: user,
+        speaker: speaker,
       })
 
       const lines = await quote.getLines()
@@ -206,14 +206,14 @@ describe("makeQuote", () => {
   })
 
   it("logs any errors", async () => {
-    const speaker = await Users.create({
+    const user = await Users.create({
       name: "Test Speaker",
       snowflake: simpleflake().toString(),
     })
 
-    const user = {
+    const speaker = {
       username: "New Name",
-      id: speaker.snowflake,
+      id: user.snowflake,
     }
 
     jest.spyOn(Quotes, "create").mockImplementation((...options) => {
@@ -225,7 +225,7 @@ describe("makeQuote", () => {
       text: "test text",
       attribution: "some guy",
       game: game,
-      speaker_user: user,
+      speaker: user,
     })
 
     expect(loggerSpy).toHaveBeenCalled()

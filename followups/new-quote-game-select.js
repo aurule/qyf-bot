@@ -14,7 +14,7 @@ module.exports = {
       text: options.text,
       attribution: options.attribution,
       game: game,
-      speaker_user: options.speaker_user,
+      speaker: options.speaker,
     })
 
     if (!(result instanceof Quotes)) {

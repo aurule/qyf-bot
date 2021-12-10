@@ -17,7 +17,7 @@ var game
 const quote_options = new QuoteData({
   text: "Test quote text",
   attribution: "The Person",
-  speaker_user: {
+  speaker: {
     id: 1,
     username: "TheFiddler"
   }
