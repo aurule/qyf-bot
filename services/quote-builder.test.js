@@ -16,7 +16,7 @@ describe("QuoteData", () => {
         username: "That Guy",
         something: "else",
         another: "thing",
-      }
+      },
     }
 
     it("saves text as-is", () => {
@@ -85,12 +85,12 @@ describe("makeQuote", () => {
       id: user.snowflake,
     }
 
-    const quote = await QuoteBuilder.makeQuote(
-      "test text",
-      "some guy",
-      game,
-      discord_user
-    )
+    const quote = await QuoteBuilder.makeQuote({
+      text: "test text",
+      attribution: "some guy",
+      game: game,
+      speaker_user: discord_user,
+    })
 
     expect(await user.countLines()).toEqual(1)
   })
@@ -101,12 +101,12 @@ describe("makeQuote", () => {
       id: simpleflake(),
     }
 
-    const quote = await QuoteBuilder.makeQuote(
-      "test text",
-      "some guy",
-      game,
-      user
-    )
+    const quote = await QuoteBuilder.makeQuote({
+      text: "test text",
+      attribution: "some guy",
+      game: game,
+      speaker_user: user,
+    })
 
     const speaker = await Users.findOne({
       where: { snowflake: user.id.toString() },
@@ -126,12 +126,12 @@ describe("makeQuote", () => {
       id: speaker.snowflake,
     }
 
-    const quote = await QuoteBuilder.makeQuote(
-      "test text",
-      "some guy",
-      game,
-      user
-    )
+    const quote = await QuoteBuilder.makeQuote({
+      text: "test text",
+      attribution: "some guy",
+      game: game,
+      speaker_user: user,
+    })
 
     expect(quote).toBeTruthy()
   })
@@ -153,12 +153,12 @@ describe("makeQuote", () => {
     })
 
     it("stores the text", async () => {
-      const quote = await QuoteBuilder.makeQuote(
-        "test text",
-        "some guy",
-        game,
-        user
-      )
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker_user: user,
+      })
 
       const lines = await quote.getLines()
 
@@ -166,12 +166,12 @@ describe("makeQuote", () => {
     })
 
     it("uses the speaker object", async () => {
-      const quote = await QuoteBuilder.makeQuote(
-        "test text",
-        "some guy",
-        game,
-        user
-      )
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker_user: user,
+      })
 
       const lines = await quote.getLines()
 
@@ -179,12 +179,12 @@ describe("makeQuote", () => {
     })
 
     it("sets the alias to attribution text", async () => {
-      const quote = await QuoteBuilder.makeQuote(
-        "test text",
-        "some guy",
-        game,
-        user
-      )
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker_user: user,
+      })
 
       const lines = await quote.getLines()
 
@@ -192,16 +192,17 @@ describe("makeQuote", () => {
     })
 
     it("sets lineOrder to zero", async () => {
-      const quote = await QuoteBuilder.makeQuote(
-        "test text",
-        "some guy",
-        game,
-        user
-      )
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker_user: user,
+      })
 
       const lines = await quote.getLines()
 
-      expect(lines[0].lineOrder).toEqual(0)})
+      expect(lines[0].lineOrder).toEqual(0)
+    })
   })
 
   it("logs any errors", async () => {
@@ -215,15 +216,17 @@ describe("makeQuote", () => {
       id: speaker.snowflake,
     }
 
-    jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
-    const loggerSpy = jest.spyOn(logger, 'warn')
+    jest.spyOn(Quotes, "create").mockImplementation((...options) => {
+      throw new Error("test error")
+    })
+    const loggerSpy = jest.spyOn(logger, "warn")
 
-    const result = await QuoteBuilder.makeQuote(
-      "test text",
-      "some guy",
-      game,
-      user
-    )
+    const result = await QuoteBuilder.makeQuote({
+      text: "test text",
+      attribution: "some guy",
+      game: game,
+      speaker_user: user,
+    })
 
     expect(loggerSpy).toHaveBeenCalled()
     expect(result).toBeNull()

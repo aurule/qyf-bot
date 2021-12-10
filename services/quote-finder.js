@@ -17,22 +17,22 @@ class SearchOptions {
    * @param  {[type]} options [description]
    * @return {[type]}         [description]
    */
-  constructor(options = {}) {
-    if (options.speaker) {
-      this.speaker = options.speaker
+  constructor({speaker, userId, gameId, alias, guild} = {}) {
+    if (speaker) {
+      this.speaker = speaker
     }
 
-    if (options.userId) {
-      this.userId = forceArray(options.userId)
+    if (userId) {
+      this.userId = forceArray(userId)
     }
 
-    if (options.gameId) {
-      this.gameId = forceArray(options.gameId)
+    if (gameId) {
+      this.gameId = forceArray(gameId)
     }
 
-    this.alias = options.alias
+    this.alias = alias
 
-    this.guild = options.guild
+    this.guild = guild
   }
 
   build() {

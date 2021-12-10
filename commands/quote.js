@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv")
 
 const { Guilds, Games, Quotes, Lines } = require("../models")
@@ -36,17 +36,24 @@ module.exports = {
     const alias = interaction.options.getString("alias")
     const user = interaction.user
 
-    const speaker_name = determineName(
-      interaction.guild.members.fetch(speaker_user).nickname,
-      speaker_user.username,
-      alias
-    )
+    const speaker_name = determineName({
+      username: interaction.guild.members.fetch(speaker_user).nickname,
+      nickname: speaker_user.username,
+      alias: alias,
+    })
     const game = await gameForChannel(interaction.channel)
 
     if (game) {
-      const result = await makeQuote(text, speaker_name, game, speaker_user)
-      if(result instanceof Quotes) {
-        return interaction.reply(`${user.username} quoted ${speaker_name}: ${text}`)
+      const result = await makeQuote({
+        text: text,
+        attribution: speaker_name,
+        game: game,
+        speaker_user: speaker_user,
+      })
+      if (result instanceof Quotes) {
+        return interaction.reply(
+          `${user.username} quoted ${speaker_name}: ${text}`
+        )
       } else {
         return interaction.reply("Something went wrong :-(")
       }
@@ -61,15 +68,20 @@ module.exports = {
       })
     )
 
-    const guild = await Guilds.findByInteraction(interaction, {include: Games})
-    const gameSelectRow = new MessageActionRow()
-      .addComponents(
-        new MessageSelectMenu()
-          .setCustomId("newQuoteGameSelect")
-          .setPlaceholder("Pick a game")
-          .addOptions(GameSelectTransformer.transform(guild.Games))
-      )
+    const guild = await Guilds.findByInteraction(interaction, {
+      include: Games,
+    })
+    const gameSelectRow = new MessageActionRow().addComponents(
+      new MessageSelectMenu()
+        .setCustomId("newQuoteGameSelect")
+        .setPlaceholder("Pick a game")
+        .addOptions(GameSelectTransformer.transform(guild.Games))
+    )
 
-    return interaction.reply({content: "Which game is this quote from?", components: [gameSelectRow], ephemeral: true})
+    return interaction.reply({
+      content: "Which game is this quote from?",
+      components: [gameSelectRow],
+      ephemeral: true,
+    })
   },
 }

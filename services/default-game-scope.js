@@ -3,31 +3,31 @@
 const { DefaultGames, Games } = require("../models")
 
 class DefaultGameScope {
-  constructor(options) {
+  constructor({name, scope_text, target_type, target_snowflake}) {
     /**
      * Name of the target. Usually the guild or channel name
      * @type {string}
      */
-    this.name = options.name
+    this.name = name
 
     /**
      * Presentable text for the scope. Usually the channel name or "the server".
      * @type {string}
      */
-    this.scope_text = options.scope_text
+    this.scope_text = scope_text
 
     /**
      * Type of the target scope.
      * One of [DefaultGames.TYPE_CHANNEL, DefaultGames.TYPE_GUILD].
      * @type {string}
      */
-    this.target_type = options.target_type
+    this.target_type = target_type
 
     /**
      * Discord snowflake for the target
      * @type {string}
      */
-    this.target_snowflake = options.target_snowflake
+    this.target_snowflake = target_snowflake
   }
 }
 

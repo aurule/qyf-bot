@@ -10,11 +10,18 @@ module.exports = {
 
     options = await keyv.get(interaction.message.interaction.id.toString())
 
-    const result = await makeQuote(options.text, options.attribution, game, options.speaker_user)
+    const result = await makeQuote({
+      text: options.text,
+      attribution: options.attribution,
+      game: game,
+      speaker_user: options.speaker_user,
+    })
 
-    if(! (result instanceof Quotes)) {
+    if (!(result instanceof Quotes)) {
       return interaction.followUp("Something went wrong :-(")
     }
-    return interaction.followUp(`${interaction.user.username} quoted ${options.attribution}: ${options.text}`)
+    return interaction.followUp(
+      `${interaction.user.username} quoted ${options.attribution}: ${options.text}`
+    )
   },
 }

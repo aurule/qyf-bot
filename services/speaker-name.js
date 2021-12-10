@@ -13,9 +13,9 @@ module.exports = {
    * @param  {[type]} alias    [description]
    * @return {[type]}          [description]
    */
-  determineName: (username, nickname, alias) => {
-    if(alias) return alias
-    if(nickname) return nickname
+  determineName: ({ username, nickname, alias } = {}) => {
+    if (alias) return alias
+    if (nickname) return nickname
     return username
-  }
+  },
 }

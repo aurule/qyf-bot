@@ -4,26 +4,26 @@ const { Quotes, Lines, Users } = require("../models")
 const { logger } = require("../util/logger")
 
 class QuoteData {
-  constructor(options) {
+  constructor({ text, attribution, speaker_user }) {
     /**
      * The content of the quote
      * @type string
      */
-    this.text = options.text
+    this.text = text
 
     /**
      * The name of who said it
      * @type string
      */
-    this.attribution = options.attribution
+    this.attribution = attribution
 
     /**
      * The discord user for who said it. Only needs id and username attributes.
      * @type Object{id,username}
      */
     this.speaker_user = {
-      id: options.speaker_user.id.toString(),
-      username: options.speaker_user.username,
+      id: speaker_user.id.toString(),
+      username: speaker_user.username,
     }
   }
 }
@@ -39,7 +39,7 @@ module.exports = {
    * @param  {discord User} speaker_user  User object from discord of the user who said the quote
    * @return {Quotes}                     The created quote object
    */
-  makeQuote: async (text, attribution, game, speaker_user) => {
+  makeQuote: async ({ text, attribution, game, speaker_user }) => {
     try {
       const the_quote = await Quotes.create({
         gameId: game.id,
@@ -63,7 +63,7 @@ module.exports = {
       })
 
       return the_quote
-    } catch(error) {
+    } catch (error) {
       logger.warn(error)
       return null
     }
