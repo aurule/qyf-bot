@@ -161,7 +161,7 @@ describe("execute", () => {
   describe("speaker", () => {
     it("with an existing speaker, queries by speaker's user ID", async () => {
       const finderSpy = jest.spyOn(QuoteFinder, "findAll")
-      interaction.command_options.speaker = {id: speaker.snowflake}
+      interaction.command_options.speaker = { id: speaker.snowflake }
 
       await list_quotes_command.execute(interaction)
 
@@ -172,7 +172,7 @@ describe("execute", () => {
     })
 
     it("with no existing speaker, it replies that there are no quotes", async () => {
-      interaction.command_options.speaker = {id: simpleflake().toString()}
+      interaction.command_options.speaker = { id: simpleflake().toString() }
 
       const result = await list_quotes_command.execute(interaction)
 
@@ -226,6 +226,17 @@ describe("getGameOrDefault", () => {
     it("returns 'all games' text for game name", async () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
+        interaction.channel
+      )
+
+      expect(result).toMatchObject({ name: "all games" })
+    })
+  })
+
+  describe("with the special All Game", () => {
+    it("returns a null id", async () => {
+      const result = await list_quotes_command.getGameOrDefault(
+        -1,
         interaction.channel
       )
 
