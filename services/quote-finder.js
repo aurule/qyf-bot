@@ -41,6 +41,10 @@ class SearchOptions {
     const game_options = {model: Games, where: {}, required: true}
     const line_options = {model: Lines, where: {}, required: true}
 
+    if(this.gameId) quote_options.where.gameId = this.gameId
+
+    if(this.guild) game_options.where.guildId = this.guild.id
+
     if(this.speaker) {
       line_options.include = {
         model: Users,
@@ -51,10 +55,6 @@ class SearchOptions {
         }
       }
     }
-
-    if(this.gameId) quote_options.where.gameId = this.gameId
-
-    if(this.guild) game_options.where.guildId = this.guild.id
 
     if(this.userId) line_options.where.speakerId = this.userId
 
