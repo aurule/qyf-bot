@@ -1,3 +1,5 @@
+const { forceArray } = require("../util/force-array")
+
 /**
  * Return a formatted snippet that displays the passed quotes' lines
  *
@@ -12,6 +14,8 @@
  * @return {String}               Markdown-formatted string of the quotes' contents
  */
 function transform(quotes) {
+  quotes = forceArray(quotes)
+
   return quotes
     .map((quote) => {
       return quote.Lines.map((line) => {

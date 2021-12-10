@@ -70,6 +70,38 @@ it("shows the text of each line in a quote", async () => {
   expect(result).toMatch("Second line")
 })
 
+it("works on a single quote", async () => {
+  await Quotes.create(
+    {
+      saidAt: Date.now,
+      gameId: game.id,
+      Lines: [
+        {
+          content: "First line",
+          lineOrder: 0,
+        },
+        {
+          content: "Second line",
+          lineOrder: 1,
+        },
+      ],
+    },
+    {
+      include: Lines,
+    }
+  )
+
+  const quote = await Quotes.findOne({
+    where: { gameId: game.id },
+    include: Lines,
+  })
+
+  const result = transform(quote)
+
+  expect(result).toMatch("First line")
+  expect(result).toMatch("Second line")
+})
+
 it("shows the attribution of each line in a quote", async () => {
   await Quotes.create(
     {
