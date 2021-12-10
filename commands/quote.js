@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv")
 
-const { Guilds, Games, Quotes, Lines } = require("../models")
+const { Guilds, Games, Quotes } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
 const GameSelectTransformer = require("../transformers/game-select-transformer")
@@ -43,6 +43,7 @@ module.exports = {
     })
     const game = await gameForChannel(interaction.channel)
 
+    // With a default game, we can save immediately
     if (game) {
       const result = await makeQuote({
         text: text,
@@ -59,6 +60,7 @@ module.exports = {
       }
     }
 
+    // With no default game, we need a followup to pick the right game
     keyv.set(
       interaction.id.toString(),
       new QuoteData({
