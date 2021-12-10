@@ -58,7 +58,9 @@ class SearchOptions {
 
     if(this.userId) line_options.where.speakerId = this.userId
 
-    if(this.alias) line_options.where[Op.like] = this.alias
+    if(this.alias) {
+      line_options.where.speakerAlias = {[Op.substring]: this.alias}
+    }
 
     quote_options.include.push(game_options)
     quote_options.include.push(line_options)
