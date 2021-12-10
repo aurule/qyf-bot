@@ -141,9 +141,7 @@ module.exports = {
     const game_arg = interaction.options.getInteger("game")
     const amount = interaction.options.getInteger("amount")
 
-    const guild = await Guilds.findByInteraction(interaction, {
-      include: Games,
-    })
+    const guild = await Guilds.findByInteraction(interaction)
 
     // enforce min and max number of quotes
     const limit = amount ? clamp(amount, 1, MAX_LIMIT) : DEFAULT_LIMIT
