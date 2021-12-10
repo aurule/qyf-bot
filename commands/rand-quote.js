@@ -15,6 +15,12 @@ const QuoteSnippetTransformer = require("../transformers/quote-snippet-transform
 const { gameForChannel } = require("../services/default-game-scope")
 
 /**
+ * The special value for the all games selector
+ * @type {Number}
+ */
+const ALL_GAMES = -1
+
+/**
  * Get the correct game or fall back on default data
  *
  * If game_arg is provided, it will look up that game and ignore the default.
@@ -34,6 +40,8 @@ async function getGameOrDefault(game_arg, channel) {
     id: null,
     name: "all games",
   }
+
+  if (game_arg == ALL_GAMES) return null_game
 
   var game
   if (game_arg) {
@@ -109,6 +117,7 @@ module.exports = {
           "Game the quote is from. Defaults to channel's current game"
         )
         .addChoices(GameChoicesTransformer.transform(guild.Games))
+        .addChoice("All Games", -1)
     ),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")

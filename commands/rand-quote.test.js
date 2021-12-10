@@ -194,6 +194,17 @@ describe("getGameOrDefault", () => {
       expect(result).toMatchObject({ name: "all games" })
     })
   })
+
+  describe("with the special All Game", () => {
+    it("returns a null id", async () => {
+      const result = await rand_quotes_command.getGameOrDefault(
+        -1,
+        interaction.channel
+      )
+
+      expect(result).toMatchObject({ name: "all games" })
+    })
+  })
 })
 
 describe("describeResults", () => {
