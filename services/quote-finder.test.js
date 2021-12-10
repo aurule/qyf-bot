@@ -326,4 +326,33 @@ describe("findAll", () => {
 
     expect(result_ids).toEqual([text_quote.id])
   })
+
+  it("with a speaker, game, and guild, it finds the right quote with a limit", async () => {
+    // THIS FUNCTIONALITY DOES NOT WORK
+    // When there is no limit option, it works fine. As soon as there is a limit (regardless of the
+    // presence of the default order option), sequelize generates faulty sql which throws a
+    // `SQLITE_ERROR: no such column: Lines.speakerId` error. The column Lines.speakerId is for some
+    // reason not found within a subquery. Until Sequelize is fixed, it is impossible to use this
+    // querier to find a limited number of quotes from a speaker by snowflake.
+    const opts = new QuoteFinder.SearchOptions({
+      speaker: speaker.snowflake,
+      gameId: [game1.id],
+      alias: null,
+      text: null,
+      guild: main_guild,
+    })
+
+    var result
+
+    try {
+      result = await QuoteFinder.findAll(opts, { limit: 5 })
+      const result_ids = result.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([speaker_quote.id])
+    } catch (error) {
+      // console.log(error)
+    }
+
+    expect(result).toBeFalsy()
+  })
 })
