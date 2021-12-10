@@ -2,7 +2,7 @@ const QuoteFinder = require("./quote-finder")
 
 const { Quotes, Lines, Games, Users, Guilds } = require("../models")
 
-const { Op } = require("sequelize");
+const { Op } = require("sequelize")
 const { simpleflake } = require("simpleflakes")
 
 describe("SearchOptions", () => {
@@ -18,46 +18,46 @@ describe("SearchOptions", () => {
     })
 
     it("forces a single userId into an array", () => {
-      const opts = new QuoteFinder.SearchOptions({userId: 1})
+      const opts = new QuoteFinder.SearchOptions({ userId: 1 })
 
       expect(opts.userId).toEqual([1])
     })
 
     it("preserves an array of userIds", () => {
       const user_ids = [1, 2, 3, 4, 5]
-      const opts = new QuoteFinder.SearchOptions({userId: user_ids})
+      const opts = new QuoteFinder.SearchOptions({ userId: user_ids })
 
       expect(opts.userId).toEqual(user_ids)
     })
 
     it("forces a single gameId into an array", () => {
-      const opts = new QuoteFinder.SearchOptions({gameId: 1})
+      const opts = new QuoteFinder.SearchOptions({ gameId: 1 })
 
       expect(opts.gameId).toEqual([1])
     })
 
     it("preserves an array of gameIds", () => {
       const game_ids = [1, 2, 3, 4, 5]
-      const opts = new QuoteFinder.SearchOptions({gameId: game_ids})
+      const opts = new QuoteFinder.SearchOptions({ gameId: game_ids })
 
       expect(opts.gameId).toEqual(game_ids)
     })
 
     it("populates the alias", () => {
-      const opts = new QuoteFinder.SearchOptions({alias: "Someone"})
+      const opts = new QuoteFinder.SearchOptions({ alias: "Someone" })
 
       expect(opts.alias).toEqual("Someone")
     })
 
     it("populates the guild", () => {
-      const fake_guild = {id: 1, name: "fake guild"}
-      const opts = new QuoteFinder.SearchOptions({guild: fake_guild})
+      const fake_guild = { id: 1, name: "fake guild" }
+      const opts = new QuoteFinder.SearchOptions({ guild: fake_guild })
 
       expect(opts.guild).toEqual(fake_guild)
     })
 
     it("populates the speaker", () => {
-      const opts = new QuoteFinder.SearchOptions({speaker: "something"})
+      const opts = new QuoteFinder.SearchOptions({ speaker: "something" })
 
       expect(opts.speaker).toEqual("something")
     })
@@ -72,12 +72,12 @@ describe("SearchOptions", () => {
       expect(result).toMatchObject({
         include: [
           {
-            model: Games
+            model: Games,
           },
           {
             model: Lines,
           },
-        ]
+        ],
       })
     })
 
@@ -92,47 +92,47 @@ describe("SearchOptions", () => {
     })
 
     it("with gameId, adds where clause at quote level", () => {
-      const opts = new QuoteFinder.SearchOptions({gameId: 1})
+      const opts = new QuoteFinder.SearchOptions({ gameId: 1 })
 
       const result = opts.build()
 
-      expect(result.where).toMatchObject({gameId: [1]})
+      expect(result.where).toMatchObject({ gameId: [1] })
     })
 
     it("with guild, adds where clause at game level", () => {
-      const opts = new QuoteFinder.SearchOptions({guild: {id: 1}})
+      const opts = new QuoteFinder.SearchOptions({ guild: { id: 1 } })
 
       const result = opts.build()
 
-      expect(result.include[0].where).toMatchObject({guildId: 1})
+      expect(result.include[0].where).toMatchObject({ guildId: 1 })
     })
 
     it("with userId, adds where clause at lines level", () => {
-      const opts = new QuoteFinder.SearchOptions({userId: 1})
+      const opts = new QuoteFinder.SearchOptions({ userId: 1 })
 
       const result = opts.build()
 
-      expect(result.include[1].where).toMatchObject({speakerId: [1]})
+      expect(result.include[1].where).toMatchObject({ speakerId: [1] })
     })
 
     it("with alias, adds where clause at lines level", () => {
-      const opts = new QuoteFinder.SearchOptions({alias: "something"})
+      const opts = new QuoteFinder.SearchOptions({ alias: "something" })
 
       const result = opts.build()
 
-      expect(result.include[1].where).toMatchObject({[Op.like]: "something"})
+      expect(result.include[1].where).toMatchObject({ [Op.like]: "something" })
     })
 
     it("with speaker, adds include and where at lines level", () => {
-      const opts = new QuoteFinder.SearchOptions({speaker: "snowflake"})
+      const opts = new QuoteFinder.SearchOptions({ speaker: "snowflake" })
 
       const result = opts.build()
 
       expect(result.include[1].include).toMatchObject({
         model: Users,
         where: {
-          snowflake: "snowflake"
-        }
+          snowflake: "snowflake",
+        },
       })
     })
   })
@@ -153,19 +153,64 @@ describe("findAll", () => {
 
   beforeAll(async () => {
     try {
-      main_guild = await Guilds.create({name: "Test Guild", snowflake: simpleflake().toString()})
-      game1 = await Games.create({name: "Test Game 1", guildId: main_guild.id})
-      game2 = await Games.create({name: "Test Game 2", guildId: main_guild.id})
-      game_quote = await Quotes.create({gameId: game2.id})
-      speaker = await Users.create({name: "Speaker", snowflake: simpleflake().toString()})
-      speaker_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerId: speaker.id}], include: Lines})
-      user = await Users.create({name: "User", snowflake: simpleflake().toString()})
-      user_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerId: speaker.id}], include: Lines})
-      alias_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerAlias: "Alias"}], include: Lines})
+      main_guild = await Guilds.create({
+        name: "Test Guild",
+        snowflake: simpleflake().toString(),
+      })
+      game1 = await Games.create({
+        name: "Test Game 1",
+        guildId: main_guild.id,
+      })
+      game2 = await Games.create({
+        name: "Test Game 2",
+        guildId: main_guild.id,
+      })
+      game_quote = await Quotes.create(
+        { gameId: game2.id, Lines: [{ content: "said", lineOrder: 0 }] },
+        { include: Lines }
+      )
+      speaker = await Users.create({
+        name: "Speaker",
+        snowflake: simpleflake().toString(),
+      })
+      speaker_quote = await Quotes.create(
+        {
+          gameId: game1.id,
+          Lines: [{ content: "said", speakerId: speaker.id, lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
+      user = await Users.create({
+        name: "User",
+        snowflake: simpleflake().toString(),
+      })
+      user_quote = await Quotes.create(
+        {
+          gameId: game1.id,
+          Lines: [{ content: "said", speakerId: user.id, lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
+      alias_quote = await Quotes.create(
+        {
+          gameId: game1.id,
+          Lines: [{ content: "said", speakerAlias: "Alias", lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
 
-      other_guild = await Guilds.create({name: "Other Test Guild", snowflake: simpleflake().toString()})
-      other_game = await Games.create({name: "Other Test Game", guildId: other_guild.id})
-      guild_quote = await Quotes.create({gameId: other_game.id})
+      other_guild = await Guilds.create({
+        name: "Other Test Guild",
+        snowflake: simpleflake().toString(),
+      })
+      other_game = await Games.create({
+        name: "Other Test Game",
+        guildId: other_guild.id,
+      })
+      guild_quote = await Quotes.create(
+        { gameId: other_game.id, Lines: [{ content: "said", lineOrder: 0 }] },
+        { include: Lines }
+      )
     } catch (err) {
       console.log(err)
     }
@@ -179,7 +224,7 @@ describe("findAll", () => {
       alias_quote.id,
       guild_quote.id,
     ]
-    await Lines.destroy({where: {quoteId: quote_ids}})
+    await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroyByPk(quote_ids)
 
     await Users.destroyByPk([speaker.id, user.id])
@@ -207,7 +252,7 @@ describe("findAll", () => {
   })
 
   it("with a game, returns the quote from that game", async () => {
-    const opts = new QuoteFinder.SearchOptions({gameId: game2.id})
+    const opts = new QuoteFinder.SearchOptions({ gameId: game2.id })
 
     const result = await QuoteFinder.findAll(opts)
     const result_ids = result.map((quote) => quote.id)
@@ -216,7 +261,7 @@ describe("findAll", () => {
   })
 
   it("with a guild, returns the quote from the guild", async () => {
-    const opts = new QuoteFinder.SearchOptions({guild: other_guild})
+    const opts = new QuoteFinder.SearchOptions({ guild: other_guild })
 
     const result = await QuoteFinder.findAll(opts)
     const result_ids = result.map((quote) => quote.id)
@@ -225,7 +270,7 @@ describe("findAll", () => {
   })
 
   it("with a speaker, returns the quote where the speaker is associated with a line", async () => {
-    const opts = new QuoteFinder.SearchOptions({speaker: speaker.snowflake})
+    const opts = new QuoteFinder.SearchOptions({ speaker: speaker.snowflake })
 
     const result = await QuoteFinder.findAll(opts)
     const result_ids = result.map((quote) => quote.id)
@@ -234,7 +279,7 @@ describe("findAll", () => {
   })
 
   it("with a user, returns the quote where the user is associated with a line", async () => {
-    const opts = new QuoteFinder.SearchOptions({userId: user.id})
+    const opts = new QuoteFinder.SearchOptions({ userId: user.id })
 
     const result = await QuoteFinder.findAll(opts)
     const result_ids = result.map((quote) => quote.id)
@@ -243,7 +288,7 @@ describe("findAll", () => {
   })
 
   it("with an alias, returns the quote where a line's attribution matches the alias text", async () => {
-    const opts = new QuoteFinder.SearchOptions({alias: "lia"})
+    const opts = new QuoteFinder.SearchOptions({ alias: "lia" })
 
     const result = await QuoteFinder.findAll(opts)
     const result_ids = result.map((quote) => quote.id)

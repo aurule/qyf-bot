@@ -1,7 +1,7 @@
 const { Quotes, Lines, Games, Users } = require("../models")
 const { forceArray } = require("../util/force-array")
 
-const { Op } = require("sequelize");
+const { Op } = require("sequelize")
 
 class SearchOptions {
   /**
@@ -36,30 +36,29 @@ class SearchOptions {
   }
 
   build() {
+    const quote_options = { where: {}, include: [] }
+    const game_options = { model: Games, where: {}, required: true }
+    const line_options = { model: Lines, where: {}, required: true }
 
-    const quote_options = {where: {}, include: []}
-    const game_options = {model: Games, where: {}, required: true}
-    const line_options = {model: Lines, where: {}, required: true}
+    if (this.gameId) quote_options.where.gameId = this.gameId
 
-    if(this.gameId) quote_options.where.gameId = this.gameId
+    if (this.guild) game_options.where.guildId = this.guild.id
 
-    if(this.guild) game_options.where.guildId = this.guild.id
-
-    if(this.speaker) {
+    if (this.speaker) {
       line_options.include = {
         model: Users,
         as: "speaker",
         required: true,
         where: {
-          snowflake: this.speaker
-        }
+          snowflake: this.speaker,
+        },
       }
     }
 
-    if(this.userId) line_options.where.speakerId = this.userId
+    if (this.userId) line_options.where.speakerId = this.userId
 
-    if(this.alias) {
-      line_options.where.speakerAlias = {[Op.substring]: this.alias}
+    if (this.alias) {
+      line_options.where.speakerAlias = { [Op.substring]: this.alias }
     }
 
     quote_options.include.push(game_options)
@@ -78,7 +77,7 @@ class SearchOptions {
  * @return {Promise<Array<Quotes>>}             Promise resolveing to an array of Quote objects matching the criteria
  */
 async function findAll(search_options, passthrough_options = {}) {
-  const defaults = {order: [['saidAt', 'DESC']]}
+  const defaults = { order: [["saidAt", "DESC"]] }
   const options = search_options.build()
 
   const final = {
