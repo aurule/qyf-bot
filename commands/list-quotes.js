@@ -139,8 +139,31 @@ module.exports = {
 
     const game = await getGameOrDefault(game_arg, interaction.channel)
 
+    // This section is a workaround for a bug in sequelize that causes a SQL
+    // error we pass a snowflake to the quote finder. For a summary, see
+    // services/quote-finder.test.js near the bottom.
+    //
+    // To avoid that bug, we make a separate query for the user and manually
+    // handle the not-found case before passing the user ID to the finder.
+    let speaker_user = {}
+    if (speaker) {
+      const user = await Users.findOne({
+        where: { snowflake: speaker.id.toString() },
+      })
+      if (!user) {
+        return interaction.reply(
+          describeResults(0, game, "", {
+            alias: alias,
+            speaker: speaker,
+            text: text,
+          })
+        )
+      }
+      speaker_user = user
+    }
+
     const finder_options = new QuoteFinder.SearchOptions({
-      speaker: speaker?.id.toString(),
+      userId: speaker_user.id,
       alias: alias,
       gameId: game.id,
       text: text,

@@ -157,6 +157,28 @@ describe("execute", () => {
       ).toMatchObject({ limit: 10 })
     })
   })
+
+  describe("speaker", () => {
+    it("with an existing speaker, queries by speaker's user ID", async () => {
+      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      interaction.command_options.speaker = {id: speaker.snowflake}
+
+      await list_quotes_command.execute(interaction)
+
+      // finderSpy was called with an object including userId:speaker.id
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ userId: [speaker.id] })
+    })
+
+    it("with no existing speaker, it replies that there are no quotes", async () => {
+      interaction.command_options.speaker = {id: simpleflake().toString()}
+
+      const result = await list_quotes_command.execute(interaction)
+
+      expect(result).toMatch("No quotes found")
+    })
+  })
 })
 
 describe("getGameOrDefault", () => {
