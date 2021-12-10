@@ -1,8 +1,9 @@
 const QuoteFinder = require("./quote-finder")
 
-const { Quotes, Lines, Games, Users } = require("../models")
+const { Quotes, Lines, Games, Users, Guilds } = require("../models")
 
 const { Op } = require("sequelize");
+const { simpleflake } = require("simpleflakes")
 
 describe("SearchOptions", () => {
   describe("constructor", () => {
@@ -138,5 +139,58 @@ describe("SearchOptions", () => {
 })
 
 describe("findAll", () => {
-  it.todo("x")
+  let main_guild
+  let game1
+  let game2
+  let speaker_quote
+  let game_quote
+  let user_quote
+  let alias_quote
+
+  let other_guild
+  let other_game
+  let guild_quote
+
+  beforeAll(async () => {
+    try {
+      main_guild = await Guilds.create({name: "Test Guild", snowflake: simpleflake().toString()})
+      game1 = await Games.create({name: "Test Game 1", guildId: main_guild.id})
+      game2 = await Games.create({name: "Test Game 2", guildId: main_guild.id})
+      game_quote = await Quotes.create({gameId: game2.id})
+      speaker = await Users.create({name: "Speaker", snowflake: simpleflake().toString()})
+      speaker_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerId: speaker.id}], include: Lines})
+      user = await Users.create({name: "User", snowflake: simpleflake().toString()})
+      user_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerId: speaker.id}], include: Lines})
+      alias_quote = await Quotes.create({gameId: game1.id, Lines: [{speakerAlias: "Alias"}], include: Lines})
+
+      other_guild = await Guilds.create({name: "Other Test Guild", snowflake: simpleflake().toString()})
+      other_game = await Games.create({name: "Other Test Game", guildId: other_guild.id})
+      guild_quote = await Quotes.create({gameId: other_game.id})
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  afterAll(async () => {
+    const quote_ids = [
+      game_quote.id,
+      speaker_quote.id,
+      user_quote.id,
+      alias_quote.id,
+      guild_quote.id,
+    ]
+    await Lines.destroy({where: {quoteId: quote_ids}})
+    await Quotes.destroyByPk(quote_ids)
+
+    await Users.destroyByPk([speaker.id, user.id])
+
+    await Games.destroyByPk([game1.id, game2.id, other_game.id])
+
+    await Guilds.destroyByPk([main_guild.id, other_game.id])
+  })
+
+  it("runs", async () => {
+    const opts = new QuoteFinder.SearchOptions()
+    await QuoteFinder.findAll(opts)
+  })
 })
