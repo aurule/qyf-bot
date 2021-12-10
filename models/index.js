@@ -34,6 +34,15 @@ fs.readdirSync(__dirname)
       sequelize,
       Sequelize.DataTypes
     )
+    /**
+     * Helper to destroy records by their IDs
+     *
+     * This just calls destroy using a pre-build where clause. It's a convenience
+     * method to cut down on clutter for this common use.
+     *
+     * @param  {Array<Int>} ids Array of primary key values of the records to destroy
+     * @return {Promise}
+     */
     model.destroyByPk = async (ids) => {
       return model.destroy({where: {id: ids}})
     }
