@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Quotes.belongsTo(models.Games)
       Quotes.hasMany(models.Lines)
+      Quotes.belongsTo(models.Users, { as: "quoter", foreignKey: "quoterId" })
     }
   }
   Quotes.init(
@@ -23,6 +24,15 @@ module.exports = (sequelize, DataTypes) => {
         references: {
           model: {
             tableName: "games",
+          },
+          key: "id",
+        },
+      },
+      quoterId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: {
+            tableName: "users",
           },
           key: "id",
         },
