@@ -66,53 +66,117 @@ describe("makeQuote", () => {
     const quote_ids = quotes.map((q) => q.id)
     const lines = await Lines.findAll({ where: { quoteId: quote_ids } })
     const speaker_ids = lines.map((line) => line.speakerId)
+    const quoter_ids = quotes.map((q) => q.quoterId)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Users.destroyByPk(speaker_ids)
     await Quotes.destroy({ where: { gameId: game_ids } })
+    await Users.destroyByPk(quoter_ids)
     await game.destroy()
     await guild.destroy()
   })
 
-  it("assigns an existing speaker", async () => {
-    const user = await Users.create({
-      name: "Test Speaker",
-      snowflake: simpleflake().toString(),
+  describe("speaker", () => {
+    it("assigns an existing speaker", async () => {
+      const user = await Users.create({
+        name: "Test Speaker",
+        snowflake: simpleflake().toString(),
+      })
+
+      const discord_user = {
+        username: "New Name",
+        id: user.snowflake,
+      }
+
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker: discord_user,
+      })
+
+      expect(await user.countLines()).toEqual(1)
     })
 
-    const discord_user = {
-      username: "New Name",
-      id: user.snowflake,
-    }
+    it("creates a new speaker", async () => {
+      const speaker = {
+        username: "Test Speaker",
+        id: simpleflake(),
+      }
 
-    const quote = await QuoteBuilder.makeQuote({
-      text: "test text",
-      attribution: "some guy",
-      game: game,
-      speaker: discord_user,
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker: speaker,
+      })
+
+      const user = await Users.findOne({
+        where: { snowflake: speaker.id.toString() },
+      })
+
+      expect(user).toBeTruthy()
     })
-
-    expect(await user.countLines()).toEqual(1)
   })
 
-  it("creates a new speaker", async () => {
-    const speaker = {
-      username: "Test Speaker",
-      id: simpleflake(),
-    }
+  describe("quoter", () => {
+    var speaker
+    var speaker_user
 
-    const quote = await QuoteBuilder.makeQuote({
-      text: "test text",
-      attribution: "some guy",
-      game: game,
-      speaker: speaker,
+    beforeEach(async () => {
+      speaker_user = await Users.create({
+        name: "Test Speaker",
+        snowflake: simpleflake().toString(),
+      })
+
+      speaker = {
+        username: "New Name",
+        id: speaker_user.snowflake,
+      }
     })
 
-    const user = await Users.findOne({
-      where: { snowflake: speaker.id.toString() },
+    it("assigns an existing quoter", async () => {
+      const quoter_user = await Users.create({
+        name: "Test Quoter",
+        snowflake: simpleflake().toString(),
+      })
+
+      const quoter = {
+        username: "New Name",
+        id: quoter_user.snowflake,
+      }
+
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker: speaker,
+        quoter: quoter,
+      })
+
+      expect(await quoter_user.countQuotes()).toEqual(1)
     })
 
-    expect(user).toBeTruthy()
+    it("creates a new quoter", async () => {
+      const quoter = {
+        username: "Test Quoter",
+        id: simpleflake(),
+      }
+
+      const quote = await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker: speaker,
+        quoter: quoter,
+      })
+
+      const user = await Users.findOne({
+        where: { snowflake: quoter.id.toString() },
+      })
+
+      expect(user).toBeTruthy()
+    })
   })
 
   it("creates a new Quote for the game", async () => {

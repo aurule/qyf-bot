@@ -36,17 +36,33 @@ module.exports = {
    * @param  {string}       text          The content of the first line
    * @param  {string}       attribution   The name to use for the line's speakerAlias
    * @param  {Games}        game          Game object the quote is associated with
-   * @param  {discord User} speaker  User object from discord of the user who said the quote
+   * @param  {discord User} speaker       User object from discord of the user who said the quote
+   * @param  {discord User} quoter        User object from discord of the user who recorded the quote
    * @return {Quotes}                     The created quote object
    */
-  makeQuote: async ({ text, attribution, game, speaker }) => {
+  makeQuote: async ({ text, attribution, game, speaker, quoter }) => {
     try {
-      const the_quote = await Quotes.create({
+      // create the quote
+      const quote_attrs = {
         gameId: game.id,
         saidAt: Date.now(),
-      })
+      }
 
-      const [user, _isNewUser] = await Users.findOrCreate({
+      if (quoter) {
+        const [quoter_user, _isNewQuoter] = await Users.findOrCreate({
+          where: { snowflake: quoter.id.toString() },
+          defaults: {
+            name: quoter.username,
+            snowflake: quoter.id.toString(),
+          },
+        })
+        quote_attrs.quoterId = quoter_user.id
+      }
+
+      const the_quote = await Quotes.create(quote_attrs)
+
+      // create the line
+      const [speaker_user, _isNewSpeaker] = await Users.findOrCreate({
         where: { snowflake: speaker.id.toString() },
         defaults: {
           name: speaker.username,
@@ -59,7 +75,7 @@ module.exports = {
         content: text,
         lineOrder: 0,
         speakerAlias: attribution,
-        speakerId: user.id,
+        speakerId: speaker_user.id,
       })
 
       return the_quote

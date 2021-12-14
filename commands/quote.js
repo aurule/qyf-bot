@@ -50,6 +50,7 @@ module.exports = {
         attribution: speaker_name,
         game: game,
         speaker: speaker,
+        quoter: user,
       })
       if (result instanceof Quotes) {
         return interaction.reply(
