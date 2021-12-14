@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
     static async findByInteraction(interaction, options = {}) {
       return Guilds.findOne({
-        where: { snowflake: interaction.guild.id },
+        where: { snowflake: interaction.guildId },
         ...options,
       })
     }

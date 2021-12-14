@@ -13,6 +13,7 @@ class Interaction {
       getInteger: (key) => this.command_options[key],
       getUser: (key) => this.command_options[key],
     }
+    this.guildId = snowflake,
     this.guild = {
       id: snowflake,
       members: [],
