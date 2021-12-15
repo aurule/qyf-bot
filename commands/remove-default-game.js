@@ -15,7 +15,7 @@ module.exports = {
       option.setName("server").setDescription("Remove the server default")
     ),
   async execute(interaction) {
-    if(!CommandPolicy.elevateMember(interaction.user)) {
+    if(!CommandPolicy.elevateMember(interaction.member)) {
       return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
     }
 

@@ -28,7 +28,7 @@ module.exports = {
           .setDescription("A few words about the game")
       ),
   async execute(interaction) {
-    if(!CommandPolicy.elevateMember(interaction.user)) {
+    if(!CommandPolicy.elevateMember(interaction.member)) {
       return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
     }
 

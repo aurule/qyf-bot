@@ -26,7 +26,7 @@ module.exports = {
         .setDescription("Apply default to the whole server")
     ),
   async execute(interaction) {
-    if(!CommandPolicy.elevateMember(interaction.user)) {
+    if(!CommandPolicy.elevateMember(interaction.member)) {
       return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
     }
 

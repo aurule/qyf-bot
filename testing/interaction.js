@@ -33,10 +33,13 @@ class Interaction {
       messages: {},
     }
     this.message = {}
-    this.user = {
+    this.member = {
       id: simpleflake(),
-      username: "Test User",
       permissions: new Permissions(Permissions.FLAGS.DEFAULTS),
+    }
+    this.user = {
+      id: this.member.id,
+      username: "Test User",
     }
   }
 
