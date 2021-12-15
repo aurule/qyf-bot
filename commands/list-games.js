@@ -11,7 +11,6 @@ module.exports = {
     const guild = await Guilds.findByInteraction(interaction)
     const games = await Games.findAll({
       where: { guildId: guild.id },
-      attributes: ["name"],
       order: [["name", "ASC"]],
       include: DefaultGames,
     })
