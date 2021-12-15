@@ -2,6 +2,7 @@
 
 const set_default_game_command = require("./set-default-game")
 const { Guilds, Games, DefaultGames } = require("../models")
+const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -9,6 +10,7 @@ const { simpleflake } = require("simpleflakes")
 var guild
 var interaction
 var game
+var policySpy
 
 beforeEach(async () => {
   try {
@@ -20,15 +22,18 @@ beforeEach(async () => {
       name: "Test Game",
       guildId: guild.id,
     })
-    interaction = new Interaction(guild.snowflake)
-    interaction.channel.id = simpleflake().toString()
-    interaction.channel.guild = { id: guild.snowflake, name: guild.name }
-    interaction.channel.name = "test channel"
-    interaction.command_options["server"] = false
-    interaction.command_options["game"] = game.id
   } catch (err) {
     console.log(err)
   }
+
+  interaction = new Interaction(guild.snowflake)
+  interaction.channel.id = simpleflake().toString()
+  interaction.channel.guild = { id: guild.snowflake, name: guild.name }
+  interaction.channel.name = "test channel"
+  interaction.command_options["server"] = false
+  interaction.command_options["game"] = game.id
+
+  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
 })
 
 afterEach(async () => {
@@ -101,6 +106,24 @@ describe("execute", () => {
       const reply = await set_default_game_command.execute(interaction)
 
       expect(reply.content).toMatch("Something went wrong")
+    })
+  })
+
+  describe("permissions", () => {
+    it("allows manager users", async () => {
+      policySpy.mockReturnValue(true)
+
+      const reply = await set_default_game_command.execute(interaction)
+
+      expect(reply).toMatch("is now the default")
+    })
+
+    it("rejects non-managers", async () => {
+      policySpy.mockReturnValue(false)
+
+      const reply = await set_default_game_command.execute(interaction)
+
+      expect(reply.content).toMatch(CommandPolicy.errorMessage)
     })
   })
 })

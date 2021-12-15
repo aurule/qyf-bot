@@ -3,6 +3,7 @@ const { Guilds, Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
+const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "set-default-game",
@@ -25,6 +26,10 @@ module.exports = {
         .setDescription("Apply default to the whole server")
     ),
   async execute(interaction) {
+    if(!CommandPolicy.elevateMember(interaction.user)) {
+      return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
+    }
+
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
