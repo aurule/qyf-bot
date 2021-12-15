@@ -1,6 +1,7 @@
 "use strict"
 
 const { simpleflake } = require("simpleflakes")
+const { Permissions } = require('discord.js');
 
 class Interaction {
   constructor(snowflake) {
@@ -35,6 +36,7 @@ class Interaction {
     this.user = {
       id: simpleflake(),
       username: "Test User",
+      permissions: new Permissions(Permissions.FLAGS.DEFAULTS),
     }
   }
 
