@@ -53,6 +53,26 @@ describe("transform", () => {
     expect(result).toMatch(game2.name)
   })
 
+  it("shows the description of a game if present", async () => {
+    const game1 = await Games.create({
+      name: "test game 1",
+      description: "first test game",
+      guildId: guild.id,
+    })
+    const game2 = await Games.create({
+      name: "test game 2",
+      guildId: guild.id,
+    })
+
+    const gamesList = await Games.findAll({
+      where: { guildId: guild.id },
+      include: DefaultGames,
+    })
+    const result = transform(gamesList)
+
+    expect(result).toMatch(game1.description)
+  })
+
   it("shows the server name when game is server default", async () => {
     const game = await Games.create({
       name: "test game",

@@ -9,6 +9,8 @@ module.exports = {
   transform: (games) => {
     return games
       .map((game) => {
+        const lines = []
+
         const defaults = game.DefaultGames.map((dg) => {
           if (dg.type == DefaultGames.TYPE_CHANNEL) {
             return channelMention(dg.snowflake)
@@ -17,7 +19,11 @@ module.exports = {
         }).join(", ")
 
         const default_text = defaults ? ` (${defaults})` : ""
-        return `* ${game.name}${default_text}`
+        lines.push(`• ${game.name}${default_text}`)
+
+        if(game.description) lines.push(`\t*${game.description}*`)
+
+        return lines.join("\n")
       })
       .join("\n")
   },
