@@ -2,12 +2,14 @@
 
 const remove_default_game_command = require("./remove-default-game")
 const { Guilds, Games, DefaultGames } = require("../models")
+const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
 
 var guild
 var interaction
+var policySpy
 
 beforeEach(async () => {
   try {
@@ -15,15 +17,17 @@ beforeEach(async () => {
       name: "Test Guild",
       snowflake: simpleflake().toString(),
     })
-
-    interaction = new Interaction(guild.snowflake)
-    interaction.channel.id = simpleflake()
-    interaction.channel.guild = { id: guild.snowflake, name: guild.name }
-    interaction.channel.name = "Test Channel"
-    interaction.command_options["server"] = false
   } catch (err) {
     console.log(err)
   }
+
+  interaction = new Interaction(guild.snowflake)
+  interaction.channel.id = simpleflake()
+  interaction.channel.guild = { id: guild.snowflake, name: guild.name }
+  interaction.channel.name = "Test Channel"
+  interaction.command_options["server"] = false
+
+  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
 })
 
 afterEach(async () => {
@@ -93,6 +97,24 @@ describe("execute", () => {
     const result = await remove_default_game_command.execute(interaction)
 
     expect(result).toMatch("Removed default game from Test Channel")
+  })
+
+  describe("permissions", () => {
+    it("allows manager users", async () => {
+      policySpy.mockReturnValue(true)
+
+      const reply = await remove_default_game_command.execute(interaction)
+
+      expect(reply).toMatch("Removed default game")
+    })
+
+    it("rejects non-managers", async () => {
+      policySpy.mockReturnValue(false)
+
+      const reply = await remove_default_game_command.execute(interaction)
+
+      expect(reply.content).toMatch(CommandPolicy.errorMessage)
+    })
   })
 })
 

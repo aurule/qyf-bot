@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { explicitScope } = require("../services/default-game-scope")
 const { DefaultGames } = require('../models')
+const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "remove-default-game",
@@ -14,6 +15,10 @@ module.exports = {
       option.setName("server").setDescription("Remove the server default")
     ),
   async execute(interaction) {
+    if(!CommandPolicy.elevateMember(interaction.user)) {
+      return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
+    }
+
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
