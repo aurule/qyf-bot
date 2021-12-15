@@ -133,6 +133,12 @@ describe("execute", () => {
 
       expect(game.name).toEqual("Test Game")
     })
+
+    it("does not redeploy guild commands", async () => {
+      await update_game_command.execute(interaction)
+
+      expect(commandSpy).not.toHaveBeenCalled()
+    })
   })
 
   describe("without a name or description", () => {

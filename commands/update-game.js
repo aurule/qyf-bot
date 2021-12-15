@@ -70,7 +70,7 @@ module.exports = {
       return interaction.reply("Something went wrong :-(")
     }
 
-    await Commands.deployToGuild(guild)
+    if(game_name) await Commands.deployToGuild(guild)
 
     return interaction.reply(`Updated game "${game.name}"`)
   },
