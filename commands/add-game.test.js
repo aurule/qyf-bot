@@ -2,6 +2,7 @@ const add_game_command = require("./add-game")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
 const Commands = require("../services/commands")
+const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -9,6 +10,7 @@ const { simpleflake } = require("simpleflakes")
 var guild
 var interaction
 var commandSpy
+var policySpy
 
 beforeEach(async () => {
   try {
@@ -25,6 +27,7 @@ beforeEach(async () => {
   interaction.command_options.description = "a new game"
 
   commandSpy = jest.spyOn(Commands, "deployToGuild").mockImplementation(async (guild) => true)
+  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
 })
 
 afterEach(async () => {
@@ -92,6 +95,24 @@ describe("execute", () => {
       const reply = await add_game_command.execute(interaction)
 
       expect(reply).toMatch("Something went wrong :-(")
+    })
+  })
+
+  describe("permissions", () => {
+    it("allows manager users", async () => {
+      policySpy.mockReturnValue(true)
+
+      const reply = await add_game_command.execute(interaction)
+
+      expect(reply).toMatch("Added game")
+    })
+
+    it("rejects non-managers", async () => {
+      policySpy.mockReturnValue(false)
+
+      const reply = await add_game_command.execute(interaction)
+
+      expect(reply.content).toMatch(CommandPolicy.errorMessage)
     })
   })
 })

@@ -3,6 +3,7 @@ const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
 const Commands = require("../services/commands")
 const { logger } = require("../util/logger")
+const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "add-game",
@@ -22,6 +23,10 @@ module.exports = {
           .setDescription("A few words about the game")
       ),
   async execute(interaction) {
+    if(!CommandPolicy.elevateMember(interaction.user)) {
+      return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
+    }
+
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")
 
