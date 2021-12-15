@@ -72,8 +72,6 @@ module.exports = {
 
     await Commands.deployToGuild(guild)
 
-    // reply with description of changes
-
-    return interaction.reply(`Chose game "${game_name}"`)
+    return interaction.reply(`Updated game "${game.name}"`)
   },
 }
