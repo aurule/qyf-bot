@@ -3,6 +3,13 @@ const { logger } = require("../util/logger")
 module.exports = {
   name: "interactionCreate",
   execute(interaction) {
+    if (
+      (process.env.NODE_ENV !== "development") ==
+      process.env.DEV_GUILDS.includes(interaction.guildId)
+    ) {
+      return
+    }
+
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
       const command = interaction.client.commands.get(interaction.commandName)
