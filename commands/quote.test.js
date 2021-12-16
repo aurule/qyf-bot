@@ -9,7 +9,6 @@ const {
   Lines,
 } = require("../models")
 const DefaultGameScopeService = require("../services/default-game-scope")
-const QuoteBuilder = require("../services/quote-builder")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
