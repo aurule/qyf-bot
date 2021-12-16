@@ -10,8 +10,6 @@ const { jsNoTests } = require("../util/filters")
 
 const { Guilds, Games } = require("../models")
 
-const clientId = process.env.CLIENT_ID
-
 
 const commandsDir = `${__dirname}/../commands`
 
@@ -50,6 +48,7 @@ async function deployToGuild(guild) {
   guild.Games = await guild.getGames()
   const commands = buildCommandJSON(guild)
 
+  const clientId = process.env.CLIENT_ID
   return restClient()
     .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
       body: commands,
