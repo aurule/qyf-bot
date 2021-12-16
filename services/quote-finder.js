@@ -3,17 +3,24 @@ const { forceArray } = require("../util/force-array")
 
 const { Op } = require("sequelize")
 
+/**
+ * Class to represent complex quote search options
+ *
+ * This is meant to be passed to this module's findAll and findOne methods. Its
+ * #build method creates a combined options object which can be used by
+ * Sequelize to generate a query.
+ */
 class SearchOptions {
   /**
    * Create a search options object
    *
    * Accepted options:
-   *   speaker  String          Stringified snowflake of a discord user
-   *   userId   Int|Array<Int>  One or more IDs for User objects
-   *   gameId   Int|Array<Int>  One or more IDs for Game objects
-   *   alias    String          Text to find within a speaker alias
-   *   guild    {[type]}
-   *   text     {[type]}
+   *   speaker  {String}          Stringified snowflake of a discord user
+   *   userId   {Int|Array<Int>}  One or more IDs for User objects
+   *   gameId   {Int|Array<Int>}  One or more IDs for Game objects
+   *   alias    {String}          Text to find within a speaker alias
+   *   guild    {Guilds}          Guild object
+   *   text     {String}          Text to find within one or more line's contents
    *
    * @param  {[type]} options [description]
    * @return {[type]}         [description]
@@ -33,6 +40,13 @@ class SearchOptions {
     this.text = text
   }
 
+  /**
+   * Create an object describing query conditions for sequelize
+   *
+   * All criteria must be met for a qhote to be returned.
+   *
+   * @return {Object} An object encapsulating all of this object's search criteria
+   */
   build() {
     const quote_options = { where: {}, include: [] }
     const game_options = { model: Games, where: {}, required: true }
@@ -72,7 +86,7 @@ class SearchOptions {
 /**
  * Find all quotes that match the given criteria
  * @param  {SearchOptions}  search_options      Search criteria object
- * @param  {Obj}            passthrough_options Object of options to send directly to Quotes.findAll(). Items
+ * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findAll(). Items
  *                                              in where and incliude will overwrite the generated clauses
  *                                              from search_options.
  * @return {Promise<Array<Quotes>>}             Promise resolveing to an array of Quote objects matching the criteria
@@ -93,10 +107,10 @@ async function findAll(search_options, passthrough_options = {}) {
 /**
  * Find one quote that matches the given criteria
  * @param  {SearchOptions}  search_options      Search criteria object
- * @param  {Obj}            passthrough_options Object of options to send directly to Quotes.findOne(). Items
+ * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findOne(). Items
  *                                              in where and incliude will overwrite the generated clauses
  *                                              from search_options.
- * @return {Promise<Quotes>}             Promise resolveing to a Quote object matching the criteria
+ * @return {Promise<Quotes>}                    Promise resolveing to a Quote object matching the criteria
  */
 async function findOne(search_options, passthrough_options = {}) {
   const defaults = {}
