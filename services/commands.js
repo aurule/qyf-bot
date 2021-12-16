@@ -44,7 +44,8 @@ function restClient() {
  * @return {Promise}      Promise for the http call
  */
 async function deployToGuild(guild) {
-  guild.Games = await guild.getGames()
+  if (!guild.Games) await guild.reload({ include: Games })
+
   const commands = buildCommandJSON(guild)
 
   const clientId = process.env.CLIENT_ID
