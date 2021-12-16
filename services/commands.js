@@ -10,8 +10,7 @@ const { jsNoTests } = require("../util/filters")
 
 const { Guilds, Games } = require("../models")
 
-
-const commandsDir = `${__dirname}/../commands`
+const guildCommandsDir = `${__dirname}/../commands`
 
 /**
  * Build the command json to send to Discord
@@ -20,10 +19,10 @@ const commandsDir = `${__dirname}/../commands`
  */
 function buildCommandJSON(guild) {
   const commands = []
-  const commandFiles = fs.readdirSync(commandsDir).filter(jsNoTests)
+  const guildCommandFiles = fs.readdirSync(guildCommandsDir).filter(jsNoTests)
 
-  for (const file of commandFiles) {
-    const command = require(`${commandsDir}/${file}`)
+  for (const file of guildCommandFiles) {
+    const command = require(`${guildCommandsDir}/${file}`)
     commands.push(command.data(guild).toJSON())
   }
 
