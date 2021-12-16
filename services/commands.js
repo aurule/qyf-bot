@@ -10,10 +10,8 @@ const { jsNoTests } = require("../util/filters")
 
 const { Guilds, Games } = require("../models")
 
-const token = process.env.BOT_TOKEN
 const clientId = process.env.CLIENT_ID
 
-const rest = new REST({ version: "9" }).setToken(token)
 
 const commandsDir = `${__dirname}/../commands`
 
@@ -35,6 +33,15 @@ function buildCommandJSON(guild) {
 }
 
 /**
+ * Helper to create a REST instance
+ * @return {REST} REST client instance
+ */
+function restClient() {
+  const token = process.env.BOT_TOKEN
+  return new REST({ version: "9" }).setToken(token)
+}
+
+/**
  * Push the command JSON to a specific guild
  * @param  {Guild} guild  The guild object to receive the command data
  * @return {Promise}      Promise for the http call
@@ -43,7 +50,7 @@ async function deployToGuild(guild) {
   guild.Games = await guild.getGames()
   const commands = buildCommandJSON(guild)
 
-  return rest
+  return restClient()
     .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
       body: commands,
     })
@@ -70,6 +77,7 @@ async function deployToAllGuilds() {
 
 module.exports = {
   buildCommandJSON,
+  restClient,
   deployToGuild,
   deployToAllGuilds,
 }
