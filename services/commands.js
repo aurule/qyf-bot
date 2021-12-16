@@ -62,16 +62,19 @@ async function deployToGuild(guild) {
 }
 
 /**
- * Push the command JSON to all guilds in our database
- * @return {null} No return value
+ * Push the command JSON to many guilds
+ * @param  {Array<Guilds>|null} Array of guilds to deploy commands, or null for all guilds
+ * @return {null}               Promise for all deploy calls
  */
-async function deployToAllGuilds() {
-  const guilds = await Guilds.findAll({include: Games})
+async function deployToAllGuilds(guilds = null) {
+  if (!guilds) guilds = await Guilds.findAll({ include: Games })
 
   logger.info("Deploying commands to all guilds")
-  Promise.all(guilds.map((g) => deployToGuild(g))).finally(() => {
-    logger.info("Done with all guilds")
-  })
+  return Promise
+    .all(guilds.map(g => this.deployToGuild(g)))
+    .finally(() => {
+      logger.info("Done with all guilds")
+    })
 }
 
 module.exports = {
