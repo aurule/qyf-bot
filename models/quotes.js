@@ -1,6 +1,7 @@
 "use strict"
 
 const { Model } = require("sequelize")
+const { Op } = require("sequelize")
 
 module.exports = (sequelize, DataTypes) => {
   class Quotes extends Model {
@@ -13,6 +14,24 @@ module.exports = (sequelize, DataTypes) => {
       Quotes.belongsTo(models.Games)
       Quotes.hasMany(models.Lines)
       Quotes.belongsTo(models.Users, { as: "quoter", foreignKey: "quoterId" })
+    }
+
+    /**
+     * Find the most recent quote reported by the user, last altered within 15 minutes
+     * @param  {Users}  user          The quoter
+     * @param  {Object} options       Additional options to pass to the findOne() method
+     * @return {Promise<Quotes|null>} Promise resolving to the quote, or null
+     */
+    static async findLastEditable(user, options = {}) {
+      return Quotes.findOne({
+        where: {
+          quoterId: user.id,
+          updatedAt: {
+            [Op.gte]: new Date(new Date() - 15 * 60 * 1000),
+          },
+        },
+        ...options,
+      })
     }
   }
   Quotes.init(
