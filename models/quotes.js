@@ -2,6 +2,7 @@
 
 const { Model } = require("sequelize")
 const { Op } = require("sequelize")
+const { subMinutes } = require('date-fns')
 
 module.exports = (sequelize, DataTypes) => {
   class Quotes extends Model {
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         where: {
           quoterId: user.id,
           updatedAt: {
-            [Op.gte]: new Date(new Date() - 15 * 60 * 1000),
+            [Op.gte]: subMinutes(new Date(), 15),
           },
         },
         ...options,
