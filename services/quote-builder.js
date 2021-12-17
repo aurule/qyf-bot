@@ -84,4 +84,30 @@ module.exports = {
       return null
     }
   },
+
+  addLine: async ({ text, attribution, speaker, quote }) => {
+    try {
+      const [speaker_user, _isNewSpeaker] = await Users.findOrCreate({
+        where: { snowflake: speaker.id.toString() },
+        defaults: {
+          name: speaker.username,
+          snowflake: speaker.id.toString(),
+        },
+      })
+
+      const currentOrdinal = await Lines.max('lineOrder', {where: {quoteId: quote.id}})
+
+      await quote.createLine({
+        content: text,
+        lineOrder: currentOrdinal + 1,
+        speakerAlias: attribution,
+        speakerId: speaker_user.id,
+      })
+
+      return quote.reload({include: Lines})
+    } catch (error) {
+      logger.warn(error)
+      return null
+    }
+  }
 }

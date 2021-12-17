@@ -296,3 +296,179 @@ describe("makeQuote", () => {
     expect(result).toBeNull()
   })
 })
+
+describe("addLine", () => {
+  var guild
+  var game
+  var quote
+  var speaker
+  var quoter
+
+  beforeEach(async () => {
+    guild = await Guilds.create({
+      name: "Test Guild",
+      snowflake: simpleflake().toString(),
+    })
+    game = await Games.create({
+      name: "Test Game",
+      guildId: guild.id,
+    })
+    speaker = await Users.create({
+      name: "Test Speaker",
+      snowflake: simpleflake().toString(),
+    })
+    quoter = await Users.create({
+      name: "Test Quoter",
+      snowflake: simpleflake().toString(),
+    })
+    quote = await Quotes.create({
+      quoterId: quoter.id,
+      gameId: game.id,
+      saidAt: Date.now(),
+    })
+    quote.createLine({
+      content: "The first line",
+      speakerId: speaker.id,
+      speakerAlias: "Some Guy",
+      lineOrder: 0,
+    })
+  })
+
+  afterEach(async () => {
+    const games = await Games.findAll({ where: { guildId: guild.id } })
+    const game_ids = games.map((g) => g.id)
+    const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
+    const quote_ids = quotes.map((q) => q.id)
+    const lines = await Lines.findAll({ where: { quoteId: quote_ids } })
+    const speaker_ids = lines.map((line) => line.speakerId)
+    const quoter_ids = quotes.map((q) => q.quoterId)
+
+    await Lines.destroy({ where: { quoteId: quote_ids } })
+    await Users.destroyByPk(speaker_ids)
+    await Quotes.destroy({ where: { gameId: game_ids } })
+    await Users.destroyByPk(quoter_ids)
+    await game.destroy()
+    await guild.destroy()
+  })
+
+  describe("speaker", () => {
+    it("assigns an existing speaker", async () => {
+      const discord_user = {
+        username: "New Name",
+        id: speaker.snowflake,
+      }
+
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: discord_user,
+        quote: quote,
+      })
+
+      expect(await speaker.countLines()).toEqual(2)
+    })
+
+    it("creates a new speaker", async () => {
+      const discord_user = {
+        username: "Test Speaker 2",
+        id: simpleflake(),
+      }
+
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: discord_user,
+        quote: quote,
+      })
+
+      const user = await Users.findOne({
+        where: { snowflake: discord_user.id.toString() },
+      })
+
+      expect(user).toBeTruthy()
+    })
+  })
+
+  describe("creates a new line", () => {
+    let speaker_user
+
+    beforeAll(() => {
+      speaker_user = {
+        username: speaker.name,
+        id: speaker.snowflake,
+      }
+    })
+
+    it("stores the text", async () => {
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: speaker_user,
+        quote: quote,
+      })
+
+      const lines = await quote.getLines()
+
+      expect(lines[1].content).toMatch("test text")
+    })
+
+    it("uses the speaker object", async () => {
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: speaker_user,
+        quote: quote,
+      })
+
+      const lines = await quote.getLines()
+
+      expect(lines[1].speakerId).toEqual(speaker.id)
+    })
+
+    it("sets the alias to attribution text", async () => {
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: speaker_user,
+        quote: quote,
+      })
+
+      const lines = await quote.getLines()
+
+      expect(lines[1].speakerAlias).toMatch("some guy")
+    })
+
+    it("sets lineOrder to zero", async () => {
+      const result_quote = await QuoteBuilder.addLine({
+        text: "test text",
+        attribution: "some guy",
+        speaker: speaker_user,
+        quote: quote,
+      })
+
+      const lines = await quote.getLines()
+
+      expect(lines[1].lineOrder).toEqual(1)
+    })
+  })
+
+  it("logs any errors", async () => {
+    jest.spyOn(Lines, "create").mockRejectedValue(new Error("test error"))
+    const loggerSpy = jest.spyOn(logger, "warn")
+
+    const discord_user = {
+      username: "New Name",
+      id: speaker.snowflake,
+    }
+
+    const result = await QuoteBuilder.addLine({
+      text: "test text",
+      attribution: "some guy",
+      speaker: discord_user,
+      quote: quote,
+    })
+
+    expect(loggerSpy).toHaveBeenCalled()
+    expect(result).toBeNull()
+  })
+})
