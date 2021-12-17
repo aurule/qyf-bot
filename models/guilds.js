@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       Guilds.hasMany(models.Games)
     }
 
+    /**
+     * Find a guild by the guild snowflake in a discord interaction
+     * @param  {Interaction}  interaction Discordjs interaction object
+     * @param  {Object}       options     Additional options to pass to the findOne() method
+     * @return {Promise<Guilds|null>}     Guild object or null
+     */
     static async findByInteraction(interaction, options = {}) {
       return Guilds.findOne({
         where: { snowflake: interaction.guildId },
