@@ -392,7 +392,7 @@ describe("addLine", () => {
   describe("creates a new line", () => {
     let speaker_user
 
-    beforeAll(() => {
+    beforeEach(() => {
       speaker_user = {
         username: speaker.name,
         id: speaker.snowflake,
