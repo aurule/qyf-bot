@@ -156,7 +156,10 @@ describe("finders", () => {
   let main_guild
   let game1
   let game2
+  let speaker
   let speaker_quote
+  let quoter
+  let quoter_quote
   let game_quote
   let user_quote
   let alias_quote
@@ -191,6 +194,18 @@ describe("finders", () => {
         {
           gameId: game1.id,
           Lines: [{ content: "said", speakerId: speaker.id, lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
+      quoter = await Users.create({
+        name: "Quoter",
+        snowflake: simpleflake().toString(),
+      })
+      quoter_quote = await Quotes.create(
+        {
+          gameId: game1.id,
+          quoterId: quoter.id,
+          Lines: [{ content: "said", lineOrder: 0 }],
         },
         { include: Lines }
       )
@@ -241,6 +256,7 @@ describe("finders", () => {
     const quote_ids = [
       game_quote.id,
       speaker_quote.id,
+      quoter_quote.id,
       user_quote.id,
       alias_quote.id,
       guild_quote.id,
@@ -249,7 +265,7 @@ describe("finders", () => {
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroyByPk(quote_ids)
 
-    await Users.destroyByPk([speaker.id, user.id])
+    await Users.destroyByPk([speaker.id, user.id, quoter.id])
 
     await Games.destroyByPk([game1.id, game2.id, other_game.id])
 
@@ -397,5 +413,43 @@ describe("finders", () => {
 
       expect(result).toBeFalsy()
     })
+  })
+
+  describe("findLastEditable", () => {
+    var discord_quoter
+
+    beforeEach(() => {
+      discord_quoter = {
+        id: quoter.snowflake
+      }
+    })
+
+    it("gets the quoter's quote", async () => {
+      const result = await QuoteFinder.findLastEditable(discord_quoter)
+
+      expect(result.id).toEqual(quoter_quote.id)
+    })
+
+    describe("with a newer quote", () => {
+      var newest_quote
+
+      beforeEach(async () => {
+        newest_quote = await Quotes.create({
+          quoterId: quoter.id,
+          gameId: game1.id,
+        })
+      })
+
+      afterEach(async () => {
+        await newest_quote.destroy()
+      })
+
+      it("gets the most recent quote", async () => {
+        const result = await QuoteFinder.findLastEditable(discord_quoter)
+
+        expect(result.id).toEqual(newest_quote.id)
+      })
+    })
+
   })
 })

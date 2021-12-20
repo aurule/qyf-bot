@@ -2,6 +2,7 @@ const { Quotes, Lines, Games, Users } = require("../models")
 const { forceArray } = require("../util/force-array")
 
 const { Op } = require("sequelize")
+const { subMinutes } = require("date-fns")
 
 /**
  * Class to represent complex quote search options
@@ -25,7 +26,7 @@ class SearchOptions {
    * @param  {[type]} options [description]
    * @return {[type]}         [description]
    */
-  constructor({speaker, userId, gameId, alias, guild, text} = {}) {
+  constructor({ speaker, userId, gameId, alias, guild, text } = {}) {
     if (speaker) {
       this.speaker = speaker
     }
@@ -125,8 +126,33 @@ async function findOne(search_options, passthrough_options = {}) {
   return Quotes.findOne(final)
 }
 
+async function findLastEditable(quoter, passthrough_options = {}) {
+  const options = {
+    where: {
+      updatedAt: {
+        [Op.gte]: subMinutes(new Date(), 60),
+      },
+    },
+    include: {
+      model: Users,
+      as: "quoter",
+      required: true,
+      where: {
+        snowflake: quoter.id.toString(),
+      },
+    },
+    order: [["updatedAt", "DESC"]],
+  }
+
+  return Quotes.findOne({
+    ...options,
+    ...passthrough_options,
+  })
+}
+
 module.exports = {
   SearchOptions,
   findAll,
   findOne,
+  findLastEditable,
 }
