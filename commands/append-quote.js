@@ -1,9 +1,16 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
-const { Quotes } = require("../models")
+const { sequelize, Quotes, Lines, Users } = require("../models")
 const { determineName } = require("../services/speaker-name")
-const QuoteBuilder = require("../services/quote-builder")
+const { addLine } = require("../services/quote-builder")
 const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
+const QuoteFinder = require("../services/quote-finder")
+
+async function getSpeaker(arg, interaction, last_line) {
+  if (arg) return interaction.guild.members.fetch(arg)
+
+  return interaction.guild.members.fetch(last_line.speaker.snowflake)
+}
 
 module.exports = {
   name: "append-quote",
@@ -28,6 +35,7 @@ module.exports = {
             "The name of who said it. Replaces the speaker's current nickname."
           )
       ),
+  getSpeaker,
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker_arg = interaction.options.getUser("speaker")
@@ -35,7 +43,7 @@ module.exports = {
     const user = interaction.user
 
     // get the quote
-    const quote = Quotes.findLastEditable(user)
+    const quote = await QuoteFinder.findLastEditable(user)
 
     if (!quote) {
       return interaction.reply({
@@ -46,26 +54,36 @@ module.exports = {
     }
 
     // determine the attribution
-    const speaker =
-      speaker_arg || interaction.guild.members.fetch(quote.speaker.snowflake)
+    const last_line = await Lines.findOne({
+      where: { quoteId: quote.id },
+      order: [["lineOrder", "DESC"]],
+      include: 'speaker',
+    })
+
+    const speaker = await getSpeaker(speaker_arg, interaction, last_line)
     const speaker_name = determineName({
-      nickname: interaction.guild.members.fetch(speaker).nickname,
-      username: speaker.username,
+      nickname: speaker.nickname,
+      username: speaker.user.username,
       alias: alias,
     })
 
     // add the new line
-    const result = QuoteBuilder.addLine({
+    return addLine({
       text: text,
       attribution: speaker_name,
-      speaker: speaker,
+      speaker: speaker.user,
       quote,
     })
-    if (result instanceof Quotes) {
-      await interaction.reply(`${user.username} added text from ${speaker_name}: ${text}`)
-      return interaction.followUp(`The full quote is:\n${QuoteSnippetTransformer.transform(quote)}`)
-    } else {
-      return interaction.reply("Something went wrong :-(")
-    }
+      .then(async (result) => {
+        await interaction.reply(
+          `${user.username} added text from ${speaker_name}: ${text}`
+        )
+        return interaction.followUp(
+          `The full quote is:\n${QuoteSnippetTransformer.transform(quote)}`
+        )
+      })
+      .catch((error) => {
+        return interaction.reply("Something went wrong :-(")
+      })
   },
 }
