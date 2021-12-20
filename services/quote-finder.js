@@ -130,7 +130,7 @@ async function findLastEditable(quoter, passthrough_options = {}) {
   const options = {
     where: {
       updatedAt: {
-        [Op.gte]: subMinutes(new Date(), 60),
+        [Op.gte]: subMinutes(new Date(), 15),
       },
     },
     include: {
