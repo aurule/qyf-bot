@@ -33,19 +33,20 @@ module.exports = {
 
     // With a default game, we can save immediately
     if (game) {
-      const result = await makeQuote({
+      return makeQuote({
         text: text,
         attribution: speaker_name,
         game: game,
         speaker: speaker,
       })
-      if (result instanceof Quotes) {
-        return interaction.reply(
-          `${user.username} quoted ${speaker_name}: ${text}`
-        )
-      } else {
-        return interaction.reply("Something went wrong :-(")
-      }
+        .then((result) => {
+          return interaction.reply(
+            `${user.username} quoted ${speaker_name}: ${text}`
+          )
+        })
+        .catch((error) => {
+          return interaction.reply("Something went wrong :-(")
+        })
     }
 
     // With no default game, we need a followup to pick the right game
