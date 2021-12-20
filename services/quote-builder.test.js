@@ -88,7 +88,7 @@ describe("makeQuote", () => {
         id: user.snowflake,
       }
 
-      const quote = await QuoteBuilder.makeQuote({
+      await QuoteBuilder.makeQuote({
         text: "test text",
         attribution: "some guy",
         game: game,
@@ -104,7 +104,7 @@ describe("makeQuote", () => {
         id: simpleflake(),
       }
 
-      const quote = await QuoteBuilder.makeQuote({
+      await QuoteBuilder.makeQuote({
         text: "test text",
         attribution: "some guy",
         game: game,
@@ -146,7 +146,7 @@ describe("makeQuote", () => {
         id: quoter_user.snowflake,
       }
 
-      const quote = await QuoteBuilder.makeQuote({
+      await QuoteBuilder.makeQuote({
         text: "test text",
         attribution: "some guy",
         game: game,
@@ -163,7 +163,7 @@ describe("makeQuote", () => {
         id: simpleflake(),
       }
 
-      const quote = await QuoteBuilder.makeQuote({
+      await QuoteBuilder.makeQuote({
         text: "test text",
         attribution: "some guy",
         game: game,
@@ -224,9 +224,7 @@ describe("makeQuote", () => {
         speaker: speaker,
       })
 
-      const lines = await quote.getLines()
-
-      expect(lines[0].content).toMatch("test text")
+      expect(quote.Lines[0].content).toMatch("test text")
     })
 
     it("uses the speaker object", async () => {
@@ -237,9 +235,7 @@ describe("makeQuote", () => {
         speaker: speaker,
       })
 
-      const lines = await quote.getLines()
-
-      expect(lines[0].speakerId).toEqual(user.id)
+      expect(quote.Lines[0].speakerId).toEqual(user.id)
     })
 
     it("sets the alias to attribution text", async () => {
@@ -250,9 +246,8 @@ describe("makeQuote", () => {
         speaker: speaker,
       })
 
-      const lines = await quote.getLines()
 
-      expect(lines[0].speakerAlias).toMatch("some guy")
+      expect(quote.Lines[0].speakerAlias).toMatch("some guy")
     })
 
     it("sets lineOrder to zero", async () => {
@@ -263,37 +258,9 @@ describe("makeQuote", () => {
         speaker: speaker,
       })
 
-      const lines = await quote.getLines()
 
-      expect(lines[0].lineOrder).toEqual(0)
+      expect(quote.Lines[0].lineOrder).toEqual(0)
     })
-  })
-
-  it("logs any errors", async () => {
-    const user = await Users.create({
-      name: "Test Speaker",
-      snowflake: simpleflake().toString(),
-    })
-
-    const speaker = {
-      username: "New Name",
-      id: user.snowflake,
-    }
-
-    jest.spyOn(Quotes, "create").mockImplementation((...options) => {
-      throw new Error("test error")
-    })
-    const loggerSpy = jest.spyOn(logger, "warn")
-
-    const result = await QuoteBuilder.makeQuote({
-      text: "test text",
-      attribution: "some guy",
-      game: game,
-      speaker: user,
-    })
-
-    expect(loggerSpy).toHaveBeenCalled()
-    expect(result).toBeNull()
   })
 })
 
@@ -358,7 +325,7 @@ describe("addLine", () => {
         id: speaker.snowflake,
       }
 
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: discord_user,
@@ -374,7 +341,7 @@ describe("addLine", () => {
         id: simpleflake(),
       }
 
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: discord_user,
@@ -400,7 +367,7 @@ describe("addLine", () => {
     })
 
     it("stores the text", async () => {
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: speaker_user,
@@ -413,7 +380,7 @@ describe("addLine", () => {
     })
 
     it("uses the speaker object", async () => {
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: speaker_user,
@@ -426,7 +393,7 @@ describe("addLine", () => {
     })
 
     it("sets the alias to attribution text", async () => {
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: speaker_user,
@@ -439,7 +406,7 @@ describe("addLine", () => {
     })
 
     it("sets lineOrder to zero", async () => {
-      const result_quote = await QuoteBuilder.addLine({
+      await QuoteBuilder.addLine({
         text: "test text",
         attribution: "some guy",
         speaker: speaker_user,
@@ -450,25 +417,5 @@ describe("addLine", () => {
 
       expect(lines[1].lineOrder).toEqual(1)
     })
-  })
-
-  it("logs any errors", async () => {
-    jest.spyOn(Lines, "create").mockRejectedValue(new Error("test error"))
-    const loggerSpy = jest.spyOn(logger, "warn")
-
-    const discord_user = {
-      username: "New Name",
-      id: speaker.snowflake,
-    }
-
-    const result = await QuoteBuilder.addLine({
-      text: "test text",
-      attribution: "some guy",
-      speaker: discord_user,
-      quote: quote,
-    })
-
-    expect(loggerSpy).toHaveBeenCalled()
-    expect(result).toBeNull()
   })
 })
