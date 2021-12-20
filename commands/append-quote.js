@@ -6,7 +6,14 @@ const { addLine } = require("../services/quote-builder")
 const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
 const QuoteFinder = require("../services/quote-finder")
 
-async function getSpeaker(arg, interaction, last_line) {
+/**
+ * Get the correct member object
+ * @param  {User|Member}  arg         Discord user or member object from the options
+ * @param  {Interaction}  interaction Discord interaction object for looking up members
+ * @param  {Lines}        last_line   Line object for determining the last used speaker
+ * @return {Member}                   Discord member object to user for the line attribution
+ */
+async function getSpeakerMember(arg, interaction, last_line) {
   if (arg) return interaction.guild.members.fetch(arg)
 
   return interaction.guild.members.fetch(last_line.speaker.snowflake)
@@ -35,7 +42,6 @@ module.exports = {
             "The name of who said it. Replaces the speaker's current nickname."
           )
       ),
-  getSpeaker,
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker_arg = interaction.options.getUser("speaker")
@@ -60,7 +66,7 @@ module.exports = {
       include: 'speaker',
     })
 
-    const speaker = await getSpeaker(speaker_arg, interaction, last_line)
+    const speaker = await getSpeakerMember(speaker_arg, interaction, last_line)
     const speaker_name = determineName({
       nickname: speaker.nickname,
       username: speaker.user.username,
@@ -86,4 +92,5 @@ module.exports = {
         return interaction.reply("Something went wrong :-(")
       })
   },
+  getSpeakerMember,
 }
