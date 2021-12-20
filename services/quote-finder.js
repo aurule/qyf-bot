@@ -90,7 +90,7 @@ class SearchOptions {
  * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findAll(). Items
  *                                              in where and incliude will overwrite the generated clauses
  *                                              from search_options.
- * @return {Promise<Array<Quotes>>}             Promise resolveing to an array of Quote objects matching the criteria
+ * @return {Promise<Array<Quotes>>}             Promise resolving to an array of Quote objects matching the criteria
  */
 async function findAll(search_options, passthrough_options = {}) {
   const defaults = { order: [["saidAt", "DESC"]] }
@@ -111,7 +111,7 @@ async function findAll(search_options, passthrough_options = {}) {
  * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findOne(). Items
  *                                              in where and incliude will overwrite the generated clauses
  *                                              from search_options.
- * @return {Promise<Quotes>}                    Promise resolveing to a Quote object matching the criteria
+ * @return {Promise<Quotes>}                    Promise resolving to a Quote object matching the criteria
  */
 async function findOne(search_options, passthrough_options = {}) {
   const defaults = {}
@@ -126,6 +126,14 @@ async function findOne(search_options, passthrough_options = {}) {
   return Quotes.findOne(final)
 }
 
+/**
+ * Find the most recent quote added by the given quoter within the last 15 minutes
+ *
+ * @param  {Users}  quoter              User whose quotes are searched
+ * @param  {Object} passthrough_options Object of options to send directly to Quotes.findOne(). Items in where
+ *                                      and incliude will overwrite the generated clauses.
+ * @return {Promise<Quotes>}            Promise resolving to a Quote object matching the quoter.
+ */
 async function findLastEditable(quoter, passthrough_options = {}) {
   const options = {
     where: {

@@ -37,7 +37,7 @@ module.exports = {
    * @param  {Games}        game          Game object the quote is associated with
    * @param  {discord User} speaker       User object from discord of the user who said the quote
    * @param  {discord User} quoter        User object from discord of the user who recorded the quote
-   * @return {Quotes}                     The created quote object
+   * @return {Promise<Quotes>}            The created quote object with its line
    */
   makeQuote: async ({ text, attribution, game, speaker, quoter }) => {
     // cr eate the quote
@@ -79,6 +79,14 @@ module.exports = {
     return the_quote.reload({ include: Lines })
   },
 
+  /**
+   * Add a line to an existing quote
+   * @param  {String} options.text        Text of the quote
+   * @param  {String} options.attribution The name to use for the line's speakerAlias
+   * @param  {User} options.speaker       Discord user object from discord of the user who said the quote
+   * @param  {Quotes} options.quote       Quote object the line should belong to
+   * @return {Promise<Quotes>}            Quote object with its lines
+   */
   addLine: async ({ text, attribution, speaker, quote }) => {
     const [speaker_user, _isNewSpeaker] = await Users.findOrCreate({
       where: { snowflake: speaker.id.toString() },
