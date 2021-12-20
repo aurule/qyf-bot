@@ -5,6 +5,8 @@ const { Permissions } = require('discord.js');
 
 class Interaction {
   constructor(snowflake) {
+    const member_snowflake = simpleflake()
+
     this.id = simpleflake()
     this.command_options = {}
     this.options = {
@@ -34,11 +36,15 @@ class Interaction {
     }
     this.message = {}
     this.member = {
-      id: simpleflake(),
+      id: member_snowflake,
       permissions: new Permissions(Permissions.FLAGS.DEFAULTS),
+      user: {
+        id: member_snowflake,
+        username: "Test User"
+      }
     }
     this.user = {
-      id: this.member.id,
+      id: member_snowflake,
       username: "Test User",
     }
   }
