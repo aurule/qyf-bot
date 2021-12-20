@@ -90,7 +90,7 @@ describe("reply", () => {
   })
 
   it("notifies if there is an error", async () => {
-    jest.spyOn(Quotes, 'create').mockImplementation((...options) => {throw new Error("test error")})
+    jest.spyOn(Quotes, 'create').mockRejectedValue(new Error("test error"))
 
     const reply = await Followup.execute(interaction)
 

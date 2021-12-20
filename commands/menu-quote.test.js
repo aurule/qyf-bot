@@ -97,9 +97,7 @@ describe("execute", () => {
       })
 
       it("notifies if there is an error", async () => {
-        jest.spyOn(Quotes, "create").mockImplementation((...options) => {
-          throw new Error("test error")
-        })
+        jest.spyOn(Quotes, "create").mockRejectedValue(new Error("test error"))
 
         const reply = await Command.execute(interaction)
 
