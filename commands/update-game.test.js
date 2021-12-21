@@ -1,6 +1,5 @@
 const update_game_command = require("./update-game")
 const { Guilds, Games } = require("../models")
-const { UniqueConstraintError } = require("sequelize")
 const Commands = require("../services/commands")
 const CommandPolicy = require("../services/command-policy")
 

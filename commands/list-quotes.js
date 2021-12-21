@@ -3,9 +3,6 @@ const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 const {
   Guilds,
   Games,
-  Quotes,
-  Lines,
-  DefaultGames,
   Users,
 } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")

@@ -2,7 +2,6 @@ const { ContextMenuCommandBuilder } = require("@discordjs/builders")
 const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 
-const { Lines } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
 const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")

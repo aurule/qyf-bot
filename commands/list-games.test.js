@@ -1,5 +1,5 @@
 const list_games_command = require("./list-games")
-const { Guilds, Games, DefaultGames } = require("../models")
+const { Guilds, Games } = require("../models")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")

@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Guilds, Games } = require("../models")
-const { UniqueConstraintError } = require("sequelize")
 const Commands = require("../services/commands")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
