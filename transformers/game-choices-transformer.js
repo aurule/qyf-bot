@@ -3,7 +3,7 @@
 module.exports = {
   /**
    * Transforms a collection of games into an array of label/value pairs
-   * suitable for the choices of a Discord integeter option
+   * suitable for the choices of a Discord integer option
    * @param  {Collection} games The games to transform
    * @return {Array[Array]}       Array of option choices
    */

@@ -27,6 +27,7 @@ fs.readdirSync(__dirname)
       sequelize,
       Sequelize.DataTypes
     )
+
     /**
      * Helper to destroy records by their IDs
      *
