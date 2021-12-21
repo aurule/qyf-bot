@@ -2,6 +2,7 @@
 
 const Commands = require("./commands")
 const { Guilds, Games } = require("../models")
+const { Routes } = require("discord-api-types/v9")
 
 const { simpleflake } = require("simpleflakes")
 
@@ -32,7 +33,7 @@ afterEach(async () => {
   }
 })
 
-describe("buildCommandJSON", () => {
+describe("buildGuildCommandJSON", () => {
   beforeEach(async () => {
     try {
       await guild.reload({ include: Games })
@@ -42,7 +43,7 @@ describe("buildCommandJSON", () => {
   })
 
   it("returns valid json", () => {
-    const result = Commands.buildCommandJSON(guild)
+    const result = Commands.buildGuildCommandJSON(guild)
 
     expect(result).toBeTruthy()
   })
@@ -52,7 +53,7 @@ describe("deployToGuild", () => {
   beforeEach(() => {
     jest
       .spyOn(Commands, "restClient")
-      .mockReturnValue({ put: (route, body) => new Promise.resolve(true)})
+      .mockReturnValue({ put: (route, body) => new Promise.resolve(true) })
   })
 
   it("uses existing games if present on guild", async () => {
@@ -75,7 +76,9 @@ describe("deployToGuild", () => {
 
 describe("deployToAllGuilds", () => {
   it("calls deployToGuild for every passed guild", async () => {
-    const deploySpy = jest.spyOn(Commands, 'deployToGuild').mockResolvedValue(true)
+    const deploySpy = jest
+      .spyOn(Commands, "deployToGuild")
+      .mockResolvedValue(true)
     await guild.reload({ include: Games })
 
     await Commands.deployToAllGuilds([guild])
@@ -84,10 +87,34 @@ describe("deployToAllGuilds", () => {
   })
 
   it("loads all guilds if not given any", async () => {
-    const findSpy = jest.spyOn(Guilds, 'findAll').mockResolvedValue([])
+    const findSpy = jest.spyOn(Guilds, "findAll").mockResolvedValue([])
 
     await Commands.deployToAllGuilds()
 
     expect(findSpy).toHaveBeenCalled()
+  })
+})
+
+describe("buildGlobalCommandJSON", () => {
+  it("returns valid json", () => {
+    const result = Commands.buildGlobalCommandJSON()
+
+    expect(result).toBeTruthy()
+  })
+})
+
+describe("deployGlobals", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Commands, "restClient")
+      .mockReturnValue({ put: (route, body) => new Promise.resolve(true) })
+  })
+
+  it("sends the commands", async () => {
+    const routeSpy = jest.spyOn(Routes, "applicationCommands").mockReturnValue("/")
+
+    const result = await Commands.deployGlobals()
+
+    expect(routeSpy).toHaveBeenCalled()
   })
 })
