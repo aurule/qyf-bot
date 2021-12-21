@@ -1,7 +1,7 @@
 const menu_append_quote_command = require("./menu-append-quote")
 
-const { Guilds, Games, DefaultGames, Quotes, Lines } = require("../models")
-const DefaultGameScopeService = require("../services/default-game-scope")
+const { Guilds, Games, Quotes, Lines, Users } = require("../models")
+const QuoteFinder = require("../services/quote-finder")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -27,14 +27,33 @@ beforeEach(async () => {
       name: "Test Game",
       guildId: guild.id,
     })
+    speaker = await Users.create({
+      snowflake: simpleflake().toString(),
+      name: "Test Speaker",
+    })
+    quote = await Quotes.create({
+      gameId: game.id,
+    })
+    line = await Lines.create({
+      quoteId: quote.id,
+      content: "test line one",
+      speakerId: speaker.id,
+      lineOrder: 0,
+    })
+    quote = await quote.reload({ include: Lines })
     interaction = new Interaction(guild.snowflake)
   } catch (err) {
     console.log(err)
   }
 
   interaction.targetId = 1
+  speaker_user = {
+    id: speaker.snowflake,
+    username: "Test Mann",
+    nickname: "Testyboi",
+  }
   interaction.channel.messages.fetch = (id) => {
-    return { content: "Text of the quote", author: speaker }
+    return { content: "Text of the quote", author: speaker_user }
   }
 })
 
@@ -47,12 +66,62 @@ afterEach(async () => {
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
-    await DefaultGames.destroy({ where: { gameId: game_ids } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
   } catch (err) {
     console.log(err)
   }
+})
+
+describe("execute", () => {
+  var finderSpy
+
+  beforeEach(() => {
+    finderSpy = jest.spyOn(QuoteFinder, "findLastEditable").mockResolvedValue(quote)
+  })
+
+  it("with no quote, it replies with instructions", async () => {
+    finderSpy.mockReturnValue(null)
+
+    const result = await menu_append_quote_command.execute(interaction)
+
+    expect(result.content).toMatch("haven't recorded a recent")
+  })
+
+  describe("adds a line", () => {
+    it("adds a line to the quote", async () => {
+      await menu_append_quote_command.execute(interaction)
+
+      expect(await quote.countLines()).toEqual(2)
+    })
+
+    it("describes what was done", async () => {
+      const replySpy = jest.spyOn(interaction, "reply")
+
+      await menu_append_quote_command.execute(interaction)
+
+      expect(replySpy).toHaveBeenCalledWith(
+        "Test User added text from Testyboi: Text of the quote"
+      )
+    })
+
+    it("displays the full quote", async () => {
+      const result = await menu_append_quote_command.execute(interaction)
+      await quote.reload({ include: Lines })
+
+      expect(result).toMatch("The full quote")
+      expect(result).toMatch(quote.Lines[0].content)
+      expect(result).toMatch(quote.Lines[1].content)
+    })
+
+    it("with an error, replies that something went wrong", async () => {
+      jest.spyOn(Lines, "create").mockRejectedValue(new Error("test error"))
+
+      const result = await menu_append_quote_command.execute(interaction)
+
+      expect(result).toMatch("Something went wrong")
+    })
+  })
 })
 
 describe("data", () => {
