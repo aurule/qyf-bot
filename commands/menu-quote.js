@@ -4,7 +4,7 @@ const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv")
 
-const { Guilds, Games, Quotes } = require("../models")
+const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
 const GameSelectTransformer = require("../transformers/game-select-transformer")

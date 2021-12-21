@@ -3,14 +3,10 @@ const append_quote_command = require("./append-quote")
 const {
   Guilds,
   Games,
-  DefaultGames,
   Quotes,
   Lines,
   Users,
 } = require("../models")
-const DefaultGameScopeService = require("../services/default-game-scope")
-const SpeakerName = require("../services/speaker-name")
-const QuoteBuilder = require("../services/quote-builder")
 const QuoteFinder = require("../services/quote-finder")
 
 const { Interaction } = require("../testing/interaction")
@@ -75,7 +71,6 @@ afterEach(async () => {
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroy({ where: { gameId: game_ids } })
-    await DefaultGames.destroy({ where: { gameId: game_ids } })
     await Games.destroy({ where: { guildId: guild.id } })
     await guild.destroy()
   } catch (err) {

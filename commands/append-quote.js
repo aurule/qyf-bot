@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 
-const { sequelize, Quotes, Lines, Users } = require("../models")
+const { Lines } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
 const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
