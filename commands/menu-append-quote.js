@@ -9,6 +9,7 @@ const QuoteFinder = require("../services/quote-finder")
 
 module.exports = {
   name: "Add to quote",
+  type: "menu",
   data: (guild) =>
     new ContextMenuCommandBuilder()
       .setName("Add to quote")

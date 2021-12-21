@@ -12,6 +12,7 @@ const { makeQuote, QuoteData } = require("../services/quote-builder")
 
 module.exports = {
   name: "Quote Message",
+  type: "menu",
   data: (guild) =>
     new ContextMenuCommandBuilder()
       .setName("Quote Message")
