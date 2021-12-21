@@ -1,10 +1,10 @@
 "use strict"
 
 const { simpleflake } = require("simpleflakes")
-const { Permissions } = require('discord.js');
+const { Permissions, Collection } = require('discord.js');
 
 class Interaction {
-  constructor(snowflake) {
+  constructor(snowflake = null) {
     const member_snowflake = simpleflake()
 
     this.id = simpleflake()
@@ -41,6 +41,9 @@ class Interaction {
     this.user = {
       id: member_snowflake,
       username: "Test User",
+    }
+    this.client = {
+      commands: new Collection()
     }
   }
 
