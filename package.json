@@ -30,7 +30,7 @@
     "test": "DOTENV_CONFIG_NODE_ENV=test jest",
     "test:watch": "DOTENV_CONFIG_NODE_ENV=test jest --watch",
     "test:ci": "DOTENV_CONFIG_NODE_ENV=test jest --ci",
-    "commands:deploy": "node scripts/deploy-commands.js",
+    "commands:deploy-guilds": "node scripts/deploy-guild-commands.js",
     "migrate": "sequelize-cli db:migrate",
     "migrate:test": "NODE_ENV=test sequelize-cli db:migrate"
   },
