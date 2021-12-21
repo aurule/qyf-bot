@@ -1,6 +1,6 @@
 "use strict"
 
-const Commands = require("./commands")
+const commandService = require("./command-deploy")
 const { Guilds, Games } = require("../models")
 const { Routes } = require("discord-api-types/v9")
 
@@ -43,7 +43,7 @@ describe("buildGuildCommandJSON", () => {
   })
 
   it("returns valid json", () => {
-    const result = Commands.buildGuildCommandJSON(guild)
+    const result = commandService.buildGuildCommandJSON(guild)
 
     expect(result).toBeTruthy()
   })
@@ -52,7 +52,7 @@ describe("buildGuildCommandJSON", () => {
 describe("deployToGuild", () => {
   beforeEach(() => {
     jest
-      .spyOn(Commands, "restClient")
+      .spyOn(commandService, "restClient")
       .mockReturnValue({ put: (route, body) => new Promise.resolve(true) })
   })
 
@@ -60,7 +60,7 @@ describe("deployToGuild", () => {
     await guild.reload({ include: Games })
     const reloadSpy = jest.spyOn(guild, "reload")
 
-    await Commands.deployToGuild(guild)
+    await commandService.deployToGuild(guild)
 
     expect(reloadSpy).not.toHaveBeenCalled()
   })
@@ -68,7 +68,7 @@ describe("deployToGuild", () => {
   it("loads the guild games if necessary", async () => {
     const reloadSpy = jest.spyOn(guild, "reload")
 
-    await Commands.deployToGuild(guild)
+    await commandService.deployToGuild(guild)
 
     expect(reloadSpy).toHaveBeenCalled()
   })
@@ -77,11 +77,11 @@ describe("deployToGuild", () => {
 describe("deployToAllGuilds", () => {
   it("calls deployToGuild for every passed guild", async () => {
     const deploySpy = jest
-      .spyOn(Commands, "deployToGuild")
+      .spyOn(commandService, "deployToGuild")
       .mockResolvedValue(true)
     await guild.reload({ include: Games })
 
-    await Commands.deployToAllGuilds([guild])
+    await commandService.deployToAllGuilds([guild])
 
     expect(deploySpy).toHaveBeenCalledTimes(1)
   })
@@ -89,7 +89,7 @@ describe("deployToAllGuilds", () => {
   it("loads all guilds if not given any", async () => {
     const findSpy = jest.spyOn(Guilds, "findAll").mockResolvedValue([])
 
-    await Commands.deployToAllGuilds()
+    await commandService.deployToAllGuilds()
 
     expect(findSpy).toHaveBeenCalled()
   })
@@ -97,7 +97,7 @@ describe("deployToAllGuilds", () => {
 
 describe("buildGlobalCommandJSON", () => {
   it("returns valid json", () => {
-    const result = Commands.buildGlobalCommandJSON()
+    const result = commandService.buildGlobalCommandJSON()
 
     expect(result).toBeTruthy()
   })
@@ -106,14 +106,14 @@ describe("buildGlobalCommandJSON", () => {
 describe("deployGlobals", () => {
   beforeEach(() => {
     jest
-      .spyOn(Commands, "restClient")
+      .spyOn(commandService, "restClient")
       .mockReturnValue({ put: (route, body) => new Promise.resolve(true) })
   })
 
   it("sends the commands", async () => {
     const routeSpy = jest.spyOn(Routes, "applicationCommands").mockReturnValue("/")
 
-    const result = await Commands.deployGlobals()
+    const result = await commandService.deployGlobals()
 
     expect(routeSpy).toHaveBeenCalled()
   })
