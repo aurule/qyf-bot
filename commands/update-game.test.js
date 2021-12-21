@@ -21,7 +21,7 @@ beforeEach(async () => {
     game = await Games.create({
       name: "Test Game",
       description: "Test description",
-      guildId: guild.id
+      guildId: guild.id,
     })
   } catch (err) {
     console.log(err)
@@ -32,8 +32,10 @@ beforeEach(async () => {
   interaction.command_options.name = ""
   interaction.command_options.description = ""
 
-  commandSpy = jest.spyOn(Commands, "deployToGuild").mockImplementation(async (guild) => true)
-  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
+  commandSpy = jest
+    .spyOn(Commands, "deployToGuild")
+    .mockImplementation(async (guild) => true)
+  policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })
 
 afterEach(async () => {
@@ -80,7 +82,7 @@ describe("execute", () => {
     })
 
     it("replies with an error when the game throws", async () => {
-      jest.spyOn(Games, 'findOne').mockRejectedValue(new Error("test error"))
+      jest.spyOn(Games, "findOne").mockRejectedValue(new Error("test error"))
 
       const reply = await update_game_command.execute(interaction)
 
@@ -88,7 +90,9 @@ describe("execute", () => {
     })
 
     it("replies with an error when the guild throws", async () => {
-      jest.spyOn(Guilds, 'findByInteraction').mockRejectedValue(new Error("test error"))
+      jest
+        .spyOn(Guilds, "findByInteraction")
+        .mockRejectedValue(new Error("test error"))
 
       const reply = await update_game_command.execute(interaction)
 
@@ -96,7 +100,7 @@ describe("execute", () => {
     })
 
     it("replies with an error when the game is not found", async () => {
-      jest.spyOn(Games, 'findOne').mockResolvedValue(null)
+      jest.spyOn(Games, "findOne").mockResolvedValue(null)
 
       const reply = await update_game_command.execute(interaction)
 
@@ -104,8 +108,8 @@ describe("execute", () => {
     })
 
     it("replies with an error when the update goes wrong", async () => {
-      jest.spyOn(game, 'update').mockRejectedValue(new Error("test error"))
-      jest.spyOn(Games, 'findOne').mockResolvedValue(game)
+      jest.spyOn(game, "update").mockRejectedValue(new Error("test error"))
+      jest.spyOn(Games, "findOne").mockResolvedValue(game)
 
       const reply = await update_game_command.execute(interaction)
 
@@ -182,13 +186,11 @@ describe("execute", () => {
 
 describe("data", () => {
   beforeEach(async () => {
-    await Games.bulkCreate(
-      [
-        {name: "Test Game 1", guildId: guild.id},
-        {name: "Test Game 2", guildId: guild.id},
-      ]
-    )
-    await guild.reload({include: Games})
+    await Games.bulkCreate([
+      { name: "Test Game 1", guildId: guild.id },
+      { name: "Test Game 2", guildId: guild.id },
+    ])
+    await guild.reload({ include: Games })
   })
 
   // This test is very bare-bones because we're really just

@@ -9,9 +9,10 @@ const QuoteFinder = require("../services/quote-finder")
 
 module.exports = {
   name: "Add to quote",
-  data: (guild) => new ContextMenuCommandBuilder()
-    .setName("Add to quote")
-    .setType(ApplicationCommandType.Message),
+  data: (guild) =>
+    new ContextMenuCommandBuilder()
+      .setName("Add to quote")
+      .setType(ApplicationCommandType.Message),
   async execute(interaction) {
     const message = await interaction.channel.messages.fetch(
       interaction.targetId

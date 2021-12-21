@@ -1,11 +1,6 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 
-const {
-  Guilds,
-  Games,
-  Users,
-  sequelize,
-} = require("../models")
+const { Guilds, Games, Users, sequelize } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
@@ -95,27 +90,28 @@ function describeResults(
 
 module.exports = {
   name: "rand-quote",
-  data: (guild) => new SlashCommandBuilder()
-    .setName("rand-quote")
-    .setDescription("Show a random quote from the current game")
-    .addUserOption((option) =>
-      option.setName("speaker").setDescription("By a user")
-    )
-    .addStringOption((option) =>
-      option.setName("alias").setDescription("By a name")
-    )
-    .addStringOption((option) =>
-      option.setName("text").setDescription("Containing some text")
-    )
-    .addIntegerOption((option) =>
-      option
-        .setName("game")
-        .setDescription(
-          "Game the quote is from. Defaults to channel's current game"
-        )
-        .addChoices(GameChoicesTransformer.transform(guild.Games))
-        .addChoice("All Games", -1)
-    ),
+  data: (guild) =>
+    new SlashCommandBuilder()
+      .setName("rand-quote")
+      .setDescription("Show a random quote from the current game")
+      .addUserOption((option) =>
+        option.setName("speaker").setDescription("By a user")
+      )
+      .addStringOption((option) =>
+        option.setName("alias").setDescription("By a name")
+      )
+      .addStringOption((option) =>
+        option.setName("text").setDescription("Containing some text")
+      )
+      .addIntegerOption((option) =>
+        option
+          .setName("game")
+          .setDescription(
+            "Game the quote is from. Defaults to channel's current game"
+          )
+          .addChoices(GameChoicesTransformer.transform(guild.Games))
+          .addChoice("All Games", -1)
+      ),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
@@ -156,7 +152,9 @@ module.exports = {
       guild: guild,
     })
 
-    const quote = await QuoteFinder.findOne(finder_options, { order: sequelize.random() })
+    const quote = await QuoteFinder.findOne(finder_options, {
+      order: sequelize.random(),
+    })
     const quote_contents = QuoteSnippetTransformer.transform(quote)
 
     return interaction.reply(

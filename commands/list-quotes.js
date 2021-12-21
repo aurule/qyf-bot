@@ -1,10 +1,6 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 
-const {
-  Guilds,
-  Games,
-  Users,
-} = require("../models")
+const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 const { clamp } = require("../util/clamp")

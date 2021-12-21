@@ -7,27 +7,31 @@ const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "set-default-game",
-  data: (guild) => new SlashCommandBuilder()
-    .setName("set-default-game")
-    .setDescription("Set the default game for this channel")
-    .addIntegerOption((option) =>
-      option
-        .setName("game")
-        .setDescription("The game to use")
-        .setRequired(true)
-        .addChoices(GameChoicesTransformer.transform(guild.Games))
-    )
-    .addChannelOption((option) =>
-      option.setName("channel").setDescription("The target channel")
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("server")
-        .setDescription("Apply default to the whole server")
-    ),
+  data: (guild) =>
+    new SlashCommandBuilder()
+      .setName("set-default-game")
+      .setDescription("Set the default game for this channel")
+      .addIntegerOption((option) =>
+        option
+          .setName("game")
+          .setDescription("The game to use")
+          .setRequired(true)
+          .addChoices(GameChoicesTransformer.transform(guild.Games))
+      )
+      .addChannelOption((option) =>
+        option.setName("channel").setDescription("The target channel")
+      )
+      .addBooleanOption((option) =>
+        option
+          .setName("server")
+          .setDescription("Apply default to the whole server")
+      ),
   async execute(interaction) {
-    if(!CommandPolicy.elevateMember(interaction.member)) {
-      return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
+    if (!CommandPolicy.elevateMember(interaction.member)) {
+      return interaction.reply({
+        content: CommandPolicy.errorMessage,
+        ephemeral: true,
+      })
     }
 
     const current_channel = interaction.channel
@@ -50,7 +54,7 @@ module.exports = {
       return interaction.reply({
         content: "Something went wrong :-(",
         components: [],
-        ephemeral: true
+        ephemeral: true,
       })
     }
 
