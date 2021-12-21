@@ -1,7 +1,7 @@
 const add_game_command = require("./add-game")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
-const Commands = require("../services/commands")
+const commandService = require("../services/command-deploy")
 const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
@@ -26,7 +26,7 @@ beforeEach(async () => {
   interaction.command_options.name = "new game"
   interaction.command_options.description = "a new game"
 
-  commandSpy = jest.spyOn(Commands, "deployToGuild").mockImplementation(async (guild) => true)
+  commandSpy = jest.spyOn(commandService, "deployToGuild").mockImplementation(async (guild) => true)
   policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
 })
 

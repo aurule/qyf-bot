@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
-const Commands = require("../services/commands")
+const CommandDeploy = require("../services/command-deploy")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
 
@@ -38,7 +38,7 @@ module.exports = {
         guildId: guild.id,
         description: description,
       })
-      await Commands.deployToGuild(guild)
+      await CommandDeploy.deployToGuild(guild)
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
         return interaction.reply(`The game "${game_name}" already exists!`)

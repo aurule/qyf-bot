@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Guilds, Games } = require("../models")
-const Commands = require("../services/commands")
+const CommandDeploy = require("../services/command-deploy")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
@@ -74,7 +74,7 @@ module.exports = {
       return interaction.reply("Something went wrong :-(")
     }
 
-    if (game_name) await Commands.deployToGuild(guild)
+    if (game_name) await CommandDeploy.deployToGuild(guild)
 
     return interaction.reply(`Updated game "${game.name}"`)
   },

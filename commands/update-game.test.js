@@ -1,6 +1,6 @@
 const update_game_command = require("./update-game")
 const { Guilds, Games } = require("../models")
-const Commands = require("../services/commands")
+const commandService = require("../services/command-deploy")
 const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
@@ -33,7 +33,7 @@ beforeEach(async () => {
   interaction.command_options.description = ""
 
   commandSpy = jest
-    .spyOn(Commands, "deployToGuild")
+    .spyOn(commandService, "deployToGuild")
     .mockImplementation(async (guild) => true)
   policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })

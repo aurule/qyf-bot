@@ -1,5 +1,5 @@
-const Commands = require("../services/commands");
+const commandService = require("../services/command-deploy");
 
 (async () => {
-  await Commands.deployToAllGuilds()
+  await commandService.deployToAllGuilds()
 })()
