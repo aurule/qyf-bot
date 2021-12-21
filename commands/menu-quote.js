@@ -24,9 +24,10 @@ module.exports = {
     const speaker = message.author
     const user = interaction.user
 
+    const speaker_member = await interaction.guild.members.fetch(speaker)
     const speaker_name = determineName({
-      username: interaction.guild.members.fetch(speaker).nickname,
-      nickname: speaker.username,
+      username: speaker.username,
+      nickname: speaker_member.nickname,
       alias: null,
     })
     const game = await gameForChannel(interaction.channel)
