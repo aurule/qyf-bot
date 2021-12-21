@@ -1,4 +1,4 @@
-const { transform } = require("./quote-snippet-transformer")
+const { present } = require("./quote-presenter")
 
 const { Guilds, Games, Quotes, Lines } = require("../models")
 
@@ -64,7 +64,7 @@ it("shows the text of each line in a quote", async () => {
     include: Lines,
   })
 
-  const result = transform(quotes)
+  const result = present(quotes)
 
   expect(result).toMatch("First line")
   expect(result).toMatch("Second line")
@@ -96,7 +96,7 @@ it("works on a single quote", async () => {
     include: Lines,
   })
 
-  const result = transform(quote)
+  const result = present(quote)
 
   expect(result).toMatch("First line")
   expect(result).toMatch("Second line")
@@ -130,7 +130,7 @@ it("shows the attribution of each line in a quote", async () => {
     include: Lines,
   })
 
-  const result = transform(quotes)
+  const result = present(quotes)
 
   expect(result).toMatch("Person 1")
   expect(result).toMatch("Person 2")
@@ -181,7 +181,7 @@ it("shows the text of all quotes", async () => {
     include: Lines,
   })
 
-  const result = transform(quotes)
+  const result = present(quotes)
 
   expect(result).toMatch("quote 2")
 })

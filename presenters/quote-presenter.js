@@ -13,7 +13,7 @@ const { forceArray } = require("../util/force-array")
  * @param  {Array<Quotes>} quotes Array of quote objects with Lines included
  * @return {String}               Markdown-formatted string of the quotes' contents
  */
-function transform(quotes) {
+function present(quotes) {
   quotes = forceArray(quotes)
 
   return quotes
@@ -26,5 +26,5 @@ function transform(quotes) {
 }
 
 module.exports = {
-  transform,
+  present,
 }

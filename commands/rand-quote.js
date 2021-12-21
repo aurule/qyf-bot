@@ -3,7 +3,7 @@ const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 const { Guilds, Games, Users, sequelize } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
-const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
+const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
 
 /**
@@ -155,7 +155,7 @@ module.exports = {
     const quote = await QuoteFinder.findOne(finder_options, {
       order: sequelize.random(),
     })
-    const quote_contents = QuoteSnippetTransformer.transform(quote)
+    const quote_contents = QuotePresenter.present(quote)
 
     return interaction.reply(
       describeResults(1, game, quote_contents, {

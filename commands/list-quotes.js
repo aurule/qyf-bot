@@ -4,7 +4,7 @@ const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 const { clamp } = require("../util/clamp")
-const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
+const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
 
 /**
@@ -181,7 +181,7 @@ module.exports = {
       guild: guild,
     })
     const quotes = await QuoteFinder.findAll(finder_options, { limit: limit })
-    const quote_contents = QuoteSnippetTransformer.transform(quotes)
+    const quote_contents = QuotePresenter.present(quotes)
 
     return interaction.reply(
       describeResults(quotes.length, game, quote_contents, {

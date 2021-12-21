@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Lines } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
-const QuoteSnippetTransformer = require("../transformers/quote-snippet-transformer")
+const QuotePresenter = require("../presenters/quote-presenter")
 const QuoteFinder = require("../services/quote-finder")
 
 /**
@@ -85,7 +85,7 @@ module.exports = {
           `${user.username} added text from ${speaker_name}: ${text}`
         )
         return interaction.followUp(
-          `The full quote is:\n${QuoteSnippetTransformer.transform(quote)}`
+          `The full quote is:\n${QuotePresenter.present(quote)}`
         )
       })
       .catch((error) => {
