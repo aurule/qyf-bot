@@ -52,15 +52,15 @@ module.exports = {
   },
   help({ command_name }) {
     return stripIndent`
-    ${command_name} shows helpful information about a command or topic.
+      ${command_name} shows helpful information about a command or topic.
 
-    Args:
-      \`topic\`: The topic you want help with
-      \`command\`: The command you want help with
+      Args:
+        \`topic\`: The topic you want help with
+        \`command\`: The command you want help with
 
-    Both args let you pick from a list, so you don't need to memorize command or topic names.
+      Both args let you pick from a list, so you don't need to memorize command or topic names.
 
-    If you give both a command and a topic, ${command_name} will only show help for the topic.
-  `
+      If you give both a command and a topic, ${command_name} will only show help for the topic.
+    `
   },
 }
