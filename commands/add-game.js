@@ -51,7 +51,12 @@ module.exports = {
 
     await CommandDeploy.deployToGuild(guild)
 
-    return interaction.reply(`Added game "${game_name}"`)
+    return interaction.reply(
+      oneLine`
+        Added game "${game_name}"! Quote away! You can also use \`/set-default-game\`
+        to make it the default for a channel or for the server.
+      `
+    )
   },
   help({ command_name }) {
     return [
