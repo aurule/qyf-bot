@@ -18,7 +18,7 @@ describe("execute", () => {
     it("displays the help for the topic", async () => {
       const result = await qyf_help_command.execute(interaction)
 
-      expect(result).toMatch("restricted to guild managers")
+      expect(result).toMatch("restricted to users")
     })
 
     it("warns the user if the topic isn't found", async () => {
@@ -68,7 +68,7 @@ describe("execute", () => {
     it("displays the help for the topic", async () => {
       const result = await qyf_help_command.execute(interaction)
 
-      expect(result).toMatch("restricted to guild managers")
+      expect(result).toMatch("restricted to users")
     })
   })
 
