@@ -1,6 +1,6 @@
 "use strict"
 
-const { jsNoTests } = require("../util/filters")
+const { jsNoTests, noDotFiles } = require("../util/filters")
 
 const fs = require("fs")
 const path = require("path")
@@ -14,6 +14,7 @@ function getCommands(target_dir) {
 
   fs.readdirSync(target_dir)
     .filter(jsNoTests)
+    .filter(noDotFiles)
     .forEach((file) => {
       const command = require(path.join(target_dir, file))
       commands.push(command)
