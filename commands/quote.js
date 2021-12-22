@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { keyv } = require("../util/keyv")
+const { stripIndent, oneLine } = require("common-tags")
 
 const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
@@ -87,5 +88,27 @@ module.exports = {
       components: [gameSelectRow],
       ephemeral: true,
     })
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} records a new quote for the channel's (or server's) default game. If the current
+        channel or server doesn't have a default game set, ${command_name} will prompt you to pick which game
+        the quote is from.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`text\`: (required) The text of the quote's first line
+            \`speaker\`: (required) The user who said it
+            \`alias\`: The name to use for the speaker, in case their nickname doesn't match their character, etc.
+      `,
+      "",
+      oneLine`
+        The given \`text\` will be added as the first line of a new quote. If you give an \`alias\`, that's
+        the text that will be used as attribution for the line. If you don't, then ${command_name} will use
+        the \`speaker\`'s server nickname (if set) or their Discord username.
+      `,
+    ].join("\n")
   },
 }
