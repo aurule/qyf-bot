@@ -22,6 +22,7 @@ module.exports = {
         logger.warn(error)
         interaction.reply({
           content: "There was an error while executing this command!",
+          components: [],
           ephemeral: true,
         })
       }
@@ -39,6 +40,7 @@ module.exports = {
         logger.warn(error)
         interaction.reply({
           content: "There was an error while executing this command!",
+          components: [],
           ephemeral: true,
         })
       }
