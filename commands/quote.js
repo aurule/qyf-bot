@@ -109,6 +109,8 @@ module.exports = {
         the text that will be used as attribution for the line. If you don't, then ${command_name} will use
         the \`speaker\`'s server nickname (if set) or their Discord username.
       `,
+      "",
+      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
     ].join("\n")
   },
 }
