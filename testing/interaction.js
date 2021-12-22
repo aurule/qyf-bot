@@ -10,7 +10,7 @@ class Interaction {
     this.id = simpleflake()
     this.command_options = {}
     this.options = {
-      getString: (key) => this.command_options[key].toString(),
+      getString: (key) => this.command_options[key]?.toString(),
       getBoolean: (key) => !!this.command_options[key],
       getChannel: (key) => this.command_options[key],
       getInteger: (key) => this.command_options[key],
