@@ -19,3 +19,17 @@ describe("jsNoTests", () => {
     expect(result).toBeFalsy()
   })
 })
+
+describe("noDotFiles", () => {
+  it("returns true for normal filenames", () => {
+    const result = filters.noDotFiles("normal name.js")
+
+    expect(result).toBeTruthy()
+  })
+
+  it("returns false for filenames starting with a dot", () => {
+    const result = filters.noDotFiles(".hidden-file")
+
+    expect(result).toBeFalsy()
+  })
+})
