@@ -67,8 +67,8 @@ module.exports = {
       "",
       stripIndent`
         Args:
-          \`name\`: (required) The name to use for the new game
-          \`description\`: A few words or a sentence describing the game
+            \`name\`: (required) The name to use for the new game
+            \`description\`: A few words or a sentence describing the game
       `,
       "",
       oneLine`

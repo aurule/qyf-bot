@@ -55,8 +55,8 @@ module.exports = {
       ${command_name} shows helpful information about a command or topic.
 
       Args:
-        \`topic\`: The topic you want help with
-        \`command\`: The command you want help with
+          \`topic\`: The topic you want help with
+          \`command\`: The command you want help with
 
       Both args let you pick from a list, so you don't need to memorize command or topic names.
 
