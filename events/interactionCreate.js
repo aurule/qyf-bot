@@ -16,16 +16,16 @@ module.exports = {
 
       if (!command) return
 
-      try {
-        command.execute(interaction)
-      } catch (error) {
-        logger.warn(error)
-        interaction.reply({
-          content: "There was an error while executing this command!",
-          components: [],
-          ephemeral: true,
+      command
+        .execute(interaction)
+        .catch((error) => {
+          logger.warn(error)
+          interaction.reply({
+            content: "There was an error while executing this command!",
+            components: [],
+            ephemeral: true,
+          })
         })
-      }
     }
 
     // handle choices on select menu components
@@ -34,16 +34,16 @@ module.exports = {
 
       if (!followup) return
 
-      try {
-        followup.execute(interaction)
-      } catch (error) {
-        logger.warn(error)
-        interaction.reply({
-          content: "There was an error while executing this command!",
-          components: [],
-          ephemeral: true,
+      followup
+        .execute(interaction)
+        .catch((error) => {
+          logger.warn(error)
+          interaction.reply({
+            content: "There was an error while executing this command!",
+            components: [],
+            ephemeral: true,
+          })
         })
-      }
     }
   },
 }
