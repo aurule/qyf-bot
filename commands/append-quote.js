@@ -5,6 +5,7 @@ const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
 const QuotePresenter = require("../presenters/quote-presenter")
 const QuoteFinder = require("../services/quote-finder")
+const { stripIndent, oneLine } = require("common-tags")
 
 /**
  * Get the correct member object
@@ -42,6 +43,7 @@ module.exports = {
             "The name of who said it. Replaces the speaker's current nickname."
           )
       ),
+  getSpeakerMember,
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker_arg = interaction.options.getUser("speaker")
@@ -53,8 +55,11 @@ module.exports = {
 
     if (!quote) {
       return interaction.reply({
-        content:
-          "You haven't recorded a recent enough quote to add a line! You can only add to a quote if you're the one who recorded it, and you did so in the last 15 minutes.",
+        content: oneLine`
+          You haven't recorded a recent enough quote to add a line! You can only
+          add to a quote if you're the one who recorded it, and you did so in
+          the last 15 minutes.
+        `,
         ephemeral: true,
       })
     }
@@ -92,5 +97,4 @@ module.exports = {
         throw(error)
       })
   },
-  getSpeakerMember,
 }
