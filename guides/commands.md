@@ -19,7 +19,7 @@ The command object looks like this:
 Requirements:
 
 * The `name` *must* be the same as used in the builder.setName() call within `data`
-* `type` is optional and describes the type of command: "menu" or "slash". Defaults to "slash".
+* `type` is optional and describes the type of command: "menu" or "slash". `Undefined` is interpreted as `"slash"`.
 * `data` must return an instance of a discordjs command builder
 * `data` receives a `guild` argument for guild commands. This can be discarded if the command arguments don't need it. It does not receive arguments for global commands.
 * `execute` should return `interaction.reply()` or similar
