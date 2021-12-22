@@ -39,3 +39,7 @@ The command_name attribute is populated by `CommandHelpPresenter.present()`.
 ## File Locations
 
 Guild commands live in the `/commands` directory. Global commands live in `/commands/global`.
+
+## Error Handling
+
+The `interactionCreate` event handler catches any errors and replies with a friendly message to the user. Commands only need to catch errors if there is some special logic to apply, and can otherwise throw up the chain.
