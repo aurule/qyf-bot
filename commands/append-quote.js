@@ -97,4 +97,33 @@ module.exports = {
         throw(error)
       })
   },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} adds another line to the quote you most recently created. However, there is a time
+        limit: quotes have to be newer than 15 minutes. If you haven't made a quote recently enough,
+        ${command_name} will let you know.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`text\`: (required) The text of the new line
+            \`speaker\`: The user who said it. Defaults to the same user as the previous line.
+            \`alias\`: The name to use for the speaker, in case their nickname doesn't match their character, etc.
+      `,
+      "",
+      oneLine`
+        The given \`text\` will be added as a new line on your last quote. Unless you specify a different
+        \`speaker\` or \`alias\`, it will use the same attribution as that previous line, under the assumption
+        that it was said by the same user speaking as the same character. ${command_name} will then display
+        the full quote with all of its lines.
+      `,
+      "",
+      oneLine`
+        If you give a new \`speaker\`, the new line will use their current server nickname (if set) or their
+        Discord username as the attribution. If you give an \`alias\`, the new line will use it for the
+        attribution with no exceptions.
+      `,
+    ].join("\n")
+  },
 }
