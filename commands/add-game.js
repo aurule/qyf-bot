@@ -38,14 +38,14 @@ module.exports = {
         guildId: guild.id,
         description: description,
       })
-      await CommandDeploy.deployToGuild(guild)
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
         return interaction.reply(`The game "${game_name}" already exists!`)
       }
-      logger.warn(error)
-      return interaction.reply("Something went wrong :-(")
+      throw(error)
     }
+
+    await CommandDeploy.deployToGuild(guild)
 
     return interaction.reply(`Added game "${game_name}"`)
   },

@@ -98,14 +98,14 @@ describe("execute", () => {
       expect(reply).toMatch("Test Game is now the default for test channel.")
     })
 
-    it("replies that there was an error when there was an error", async () => {
-      jest.spyOn(DefaultGames, "upsert").mockImplementation(() => {
-        throw new Error()
-      })
+    it("throws errors up the chain", async () => {
+      jest.spyOn(DefaultGames, "upsert").mockRejectedValue(new Error("test error"))
 
-      const reply = await set_default_game_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(reply.content).toMatch("Something went wrong")
+      return set_default_game_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
   })
 

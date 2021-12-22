@@ -96,12 +96,14 @@ describe("execute", () => {
         expect(reply).toMatch(message_text)
       })
 
-      it("notifies if there is an error", async () => {
+      it("throws errors up the chain", async () => {
         jest.spyOn(Quotes, "create").mockRejectedValue(new Error("test error"))
 
-        const reply = await Command.execute(interaction)
+        expect.assertions(1)
 
-        expect(reply).toMatch("Something went wrong")
+        return Command
+          .execute(interaction)
+          .catch((e) => expect(e.message).toMatch("test error"))
       })
     })
   })

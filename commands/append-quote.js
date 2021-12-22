@@ -89,7 +89,7 @@ module.exports = {
         )
       })
       .catch((error) => {
-        return interaction.reply("Something went wrong :-(")
+        throw(error)
       })
   },
   getSpeakerMember,

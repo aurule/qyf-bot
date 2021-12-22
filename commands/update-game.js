@@ -55,7 +55,7 @@ module.exports = {
       })
     } catch (error) {
       logger.error("Error fetching guild or game", error)
-      return interaction.reply("Something went wrong :-(")
+      throw(error)
     }
 
     if (!game) {
@@ -71,7 +71,7 @@ module.exports = {
       await game.update(update_params)
     } catch (error) {
       logger.error("Error updating game", error)
-      return interaction.reply("Something went wrong :-(")
+      throw(error)
     }
 
     if (game_name) await CommandDeploy.deployToGuild(guild)

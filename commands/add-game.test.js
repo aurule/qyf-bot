@@ -26,8 +26,10 @@ beforeEach(async () => {
   interaction.command_options.name = "new game"
   interaction.command_options.description = "a new game"
 
-  commandSpy = jest.spyOn(commandService, "deployToGuild").mockImplementation(async (guild) => true)
-  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
+  commandSpy = jest
+    .spyOn(commandService, "deployToGuild")
+    .mockImplementation(async (guild) => true)
+  policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })
 
 afterEach(async () => {
@@ -87,14 +89,14 @@ describe("execute", () => {
   })
 
   describe("with an error", () => {
-    it("replies with a boring message", async () => {
-      jest.spyOn(Games, "create").mockImplementation(async (args) => {
-        throw new Error("test error")
-      })
+    it("throws errors up the chain", async () => {
+      jest.spyOn(Games, "create").mockRejectedValue(new Error("test error"))
 
-      const reply = await add_game_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(reply).toMatch("Something went wrong :-(")
+      return add_game_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
   })
 

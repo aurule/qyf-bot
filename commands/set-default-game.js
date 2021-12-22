@@ -42,21 +42,12 @@ module.exports = {
 
     const command_options = explicitScope(target_channel, server_wide)
 
-    try {
-      await DefaultGames.upsert({
-        name: command_options.name,
-        type: command_options.target_type,
-        snowflake: command_options.target_snowflake,
-        gameId: game_id,
-      })
-    } catch (error) {
-      logger.warn(error)
-      return interaction.reply({
-        content: "Something went wrong :-(",
-        components: [],
-        ephemeral: true,
-      })
-    }
+    await DefaultGames.upsert({
+      name: command_options.name,
+      type: command_options.target_type,
+      snowflake: command_options.target_snowflake,
+      gameId: game_id,
+    })
 
     const game = await Games.findOne({ where: { id: game_id } })
 

@@ -114,12 +114,14 @@ describe("execute", () => {
       expect(result).toMatch(quote.Lines[1].content)
     })
 
-    it("with an error, replies that something went wrong", async () => {
+    it("with an error, throws errors up the chain", async () => {
       jest.spyOn(Lines, "create").mockRejectedValue(new Error("test error"))
 
-      const result = await menu_append_quote_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(result).toMatch("Something went wrong")
+      return menu_append_quote_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
   })
 })

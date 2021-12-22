@@ -81,22 +81,26 @@ describe("execute", () => {
       expect(reply).toMatch(game.name)
     })
 
-    it("replies with an error when the game throws", async () => {
+    it("throws game errors up the chain", async () => {
       jest.spyOn(Games, "findOne").mockRejectedValue(new Error("test error"))
 
-      const reply = await update_game_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(reply).toMatch("Something went wrong")
+      return update_game_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
 
-    it("replies with an error when the guild throws", async () => {
+    it("throws guild errors up the chain", async () => {
       jest
         .spyOn(Guilds, "findByInteraction")
         .mockRejectedValue(new Error("test error"))
 
-      const reply = await update_game_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(reply).toMatch("Something went wrong")
+      return update_game_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
 
     it("replies with an error when the game is not found", async () => {
@@ -107,13 +111,15 @@ describe("execute", () => {
       expect(reply).toMatch("Something went wrong")
     })
 
-    it("replies with an error when the update goes wrong", async () => {
+    it("throws errors up the chain when the update goes wrong", async () => {
       jest.spyOn(game, "update").mockRejectedValue(new Error("test error"))
       jest.spyOn(Games, "findOne").mockResolvedValue(game)
 
-      const reply = await update_game_command.execute(interaction)
+      expect.assertions(1)
 
-      expect(reply).toMatch("Something went wrong")
+      return update_game_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
     })
   })
 
