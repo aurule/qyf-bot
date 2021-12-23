@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
+
 const { explicitScope } = require("../services/default-game-scope")
 const { DefaultGames } = require('../models')
 const CommandPolicy = require("../services/command-policy")
@@ -29,5 +31,32 @@ module.exports = {
     await DefaultGames.destroy({where: {snowflake: scope.target_snowflake}})
 
     return interaction.reply(`Removed default game from ${scope.scope_text}`)
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} clears this channel's default game. The game is still available, but will not be
+        automatically used by commands in this channel.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`channel\`: Different channel (or category) whose default game should be cleared
+            \`server\`: Whether to clear the server-wide default game
+      `,
+      "",
+      oneLine`
+        With no options, ${command_name} will clear the default game from the current channel. If a
+        \`channel\` is provided, it will instead clear the default game of that channel. Note that Discord
+        lets you pass a category, or channel group, for the \`channel\` option. This works just fine!
+      `,
+      "",
+      oneLine`
+        The \`server\` option overrides \`channel\` and causes ${command_name} to clear the server-wide
+        default game.
+      `,
+      "",
+      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+    ].join("\n")
   },
 }
