@@ -1,9 +1,9 @@
 const { ContextMenuCommandBuilder } = require("@discordjs/builders")
 const { ApplicationCommandType } = require("discord-api-types/v9")
-
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
-const { keyv } = require("../util/keyv")
+const { stripIndent, oneLine } = require("common-tags")
 
+const { keyv } = require("../util/keyv")
 const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
@@ -76,5 +76,24 @@ module.exports = {
       components: [gameSelectRow],
       ephemeral: true,
     })
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} is a context menu command that records a Discord message as a new quote for the channel's (or server's) default game. If the current
+        channel or server doesn't have a default game set, ${command_name} will prompt you to pick which game
+        the quote is from. Discord only makes context menu commands available to desktop users. To use
+        ${command_name}, right click on a message, then hover over *Apps*, then click ${command_name} in the
+        small menu that appears.
+      `,
+      "",
+      oneLine`
+        The message's contents will be added as the first line of a new quote. The user who sent the message
+        will be the line's speaker and their server nickname (if set) or Discord username will be used as the
+        line's attribution.
+      `,
+      "",
+      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+    ].join("\n")
   },
 }
