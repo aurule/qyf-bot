@@ -1,4 +1,4 @@
-const { inlineCode } = require('@discordjs/builders');
+const { inlineCode, italic } = require('@discordjs/builders');
 
 module.exports = {
   /**
@@ -10,7 +10,7 @@ module.exports = {
   present: (command) => {
     const lines = []
 
-    const command_name = command.type == "menu" ? command.name : inlineCode(`/${command.name}`)
+    const command_name = command.type == "menu" ? italic(command.name) : inlineCode(`/${command.name}`)
     lines.push(`Showing help for ${command_name}:`)
 
     lines.push(command.help({command_name: command_name}))
