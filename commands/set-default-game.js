@@ -1,24 +1,26 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
+const { Collection } = require("discord.js")
 
 const { Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
+const GameNameCompleter = require("../completers/game-name-completer")
 
 module.exports = {
   name: "set-default-game",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("set-default-game")
       .setDescription("Set the default game for this channel")
-      .addIntegerOption((option) =>
+      .addStringOption((option) =>
         option
           .setName("game")
           .setDescription("The game to use")
           .setRequired(true)
-          .addChoices(GameChoicesTransformer.transform(guild.Games))
+          .setAutocomplete(true)
       )
       .addChannelOption((option) =>
         option.setName("channel").setDescription("The target channel")
@@ -28,6 +30,9 @@ module.exports = {
           .setName("server")
           .setDescription("Apply default to the whole server")
       ),
+  autocomplete: new Collection([
+    ['game', GameNameCompleter]
+  ]),
   async execute(interaction) {
     if (!CommandPolicy.elevateMember(interaction.member)) {
       return interaction.reply({

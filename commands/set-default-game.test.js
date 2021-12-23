@@ -129,16 +129,6 @@ describe("execute", () => {
 })
 
 describe("data", () => {
-  beforeEach(async () => {
-    await Games.bulkCreate(
-      [
-        {name: "Test Game 1", guildId: guild.id},
-        {name: "Test Game 2", guildId: guild.id},
-      ]
-    )
-    await guild.reload({include: Games})
-  })
-
   // This test is very bare-bones because we're really just
   // testing that the various calls to discord.js functions
   // were executed properly.
