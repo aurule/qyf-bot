@@ -22,7 +22,7 @@ async function getSpeakerMember(arg, interaction, last_line) {
 
 module.exports = {
   name: "append-quote",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("append-quote")
       .setDescription("Add a line to a quote")

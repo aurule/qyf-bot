@@ -7,7 +7,7 @@ const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "remove-default-game",
-  data: (guild) => new SlashCommandBuilder()
+  data: () => new SlashCommandBuilder()
     .setName("remove-default-game")
     .setDescription("Remove the default game for this channel")
     .addChannelOption((option) =>

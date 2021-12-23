@@ -11,7 +11,7 @@ const { makeQuote, QuoteData } = require("../services/quote-builder")
 
 module.exports = {
   name: "quote",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("quote")
       .setDescription("Record a quote!")

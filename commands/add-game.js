@@ -9,7 +9,7 @@ const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "add-game",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("add-game")
       .setDescription("Add a game to this server")
