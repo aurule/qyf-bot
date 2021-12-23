@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { UniqueConstraintError } = require("sequelize")
 const { Guilds, Games } = require("../models")
 const CommandDeploy = require("../services/command-deploy")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -70,6 +71,9 @@ module.exports = {
     try {
       await game.update(update_params)
     } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        return interaction.reply(`The game "${game_name}" already exists!`)
+      }
       logger.error("Error updating game", error)
       throw(error)
     }

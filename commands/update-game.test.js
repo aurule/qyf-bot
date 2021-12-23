@@ -5,6 +5,7 @@ const CommandPolicy = require("../services/command-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
+const { UniqueConstraintError } = require("sequelize")
 
 var guild
 var game
@@ -79,6 +80,17 @@ describe("execute", () => {
       await game.reload()
 
       expect(reply).toMatch(game.name)
+    })
+
+    describe("with a duplicate name", () => {
+      it("replies that the game already exists", async () => {
+        jest.spyOn(game, "update").mockRejectedValue(new UniqueConstraintError())
+        jest.spyOn(Games, "findOne").mockResolvedValue(game)
+
+        const reply = await update_game_command.execute(interaction)
+
+        expect(reply).toMatch('The game "New Name" already exists!')
+      })
     })
 
     it("throws game errors up the chain", async () => {
