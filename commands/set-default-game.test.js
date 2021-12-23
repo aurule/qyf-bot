@@ -154,3 +154,11 @@ describe("data", () => {
     expect(command_data.name).toEqual(set_default_game_command.name)
   })
 })
+
+describe("help", () => {
+  it("includes the command name in the output", () => {
+    const help_text = set_default_game_command.help({command_name: "sillyness"})
+
+    expect(help_text).toMatch("sillyness")
+  })
+})

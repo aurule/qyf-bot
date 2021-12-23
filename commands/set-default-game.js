@@ -1,4 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
+
 const { Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -54,5 +56,32 @@ module.exports = {
     return interaction.reply(
       `${game.name} is now the default for ${command_options.name}.`
     )
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} sets this channel's default game.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`game\`: (required) The game to set as the default
+            \`channel\`: Different channel (or category) whose default game should be set
+            \`server\`: Whether to set the server-wide default game
+      `,
+      "",
+      oneLine`
+        With just a game, ${command_name} will set the chosen game as the default for the current channel. If
+        a \`channel\` is provided, it will instead be set as the default for that channel. Note that Discord
+        lets you pass a category, or channel group, for the \`channel\` option. This works just fine!
+      `,
+      "",
+      oneLine`
+        The \`server\` option overrides \`channel\` and causes ${command_name} to set the game as the
+        server-wide default.
+      `,
+      "",
+      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+    ].join("\n")
   },
 }
