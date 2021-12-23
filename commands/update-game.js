@@ -1,16 +1,18 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { UniqueConstraintError } = require("sequelize")
+const { Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const CommandDeploy = require("../services/command-deploy")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
+const GameNameCompleter = require("../completers/game-name-completer")
 
 module.exports = {
   name: "update-game",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("update-game")
       .setDescription("Change the name or description of a game")
@@ -18,8 +20,7 @@ module.exports = {
         option
           .setName("game")
           .setDescription("The game to update")
-          .addChoices(GameChoicesTransformer.transform(guild.Games))
-          .setRequired(true)
+          .setAutocomplete(true)
       )
       .addStringOption((option) =>
         option.setName("name").setDescription("The new name of the game")
@@ -29,6 +30,9 @@ module.exports = {
           .setName("description")
           .setDescription("A few words about the game")
       ),
+  autocomplete: new Collection([
+    ['game', GameNameCompleter]
+  ]),
   async execute(interaction) {
     if (!CommandPolicy.elevateMember(interaction.member)) {
       return interaction.reply({
@@ -37,7 +41,7 @@ module.exports = {
       })
     }
 
-    const gameId = interaction.options.getInteger("game")
+    const gameId = Number(interaction.options.getString("game"))
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")
 
