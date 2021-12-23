@@ -8,7 +8,6 @@ const {
   DefaultGames,
   Users,
 } = require("../models")
-const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 
 const { Interaction } = require("../testing/interaction")

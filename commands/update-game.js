@@ -5,7 +5,6 @@ const { Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const CommandDeploy = require("../services/command-deploy")
-const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
 const GameNameCompleter = require("../completers/game-name-completer")

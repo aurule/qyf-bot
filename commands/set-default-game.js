@@ -4,7 +4,6 @@ const { Collection } = require("discord.js")
 
 const { Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
-const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
 const GameNameCompleter = require("../completers/game-name-completer")
