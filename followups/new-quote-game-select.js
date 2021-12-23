@@ -1,6 +1,6 @@
 const { Quotes, Games } = require("../models")
 const { makeQuote } = require("../services/quote-builder")
-const { keyv } = require("../util/keyv.js")
+const { followup_store } = require("../util/keyv.js")
 
 module.exports = {
   name: "newQuoteGameSelect",
@@ -8,7 +8,7 @@ module.exports = {
     const game = await Games.findByPk(interaction.values[0])
     interaction.update({ content: `Chose ${game.name}`, components: [] })
 
-    options = await keyv.get(interaction.message.interaction.id.toString())
+    options = await followup_store.get(interaction.message.interaction.id.toString())
 
     return makeQuote({
       text: options.text,

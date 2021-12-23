@@ -13,7 +13,8 @@ afterAll(() => {
   process.env = old_env
 })
 
-it("creates a keyv instance", () => {
-  const { keyv } = require("./keyv")
-  expect(keyv).toBeTruthy()
+it("creates the correct keyv instances", () => {
+  const { followup_store, cache } = require("./keyv")
+  expect(followup_store).toBeTruthy()
+  expect(cache).toBeTruthy()
 })

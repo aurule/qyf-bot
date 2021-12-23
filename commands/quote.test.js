@@ -12,7 +12,7 @@ const DefaultGameScopeService = require("../services/default-game-scope")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
-const { keyv } = require("../util/keyv")
+const { followup_store } = require("../util/keyv")
 
 var guild
 var interaction
@@ -118,7 +118,7 @@ describe("execute", () => {
 
   describe("with no default game", () => {
     it("stores the quote info for later followup", async () => {
-      const keyvSpy = jest.spyOn(keyv, "set")
+      const keyvSpy = jest.spyOn(followup_store, "set")
 
       const reply = await quote_command.execute(interaction)
 

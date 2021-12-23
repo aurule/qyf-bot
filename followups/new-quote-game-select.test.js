@@ -8,7 +8,7 @@ const {
 } = require("../models")
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
-const { keyv } = require("../util/keyv.js")
+const { followup_store } = require("../util/keyv.js")
 const { QuoteData } = require("../services/quote-builder")
 
 var guild
@@ -41,7 +41,7 @@ beforeEach(async () => {
 
   interaction.values = [game.id.toString()]
   interaction.message.interaction = {id: caller_id}
-  keyv.set(caller_id, quote_options)
+  followup_store.set(caller_id, quote_options)
 })
 
 afterEach(async () => {

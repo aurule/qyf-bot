@@ -3,7 +3,7 @@ const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
-const { keyv } = require("../util/keyv")
+const { followup_store } = require("../util/keyv")
 const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
@@ -52,13 +52,14 @@ module.exports = {
     }
 
     // With no default game, we need a followup to pick the right game
-    keyv.set(
+    followup_store.set(
       interaction.id.toString(),
       new QuoteData({
         text: text,
         attribution: speaker_name,
         speaker: speaker,
-      })
+      }),
+      900000 // expire in 15 minutes
     )
 
     const guild = await Guilds.findByInteraction(interaction, {
