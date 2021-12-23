@@ -9,12 +9,14 @@ class Interaction {
 
     this.id = simpleflake()
     this.command_options = {}
+    this.partial_text = "partial"
     this.options = {
       getString: (key) => this.command_options[key]?.toString(),
       getBoolean: (key) => !!this.command_options[key],
       getChannel: (key) => this.command_options[key],
       getInteger: (key) => this.command_options[key],
       getUser: (key) => this.command_options[key],
+      getFocused: () => this.partial_text,
     }
     this.guildId = snowflake,
     this.guild = {
@@ -57,6 +59,10 @@ class Interaction {
 
   async followUp(msg) {
     return msg
+  }
+
+  async respond(data) {
+    return data
   }
 }
 
