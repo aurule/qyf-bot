@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
 
 const { Guilds, Games, Users, sequelize } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -167,4 +168,26 @@ module.exports = {
   },
   getGameOrDefault,
   describeResults,
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} shows a random quote recorded on this server. It searches for quotes based on
+        the arguments given, and displays one for your entertainment.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`speaker\`: User who said one or more lines
+            \`alias\`: One or more lines are attributed to this name
+            \`text\`: One or more lines contain this text
+            \`game\`: Show a quote from a game other than the channel's default
+      `,
+      "",
+      oneLine`
+        ${command_name} finds a quote which matches *all* of the options given. The quote is pulled from the
+        channel's default game, or from all games if no default is set. For more info on how default games
+        work, check out the *Default Games* topic in \`/qyf-help\`.
+      `,
+    ].join("\n")
+  },
 }
