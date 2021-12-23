@@ -13,7 +13,7 @@ describe("jsNoTests", () => {
     expect(result).toBeFalsy()
   })
 
-  it("returns false for test.js filenames", () => {
+  it("returns false for .test.js filenames", () => {
     const result = filters.jsNoTests("test script.test.js")
 
     expect(result).toBeFalsy()
