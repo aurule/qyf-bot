@@ -45,5 +45,19 @@ module.exports = {
           })
         })
     }
+
+    if (interaction.isAutocomplete()) {
+      const command = interaction.client.commands.get(interaction.commandName)
+      const option = interaction.options.getFocused(true)
+
+      command
+        .autocomplete
+        .get(option.name)
+        ?.complete(interaction)
+        .catch((error) => {
+          logger.warn(error)
+          interaction.respond([])
+        })
+    }
   },
 }
