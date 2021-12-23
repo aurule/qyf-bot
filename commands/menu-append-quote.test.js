@@ -142,3 +142,12 @@ describe("data", () => {
     expect(command_data.name).toEqual(menu_append_quote_command.name)
   })
 })
+
+describe("help", () => {
+  it("includes the command name in the output", () => {
+    const help_text = menu_append_quote_command.help({command_name: "sillyness"})
+
+    expect(help_text).toMatch("sillyness")
+  })
+})
+

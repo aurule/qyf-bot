@@ -1,6 +1,7 @@
 const { ContextMenuCommandBuilder } = require("@discordjs/builders")
 const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
+const { stripIndent, oneLine } = require("common-tags")
 
 const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
@@ -28,8 +29,11 @@ module.exports = {
 
     if (!quote) {
       return interaction.reply({
-        content:
-          "You haven't recorded a recent enough quote to add a line! You can only add to a quote if you're the one who recorded it, and you did so in the last 15 minutes.",
+        content: oneLine`
+          You haven't recorded a recent enough quote to add a line! You can only
+          add to a quote if you're the one who recorded it, and you did so in
+          the last 15 minutes.
+        `,
         ephemeral: true,
       })
     }
@@ -60,5 +64,22 @@ module.exports = {
       .catch((error) => {
         throw(error)
       })
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} is a context menu command that adds a Discord message to the quote you most recently
+        created. Discord only makes these kinds of commands available to desktop users. To use
+        ${command_name}, right click on a message, then hover over Apps, then click ${command_name} in the
+        small menu that appears. In order to add a line, your most recent quote has to be newer than 15
+        minutes. If you haven't made a quote recently enough, ${command_name} will let you know.
+      `,
+      "",
+      oneLine`
+        The message's contents will be added as a new line on your last quote. The user who sent the message
+        will be set as the line's speaker and their server nickname (if set) or Discord username will be used
+        as the line's attribution. ${command_name} will then display the full quote with all of its lines.
+      `,
+    ].join("\n")
   },
 }
