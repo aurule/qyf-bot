@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
 const { UniqueConstraintError } = require("sequelize")
+
 const { Guilds, Games } = require("../models")
 const CommandDeploy = require("../services/command-deploy")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -81,5 +83,25 @@ module.exports = {
     if (game_name) await CommandDeploy.deployToGuild(guild)
 
     return interaction.reply(`Updated game "${game.name}"`)
+  },
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} changes the details of a game that's already on this server. It can only be used by
+        people with the Manage Channels or Manage Server permissions.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`game\`: (required) The game to modify
+            \`name\`: The name to use for the new game
+            \`description\`: A few words or a sentence describing the game
+      `,
+      "",
+      oneLine`
+        Every game on a server must have a unique name. If you try to reuse a name, ${command_name} will tell
+        you that that game already exists.
+      `,
+    ].join("\n")
   },
 }
