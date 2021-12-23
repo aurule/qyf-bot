@@ -206,7 +206,7 @@ module.exports = {
             \`speaker\`: User who said one or more lines
             \`alias\`: One or more lines are attributed to this name
             \`text\`: One or more lines contain this text
-            \`game\`: Limit quotes to the chosen game
+            \`game\`: Show quotes from a game other than the channel's default
             \`amount\`: Number of quotes from 1-10. Defaults to 5
       `,
       "",
@@ -215,6 +215,11 @@ module.exports = {
         few, however, due to restrictions on message length set by Discord. Listing long quotes might still
         prevent a response from being posted thanks to these restrictions, so lower the \`amount\` if this
         happens.
+      `,
+      "",
+      oneLine`
+        Quotes are pulled from the channel's default game, or from all games if no default is set. For more
+        info on how default games work, check out the *Default Games* topic in \`/qyf-help\`.
       `,
     ].join("\n")
   },
