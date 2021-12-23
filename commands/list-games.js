@@ -28,7 +28,7 @@ module.exports = {
       "",
       oneLine`
         The games are listed in alphabetical order, with their descriptions (if set) immediately below. Games
-        that are set as the default for a channel, topic, or the server have that status noted next to their
+        that are set as the default for a channel, category, or the server have that status noted next to their
         names.
       `,
     ].join("\n")
