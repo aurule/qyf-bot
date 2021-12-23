@@ -6,7 +6,7 @@ const { DefaultGames } = require("../models")
 module.exports = {
   // This is meant to be called with an array of games whose query has
   // `include: DefaultGames` to avoid doing n+1 queries.
-  transform: (games) => {
+  present: (games) => {
     return games
       .map((game) => {
         const lines = []

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const { Guilds, Games, DefaultGames } = require("../models")
-const { transform } = require("../transformers/game-list-transformer")
+const { present } = require("../presenters/game-list-presenter")
 const { stripIndent, oneLine } = require("common-tags")
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
       include: DefaultGames,
     })
 
-    const reply_text = transform(games)
+    const reply_text = present(games)
 
     return interaction.reply(reply_text)
   },

@@ -1,14 +1,14 @@
 "use strict"
 
 const { Guilds, Games, DefaultGames } = require("../models")
-const { transform } = require("./game-list-transformer")
+const { present } = require("./game-list-presenter")
 
 const { simpleflake } = require("simpleflakes")
 const {
   MessageMentions: { CHANNELS_PATTERN },
 } = require("discord.js")
 
-describe("transform", () => {
+describe("present", () => {
   var guild
 
   beforeEach(async () => {
@@ -47,7 +47,7 @@ describe("transform", () => {
       where: { guildId: guild.id },
       include: DefaultGames,
     })
-    const result = transform(gamesList)
+    const result = present(gamesList)
 
     expect(result).toMatch(game1.name)
     expect(result).toMatch(game2.name)
@@ -68,7 +68,7 @@ describe("transform", () => {
       where: { guildId: guild.id },
       include: DefaultGames,
     })
-    const result = transform(gamesList)
+    const result = present(gamesList)
 
     expect(result).toMatch(game1.description)
   })
@@ -89,7 +89,7 @@ describe("transform", () => {
       where: { guildId: guild.id },
       include: DefaultGames,
     })
-    const result = transform(gamesList)
+    const result = present(gamesList)
 
     expect(result).toMatch(guild.name)
 
@@ -112,7 +112,7 @@ describe("transform", () => {
       where: { guildId: guild.id },
       include: DefaultGames,
     })
-    const result = transform(gamesList)
+    const result = present(gamesList)
 
     expect(result).toMatch(CHANNELS_PATTERN)
 
