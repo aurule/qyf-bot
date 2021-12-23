@@ -45,7 +45,7 @@ module.exports = {
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
     const server_wide = interaction.options.getBoolean("server")
-    const game_id = interaction.options.getInteger("game")
+    const game_id = Number(interaction.options.getInteger("game"))
 
     const command_options = explicitScope(target_channel, server_wide)
 
