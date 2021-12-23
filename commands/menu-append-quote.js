@@ -70,7 +70,7 @@ module.exports = {
       oneLine`
         ${command_name} is a context menu command that adds a Discord message to the quote you most recently
         created. Discord only makes these kinds of commands available to desktop users. To use
-        ${command_name}, right click on a message, then hover over Apps, then click ${command_name} in the
+        ${command_name}, right click on a message, then hover over *Apps*, then click ${command_name} in the
         small menu that appears. In order to add a line, your most recent quote has to be newer than 15
         minutes. If you haven't made a quote recently enough, ${command_name} will let you know.
       `,
