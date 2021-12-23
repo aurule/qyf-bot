@@ -1,10 +1,11 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
+
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
 const CommandDeploy = require("../services/command-deploy")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
-const { stripIndent, oneLine } = require("common-tags")
 
 module.exports = {
   name: "add-game",
