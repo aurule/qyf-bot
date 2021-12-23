@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
 
 const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -193,4 +194,28 @@ module.exports = {
   },
   getGameOrDefault,
   describeResults,
+  help({ command_name }) {
+    return [
+      oneLine`
+        ${command_name} shows the most recent quotes recorded on this server. It searches for quotes based on
+        the arguments given, and displays the most recent ones for your entertainment.
+      `,
+      "",
+      stripIndent`
+        Args:
+            \`speaker\`: User who said one or more lines
+            \`alias\`: One or more lines are attributed to this name
+            \`text\`: One or more lines contain this text
+            \`game\`: Limit quotes to the chosen game
+            \`amount\`: Number of quotes from 1-10. Defaults to 5
+      `,
+      "",
+      oneLine`
+        ${command_name} finds quotes which match *all* of the options given. It can only display the first
+        few, however, due to restrictions on message length set by Discord. Listing long quotes might still
+        prevent a response from being posted thanks to these restrictions, so lower the \`amount\` if this
+        happens.
+      `,
+    ].join("\n")
+  },
 }
