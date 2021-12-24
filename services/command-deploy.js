@@ -116,7 +116,7 @@ async function deployDev() {
         logger.info(`Deployed to guild ${guild.name}`)
       })))
     .finally(() => {
-      logger.info("Done with all guilds")
+      logger.info("Done with dev guilds")
     })
 }
 
