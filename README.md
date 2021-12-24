@@ -12,7 +12,7 @@ BOT_TOKEN
 REDIS_URL
 NODE_ENV
 CLIENT_ID
-DEV_GUILDS
+DEV_GUILDS = [ "snowflake number" ]
 
 # Deploy process
 
