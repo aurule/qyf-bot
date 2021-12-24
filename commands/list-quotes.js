@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
+const { Collection } = require("discord.js")
 
 const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -7,6 +8,7 @@ const QuoteFinder = require("../services/quote-finder")
 const { clamp } = require("../util/clamp")
 const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
+const GameNameWithAllCompleter = require("../completers/game-name-with-all-completer")
 
 /**
  * Maximum number of quotes that can be displayed
@@ -19,12 +21,6 @@ const MAX_LIMIT = 10
  * @type {Number}
  */
 const DEFAULT_LIMIT = 5
-
-/**
- * The special value for the all games selector
- * @type {Number}
- */
-const ALL_GAMES = -1
 
 /**
  * Get the correct game or fall back on default data
@@ -47,7 +43,7 @@ async function getGameOrDefault(game_arg, channel) {
     name: "all games",
   }
 
-  if (game_arg == ALL_GAMES) return null_game
+  if (game_arg == GameNameWithAllCompleter.ALL_GAMES) return null_game
 
   var game
   if (game_arg) {
@@ -110,7 +106,7 @@ function describeResults(
 
 module.exports = {
   name: "list-quotes",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("list-quotes")
       .setDescription("Show the most recent quotes from the current game")
@@ -123,25 +119,27 @@ module.exports = {
       .addStringOption((option) =>
         option.setName("text").setDescription("Containing some text")
       )
-      .addIntegerOption((option) =>
+      .addStringOption((option) =>
         option
           .setName("game")
           .setDescription(
             "Game the quote is from. Defaults to channel's current game"
           )
-          .addChoices(GameChoicesTransformer.transform(guild.Games))
-          .addChoice("All Games", ALL_GAMES)
+          .setAutocomplete(true)
       )
       .addIntegerOption((option) =>
         option
           .setName("amount")
           .setDescription("Number of quotes to show (1-10)")
       ),
+  autocomplete: new Collection([
+    ['game', GameNameWithAllCompleter]
+  ]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
-    const game_arg = interaction.options.getInteger("game")
+    const game_arg = +interaction.options.getString("game")
     const amount = interaction.options.getInteger("amount")
 
     const guild = await Guilds.findByInteraction(interaction)

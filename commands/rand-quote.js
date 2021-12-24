@@ -1,17 +1,13 @@
 const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
+const { Collection } = require("discord.js")
 
 const { Guilds, Games, Users, sequelize } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
 const QuoteFinder = require("../services/quote-finder")
 const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
-
-/**
- * The special value for the all games selector
- * @type {Number}
- */
-const ALL_GAMES = -1
+const GameNameWithAllCompleter = require("../completers/game-name-with-all-completer")
 
 /**
  * Get the correct game or fall back on default data
@@ -34,7 +30,7 @@ async function getGameOrDefault(game_arg, channel) {
     name: "all games",
   }
 
-  if (game_arg == ALL_GAMES) return null_game
+  if (game_arg == GameNameWithAllCompleter.ALL_GAMES) return null_game
 
   var game
   if (game_arg) {
@@ -91,7 +87,7 @@ function describeResults(
 
 module.exports = {
   name: "rand-quote",
-  data: (guild) =>
+  data: () =>
     new SlashCommandBuilder()
       .setName("rand-quote")
       .setDescription("Show a random quote from the current game")
@@ -104,20 +100,22 @@ module.exports = {
       .addStringOption((option) =>
         option.setName("text").setDescription("Containing some text")
       )
-      .addIntegerOption((option) =>
+      .addStringOption((option) =>
         option
           .setName("game")
           .setDescription(
             "Game the quote is from. Defaults to channel's current game"
           )
-          .addChoices(GameChoicesTransformer.transform(guild.Games))
-          .addChoice("All Games", -1)
+          .setAutocomplete(true)
       ),
+  autocomplete: new Collection([
+    ['game', GameNameWithAllCompleter]
+  ]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
-    const game_arg = interaction.options.getInteger("game")
+    const game_arg = +interaction.options.getString("game")
 
     const guild = await Guilds.findByInteraction(interaction)
     const game = await getGameOrDefault(game_arg, interaction.channel)
