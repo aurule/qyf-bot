@@ -44,7 +44,14 @@ module.exports = {
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
     const server_wide = interaction.options.getBoolean("server")
-    const game_id = Number(interaction.options.getInteger("game"))
+    const game_arg = Number(interaction.options.getString("game"))
+
+    if (!game_arg) {
+      return interaction.reply({
+        content: `There is no game called "${interaction.options.getString("game")}"`,
+        ephemeral: true,
+      })
+    }
 
     const command_options = explicitScope(target_channel, server_wide)
 
@@ -52,10 +59,10 @@ module.exports = {
       name: command_options.name,
       type: command_options.target_type,
       snowflake: command_options.target_snowflake,
-      gameId: game_id,
+      gameId: game_arg,
     })
 
-    const game = await Games.findOne({ where: { id: game_id } })
+    const game = await Games.findOne({ where: { id: game_arg } })
 
     return interaction.reply(
       `${game.name} is now the default for ${command_options.name}.`

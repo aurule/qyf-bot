@@ -91,6 +91,15 @@ describe("execute", () => {
     expect(record).toBeTruthy()
   })
 
+  it("warns about an invalid game choice", async () => {
+    interaction.command_options.game = "fiddlesticks"
+
+    const result = await set_default_game_command.execute(interaction)
+
+    expect(result.content).toMatch("There is no game")
+    expect(result.content).toMatch("fiddlesticks")
+  })
+
   describe("reply", () => {
     it("replies that the game was set as default", async () => {
       const reply = await set_default_game_command.execute(interaction)

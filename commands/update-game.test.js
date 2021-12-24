@@ -171,7 +171,7 @@ describe("execute", () => {
     it("replies with an error", async () => {
       const reply = await update_game_command.execute(interaction)
 
-      expect(reply).toMatch("You need to give a new name or new description")
+      expect(reply.content).toMatch("You need to give a new name or new description")
     })
 
     it("does not change the game", async () => {
@@ -189,7 +189,7 @@ describe("execute", () => {
 
       const reply = await update_game_command.execute(interaction)
 
-      expect(reply).toMatch("need to give")
+      expect(reply.content).toMatch("need to give")
     })
 
     it("rejects non-managers", async () => {
@@ -199,6 +199,15 @@ describe("execute", () => {
 
       expect(reply.content).toMatch(CommandPolicy.errorMessage)
     })
+  })
+
+  it("warns about an invalid game choice", async () => {
+    interaction.command_options.game = "fiddlesticks"
+
+    const result = await update_game_command.execute(interaction)
+
+    expect(result.content).toMatch("There is no game")
+    expect(result.content).toMatch("fiddlesticks")
   })
 })
 
