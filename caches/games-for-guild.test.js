@@ -63,3 +63,27 @@ describe("get", () => {
     expect(keyvSpy).toHaveBeenCalled()
   })
 })
+
+describe("delete", () => {
+  it("removes cached data for that snowflake", async () => {
+    const snowflake = simpleflake().toString()
+    await cache.set(GamesForGuild.key(snowflake), "test data")
+
+    await GamesForGuild.delete(snowflake)
+
+    const result = await cache.get(GamesForGuild.key(snowflake))
+    expect(result).toBeFalsy()
+  })
+
+  it("leaves cached data for other snowflakes", async () => {
+    const snowflake = simpleflake().toString()
+    const other_snowflake = simpleflake().toString()
+    await cache.set(GamesForGuild.key(snowflake), "test data")
+    await cache.set(GamesForGuild.key(other_snowflake), "kept test data")
+
+    await GamesForGuild.delete(snowflake)
+
+    const result = await cache.get(GamesForGuild.key(other_snowflake))
+    expect(result).toEqual("kept test data")
+  })
+})

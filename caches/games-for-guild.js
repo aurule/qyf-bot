@@ -35,5 +35,14 @@ module.exports = {
 
     await cache.set(snowflake, data)
     return data
+  },
+
+  /**
+   * Delete the cache for a specific guild snowflake
+   * @param  {String}   snowflake The snowflake of the guild whose cache to purge
+   * @return {Promise}            Promise resolving to true
+   */
+  async delete(snowflake) {
+    return cache.delete(module.exports.key(snowflake))
   }
 }
