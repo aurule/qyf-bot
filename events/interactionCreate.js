@@ -46,6 +46,7 @@ module.exports = {
         })
     }
 
+    // handle autocomplete requests
     if (interaction.isAutocomplete()) {
       const command = interaction.client.commands.get(interaction.commandName)
       const option = interaction.options.getFocused(true)
