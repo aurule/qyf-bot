@@ -205,7 +205,7 @@ module.exports = {
             \`alias\`: One or more lines are attributed to this name
             \`text\`: One or more lines contain this text
             \`game\`: Show quotes from a game other than the channel's default
-            \`amount\`: Number of quotes from 1-10. Defaults to 5
+            \`amount\`: Number of quotes from 1-${MAX_LIMIT}. Defaults to ${DEFAULT_LIMIT}
       `,
       "",
       oneLine`
