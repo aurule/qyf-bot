@@ -130,7 +130,9 @@ module.exports = {
       .addIntegerOption((option) =>
         option
           .setName("amount")
-          .setDescription("Number of quotes to show (1-10)")
+          .setDescription(`Number of quotes to show (1-${MAX_LIMIT})`)
+          .setMinValue(1)
+          .setMaxValue(MAX_LIMIT)
       ),
   autocomplete: new Collection([
     ['game', GameNameWithAllCompleter]
