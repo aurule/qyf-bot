@@ -1,31 +1,5 @@
 const { Guilds, Games } = require("../models")
-const { Op } = require("sequelize")
-const { cache } = require("../util/keyv")
-
-function cacheKey(interaction) {
-  return `game-name-completer ${interaction.guildId}`
-}
-
-async function getCachedGames(interaction) {
-  const cached = await cache.get(cacheKey(interaction))
-  if (cached) return cached
-
-  const data = await Games.findAll(
-    {
-      raw: true,
-      include: {
-        model: Guilds,
-        attributes: [],
-        where: {
-          snowflake: interaction.guildId.toString()
-        }
-      }
-    }
-  )
-
-  await cache.set(cacheKey(interaction), data)
-  return data
-}
+const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   /**
@@ -37,7 +11,7 @@ module.exports = {
    * @return {Promise}                              A promise for the interaction response
    */
   async complete(interaction) {
-    const data = await getCachedGames(interaction)
+    const data = await GamesForGuild.get(interaction.guildId.toString())
 
     return interaction.respond(
       data
@@ -46,7 +20,5 @@ module.exports = {
           return { name: game.name, value: game.id.toString() }
         })
     )
-  },
-  cacheKey,
-  getCachedGames,
+  }
 }

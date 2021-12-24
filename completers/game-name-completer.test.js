@@ -9,63 +9,7 @@ var interaction
 var guild
 var game
 
-describe("cacheKey", () => {
-  it("creates a key including the guild snowflake", () => {
-    interaction = new Interaction(simpleflake())
-
-    const result = GameNameCompleter.cacheKey(interaction)
-
-    expect(result).toMatch(interaction.guildId.toString())
-  })
-})
-
-describe("getCachedGames", () => {
-
-  beforeEach(async () => {
-    try {
-      guild = await Guilds.create({
-        name: "Test Guild",
-        snowflake: simpleflake().toString(),
-      })
-
-      game = await Games.create({
-        guildId: guild.id,
-        name: "Test Game Partialities"
-      })
-      interaction = new Interaction(guild.snowflake)
-    } catch (err) {
-      console.log(err)
-    }
-  })
-
-  afterEach(async () => {
-    try {
-      await game.destroy()
-      await guild.destroy()
-    } catch (err) {
-      console.log(err)
-    }
-  })
-
-  it("returns any cached data", async () => {
-    const key = GameNameCompleter.cacheKey(interaction)
-    await cache.set(key, "test data")
-
-    const result = await GameNameCompleter.getCachedGames(interaction)
-
-    expect(result).toEqual("test data")
-  })
-
-  it("caches data from the db", async () => {
-    const keyvSpy = jest.spyOn(cache, 'set')
-
-    const result = await GameNameCompleter.getCachedGames(interaction)
-
-    expect(keyvSpy).toHaveBeenCalled()
-  })
-})
-
-describe("completer", () => {
+describe("complete", () => {
   beforeEach(async () => {
     try {
       guild = await Guilds.create({
