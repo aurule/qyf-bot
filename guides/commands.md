@@ -41,7 +41,7 @@ The command_name attribute is populated by `CommandHelpPresenter.present()`.
 
 ## File Locations
 
-Guild commands live in the `/commands` directory. Global commands live in `/commands/global`.
+Global commands live in the `/commands` directory. Guild commands live in `/commands/global`.
 
 ## Error Handling
 

@@ -6,8 +6,8 @@ const fs = require("fs")
 const path = require("path")
 const basename = path.basename(__filename)
 
-const guildCommandsDir = `${__dirname}/../commands`
-const globalCommandsDir = `${__dirname}/../commands/global`
+const guildCommandsDir = `${__dirname}/../commands/guild`
+const globalCommandsDir = `${__dirname}/../commands`
 
 function getCommands(target_dir) {
   const commands = []
