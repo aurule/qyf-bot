@@ -3,7 +3,7 @@
 const { Quotes, Lines, Users } = require("../models")
 
 class QuoteData {
-  constructor({ text, attribution, speaker }) {
+  constructor({ text, attribution, speaker, context }) {
     /**
      * The content of the quote
      * @type string
@@ -24,6 +24,12 @@ class QuoteData {
       id: speaker.id.toString(),
       username: speaker.username,
     }
+
+    /**
+     * The context of the quote
+     * @type string
+     */
+    this.context = context
   }
 }
 
@@ -37,13 +43,15 @@ module.exports = {
    * @param  {Games}        game          Game object the quote is associated with
    * @param  {discord User} speaker       User object from discord of the user who said the quote
    * @param  {discord User} quoter        User object from discord of the user who recorded the quote
+   * @param  {string}       context       Description of the quote's circumstances
    * @return {Promise<Quotes>}            The created quote object with its line
    */
-  makeQuote: async ({ text, attribution, game, speaker, quoter }) => {
-    // cr eate the quote
+  makeQuote: async ({ text, attribution, game, speaker, quoter, context }) => {
+    // create the quote
     const quote_attrs = {
       gameId: game.id,
       saidAt: Date.now(),
+      context: context,
     }
 
     if (quoter) {

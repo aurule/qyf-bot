@@ -15,6 +15,7 @@ module.exports = {
       attribution: options.attribution,
       game: game,
       speaker: options.speaker,
+      context: options.context,
     })
       .then((result) => {
         return interaction.followUp(

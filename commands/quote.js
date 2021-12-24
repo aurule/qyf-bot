@@ -30,11 +30,19 @@ module.exports = {
           .setDescription(
             "The name of who said it. Replaces the speaker's current nickname."
           )
+      )
+      .addStringOption((option) =>
+        option
+          .setName("context")
+          .setDescription(
+            "A few words that describe circumstances of the quote"
+          )
       ),
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
+    const context = interaction.options.getString("context")
     const user = interaction.user
 
     const speaker_name = determineName({
@@ -52,6 +60,7 @@ module.exports = {
         game: game,
         speaker: speaker,
         quoter: user,
+        context: context,
       })
         .then(async (result) => {
           return interaction.reply(
@@ -70,6 +79,7 @@ module.exports = {
         text: text,
         attribution: speaker_name,
         speaker: speaker,
+        context: context,
       }),
       900000 // expire in 15 minutes
     )

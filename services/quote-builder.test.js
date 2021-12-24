@@ -17,6 +17,7 @@ describe("QuoteData", () => {
         something: "else",
         another: "thing",
       },
+      context: "some context"
     }
 
     it("saves text as-is", () => {
@@ -40,6 +41,12 @@ describe("QuoteData", () => {
       }
 
       expect(data.speaker).toEqual(expected_user)
+    })
+
+    it("saves context as-is", () => {
+      const data = new QuoteBuilder.QuoteData(options)
+
+      expect(data.context).toEqual(options.context)
     })
   })
 })
@@ -195,6 +202,7 @@ describe("makeQuote", () => {
       attribution: "some guy",
       game: game,
       speaker: speaker,
+      context: "some context!",
     })
 
     expect(quote).toBeTruthy()
