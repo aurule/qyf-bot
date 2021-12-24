@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
-
-const commandFetch = require("../../services/command-fetch")
-const CommandChoicesTransformer = require("../../transformers/command-choices-transformer")
-const CommandHelpPresenter = require("../../presenters/command-help-presenter")
-const Topics = require("../../help")
 const { stripIndent } = require("common-tags")
+
+const commandFetch = require("../services/command-fetch")
+const CommandChoicesTransformer = require("../transformers/command-choices-transformer")
+const CommandHelpPresenter = require("../presenters/command-help-presenter")
+const Topics = require("../help")
 
 module.exports = {
   name: "qyf-help",

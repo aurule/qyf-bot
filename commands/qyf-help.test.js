@@ -1,6 +1,6 @@
 const qyf_help_command = require("./qyf-help")
 
-const { Interaction } = require("../../testing/interaction")
+const { Interaction } = require("../testing/interaction")
 
 var interaction
 
