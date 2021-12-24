@@ -13,7 +13,7 @@ module.exports = {
     database: "development",
     dialect: "sqlite",
     storage: ".sqlite/development.sqlite",
-    transactionType: "IMMEDIATE"
+    transactionType: "IMMEDIATE",
   },
   test: {
     ...global_options,
@@ -22,7 +22,16 @@ module.exports = {
     database: "test",
     dialect: "sqlite",
     storage: ".sqlite/test.sqlite",
-    transactionType: "IMMEDIATE"
+    transactionType: "IMMEDIATE",
+  },
+  ci: {
+    ...global_options,
+    username: "postgres",
+    password: "postgres",
+    database: "postgres",
+    host: "localhost",
+    port: 5432,
+    dialect: "pgsql",
   },
   production: {
     ...global_options,
@@ -30,6 +39,6 @@ module.exports = {
     password: null,
     database: "database_production",
     host: "127.0.0.1",
-    dialect: "pgsql"
+    dialect: "pgsql",
   }
 }

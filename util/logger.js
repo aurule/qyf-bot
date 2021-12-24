@@ -10,6 +10,7 @@ const logStream = pickStream()
 function pickStream() {
   if (process.env.NODE_ENV == "development") return pretty()
   if (process.env.NODE_ENV == "test") return devnull()
+  if (process.env.NODE_ENV == "ci") return devnull()
 }
 
 module.exports = {
