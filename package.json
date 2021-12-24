@@ -34,6 +34,7 @@
     "test:ci": "DOTENV_CONFIG_NODE_ENV=test jest --ci",
     "commands:deploy-guilds": "node scripts/deploy-guild-commands.js",
     "commands:deploy-globals": "node scripts/deploy-global-commands.js",
+    "commands:deploy-dev": "node scripts/deploy-dev-commands.js",
     "migrate": "sequelize-cli db:migrate",
     "migrate:test": "NODE_ENV=test sequelize-cli db:migrate"
   },

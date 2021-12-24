@@ -92,6 +92,34 @@ async function deployGlobals() {
     })
 }
 
+/**
+ * Build global commands as though they're guild commands and push to the dev servers
+ * @return {Promise}      Promise for the http call
+ */
+async function deployDev() {
+  const devFlakes = JSON.parse(process.env.DEV_GUILDS)
+  const guilds = await Guilds.findAll({ where: { snowflake: devFlakes } })
+
+  logger.info("Deploying global commands as guild commands to dev servers")
+
+  const commandJSON = buildGlobalCommandJSON()
+
+  return Promise
+    .all(guilds.map(guild => restClient()
+      .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
+        body: commandJSON,
+      })
+      .catch((error) => {
+        logger.warn(`Error deploying commands to guild ${guild.name}: ${error}`)
+      })
+      .finally(() => {
+        logger.info(`Deployed to guild ${guild.name}`)
+      })))
+    .finally(() => {
+      logger.info("Done with all guilds")
+    })
+}
+
 module.exports = {
   buildGuildCommandJSON,
   buildGlobalCommandJSON,
@@ -99,4 +127,5 @@ module.exports = {
   deployToGuild,
   deployToAllGuilds,
   deployGlobals,
+  deployDev,
 }
