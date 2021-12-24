@@ -115,7 +115,7 @@ module.exports = {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
-    const game_arg = +interaction.options.getString("game")
+    const game_arg = Number(interaction.options.getString("game"))
 
     const guild = await Guilds.findByInteraction(interaction)
     const game = await getGameOrDefault(game_arg, interaction.channel)
