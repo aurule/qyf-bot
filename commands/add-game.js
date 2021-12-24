@@ -3,9 +3,9 @@ const { stripIndent, oneLine } = require("common-tags")
 
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
-const CommandDeploy = require("../services/command-deploy")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
+const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "add-game",
@@ -50,7 +50,7 @@ module.exports = {
       throw error
     }
 
-    await CommandDeploy.deployToGuild(guild)
+    await GamesForGuild.delete(guild.snowflake)
 
     return interaction.reply(
       oneLine`

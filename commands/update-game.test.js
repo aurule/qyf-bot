@@ -1,7 +1,7 @@
 const update_game_command = require("./update-game")
 const { Guilds, Games } = require("../models")
-const commandService = require("../services/command-deploy")
 const CommandPolicy = require("../services/command-policy")
+const GamesForGuild = require("../caches/games-for-guild")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -10,7 +10,7 @@ const { UniqueConstraintError } = require("sequelize")
 var guild
 var game
 var interaction
-var commandSpy
+var cacheDeleteSpy
 var policySpy
 
 beforeEach(async () => {
@@ -33,9 +33,9 @@ beforeEach(async () => {
   interaction.command_options.name = ""
   interaction.command_options.description = ""
 
-  commandSpy = jest
-    .spyOn(commandService, "deployToGuild")
-    .mockImplementation(async (guild) => true)
+  cacheDeleteSpy = jest
+    .spyOn(GamesForGuild, "delete")
+    .mockResolvedValue(true)
   policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })
 
@@ -69,10 +69,10 @@ describe("execute", () => {
       expect(game.description).toEqual("Test description")
     })
 
-    it("redeploys guild commands", async () => {
+    it("clears the guild games cache", async () => {
       await update_game_command.execute(interaction)
 
-      expect(commandSpy).toHaveBeenCalled()
+      expect(cacheDeleteSpy).toHaveBeenCalled()
     })
 
     it("replies with the updated game info", async () => {
@@ -155,10 +155,10 @@ describe("execute", () => {
       expect(game.name).toEqual("Test Game")
     })
 
-    it("does not redeploy guild commands", async () => {
+    it("clears the guild games cache", async () => {
       await update_game_command.execute(interaction)
 
-      expect(commandSpy).not.toHaveBeenCalled()
+      expect(cacheDeleteSpy).toHaveBeenCalled()
     })
   })
 

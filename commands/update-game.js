@@ -4,10 +4,10 @@ const { UniqueConstraintError } = require("sequelize")
 const { Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
-const CommandDeploy = require("../services/command-deploy")
 const { logger } = require("../util/logger")
 const CommandPolicy = require("../services/command-policy")
 const GameNameCompleter = require("../completers/game-name-completer")
+const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "update-game",
@@ -83,7 +83,7 @@ module.exports = {
       throw(error)
     }
 
-    if (game_name) await CommandDeploy.deployToGuild(guild)
+    await GamesForGuild.delete(guild.snowflake)
 
     return interaction.reply(`Updated game "${game.name}"`)
   },

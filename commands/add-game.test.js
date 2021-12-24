@@ -1,15 +1,15 @@
 const add_game_command = require("./add-game")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
-const commandService = require("../services/command-deploy")
 const CommandPolicy = require("../services/command-policy")
+const GamesForGuild = require("../caches/games-for-guild")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
 
 var guild
 var interaction
-var commandSpy
+var cacheDeleteSpy
 var policySpy
 
 beforeEach(async () => {
@@ -26,9 +26,9 @@ beforeEach(async () => {
   interaction.command_options.name = "new game"
   interaction.command_options.description = "a new game"
 
-  commandSpy = jest
-    .spyOn(commandService, "deployToGuild")
-    .mockImplementation(async (guild) => true)
+  cacheDeleteSpy = jest
+    .spyOn(GamesForGuild, "delete")
+    .mockResolvedValue(true)
   policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })
 
@@ -65,14 +65,14 @@ describe("execute", () => {
       expect(reply).toMatch('Added game "new game"')
     })
 
-    it("updates the guild's commands", async () => {
+    it("clears the guild's cache", async () => {
       try {
         await add_game_command.execute(interaction)
       } catch (error) {
         console.log(error)
       }
 
-      expect(commandSpy).toHaveBeenCalled()
+      expect(cacheDeleteSpy).toHaveBeenCalled()
     })
   })
 
