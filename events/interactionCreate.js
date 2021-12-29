@@ -19,7 +19,7 @@ module.exports = {
       command
         .execute(interaction)
         .catch((error) => {
-          logger.warn(error)
+          logger.error(error)
           interaction.reply({
             content: "There was an error while executing this command!",
             components: [],
@@ -37,7 +37,7 @@ module.exports = {
       followup
         .execute(interaction)
         .catch((error) => {
-          logger.warn(error)
+          logger.error(error)
           interaction.reply({
             content: "There was an error while executing this command!",
             components: [],
@@ -56,7 +56,7 @@ module.exports = {
         .get(option.name)
         ?.complete(interaction)
         .catch((error) => {
-          logger.warn(error)
+          logger.error(error)
           interaction.respond([])
         })
     }
