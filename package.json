@@ -13,14 +13,14 @@
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "pino": "^7.6.2",
-    "sequelize": "^6.12.4"
+    "sequelize": "^6.12.4",
+    "sequelize-cli": "^6.3.0"
   },
   "devDependencies": {
     "dev-null": "^0.1.1",
     "jest": "^27.4.5",
     "pino-pretty": "^7.3.0",
     "prettier": "^2.5.1",
-    "sequelize-cli": "^6.3.0",
     "simpleflakes": "^2.2.2",
     "sqlite3": "^5.0.2"
   },
