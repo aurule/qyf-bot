@@ -31,14 +31,15 @@ module.exports = {
     database: "postgres",
     host: "localhost",
     port: 5432,
-    dialect: "pgsql",
+    dialect: "postgres",
   },
   production: {
     ...global_options,
-    username: "root",
-    password: null,
+    username: "postgres",
+    password: "postgres",
     database: "database_production",
     host: "127.0.0.1",
-    dialect: "pgsql",
+    port: 5432,
+    dialect: "postgres",
   }
 }
