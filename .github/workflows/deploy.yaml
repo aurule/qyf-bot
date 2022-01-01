@@ -5,7 +5,7 @@ on:
     branches: main
 
 jobs:
-  tests:
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -21,4 +21,4 @@ jobs:
     - name: Push files with rsync
       run: rsync -avzh --delete --exclude='/.git' --filter=':- .gitignore' ./ ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }}:/home/qyf/qyf-bot/
     - name: Setup and restart
-      run: ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }} "cd ~/qyf-bot && npm run deploy"
+      run: ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }} "cd qyf-bot && ~/.nvm/nvm-exec npm run deploy"
