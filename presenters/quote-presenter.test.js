@@ -39,25 +39,29 @@ afterEach(async () => {
 })
 
 it("shows the text of each line in a quote", async () => {
-  await Quotes.create(
-    {
-      saidAt: Date.now,
-      gameId: game.id,
-      Lines: [
-        {
-          content: "First line",
-          lineOrder: 0,
-        },
-        {
-          content: "Second line",
-          lineOrder: 1,
-        },
-      ],
-    },
-    {
-      include: Lines,
-    }
-  )
+  try {
+    await Quotes.create(
+      {
+        saidAt: Date.now,
+        gameId: game.id,
+        Lines: [
+          {
+            content: "First line",
+            lineOrder: 0,
+          },
+          {
+            content: "Second line",
+            lineOrder: 1,
+          },
+        ],
+      },
+      {
+        include: Lines,
+      }
+    )
+  } catch(error) {
+    console.log(error)
+  }
 
   const quotes = await Quotes.findAll({
     where: { gameId: game.id },
