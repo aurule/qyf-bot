@@ -134,6 +134,14 @@ describe("gameForChannel", () => {
       expect(result.id).toEqual(game.id)
     })
 
+    it("handles missing parentId", async () => {
+      channel.parentId = undefined
+
+      const result = await Service.gameForChannel(channel)
+
+      expect(result.id).toEqual(game.id)
+    })
+
     describe("server also has a default game", () => {
       it("returns the channel's game", async () => {
         const game2 = await Games.create({

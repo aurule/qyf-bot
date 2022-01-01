@@ -81,7 +81,7 @@ module.exports = {
     }
 
     search_ids.push(current_channel.id.toString())
-    search_ids.push(current_channel.parentId.toString())
+    if (current_channel.parentId) search_ids.push(current_channel.parentId.toString())
     search_ids.push(current_channel.guildId.toString())
 
     const default_game = await DefaultGames.findOne({where: {snowflake: search_ids}, include: Games})
