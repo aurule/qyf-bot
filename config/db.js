@@ -34,6 +34,7 @@ module.exports = {
     host: "postgres",
     port: 5432,
     dialect: "postgres",
+    transactionType: "IMMEDIATE",
   },
   production: {
     ...global_options,
