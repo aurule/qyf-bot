@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      DefaultGames.belongsTo(models.Games)
+      DefaultGames.belongsTo(models.Games, { foreignKey: "gameId" })
     }
 
     // static "constants" to ensure correct type enum values

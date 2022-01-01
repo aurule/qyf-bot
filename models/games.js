@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Games.belongsTo(models.Guilds)
-      Games.hasMany(models.Quotes)
-      Games.hasMany(models.DefaultGames)
+      Games.belongsTo(models.Guilds, { foreignKey: "guildId" })
+      Games.hasMany(models.Quotes, { foreignKey: "gameId" })
+      Games.hasMany(models.DefaultGames, { foreignKey: "gameId" })
     }
   }
   Games.init(
