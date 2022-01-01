@@ -69,4 +69,12 @@ describe("complete", () => {
 
     expect(result.length).toEqual(1)
   })
+
+  it("includes a valid All Games entry", async () => {
+    interaction.partial_text = "nothing matches"
+
+    const result = await GameNameWithAllCompleter.complete(interaction)
+
+    expect(result[0]).toEqual({name: "All Games", value: "-1"})
+  })
 })

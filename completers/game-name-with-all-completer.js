@@ -24,7 +24,7 @@ module.exports = {
       .map((game) => {
         return { name: game.name, value: game.id.toString() }
       })
-    options.push({ name: "All Games", value: ALL_GAMES})
+    options.push({ name: "All Games", value: ALL_GAMES.toString()})
 
     return interaction.respond(options)
   },
