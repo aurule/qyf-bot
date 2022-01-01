@@ -42,7 +42,7 @@ it("shows the text of each line in a quote", async () => {
   try {
     await Quotes.create(
       {
-        saidAt: Date.now,
+        saidAt: Date.now(),
         gameId: game.id,
         Lines: [
           {
@@ -60,7 +60,7 @@ it("shows the text of each line in a quote", async () => {
       }
     )
   } catch(error) {
-    console.log(error)
+    console.log()
   }
 
   const quotes = await Quotes.findAll({
@@ -77,7 +77,7 @@ it("shows the text of each line in a quote", async () => {
 it("works on a single quote", async () => {
   await Quotes.create(
     {
-      saidAt: Date.now,
+      saidAt: Date.now(),
       gameId: game.id,
       Lines: [
         {
@@ -109,7 +109,7 @@ it("works on a single quote", async () => {
 it("shows the attribution of each line in a quote", async () => {
   await Quotes.create(
     {
-      saidAt: Date.now,
+      saidAt: Date.now(),
       gameId: game.id,
       Lines: [
         {
@@ -143,7 +143,7 @@ it("shows the attribution of each line in a quote", async () => {
 it("shows the text of all quotes", async () => {
   await Quotes.create(
     {
-      saidAt: Date.now,
+      saidAt: Date.now(),
       gameId: game.id,
       Lines: [
         {
@@ -162,7 +162,7 @@ it("shows the text of all quotes", async () => {
   )
   await Quotes.create(
     {
-      saidAt: Date.now,
+      saidAt: Date.now(),
       gameId: game.id,
       Lines: [
         {
