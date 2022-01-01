@@ -10,7 +10,10 @@ function pickStream() {
     const pretty = require('pino-pretty')
     return pretty()
   }
-  if (process.env.NODE_ENV == "test") return devnull()
+  if (process.env.NODE_ENV == "test") {
+    const devnull = require('dev-null')
+    return devnull()
+  }
   if (process.env.NODE_ENV == "ci") {
     const devnull = require('dev-null')
     return devnull()
