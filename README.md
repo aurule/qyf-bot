@@ -22,7 +22,9 @@ BOT_TOKEN: discord bot application token
 REDIS_URL: URL of the redis instance to use
 NODE_ENV: one of "development", "test", "ci", or "production"
 CLIENT_ID: ID of the bot's discord user
-DEV_GUILDS = [ "guild_snowflake" ]
+DEV_GUILDS: [ "guild_snowflake" ]
+DB_HOST: Host for the postgres database (only used in production)
+DB_PW: password for the postgres database (only used in production)
 
 # Deployment
 

@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 const { logger } = require("../util/logger")
 
 const global_options = {
@@ -36,9 +38,9 @@ module.exports = {
   production: {
     ...global_options,
     username: "postgres",
-    password: "postgres",
-    database: "database_production",
-    host: "127.0.0.1",
+    password: process.env.DB_PW,
+    database: "postgres",
+    host: process.env.DB_HOST,
     port: 5432,
     dialect: "postgres",
   }
