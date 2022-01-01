@@ -26,5 +26,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: npm ci
-    - run: npm run migrate:test
+    - run: npm run migrate:ci
     - run: npm run test:ci
