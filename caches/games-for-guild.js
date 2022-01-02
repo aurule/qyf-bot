@@ -29,7 +29,10 @@ module.exports = {
           where: {
             snowflake: snowflake
           }
-        }
+        },
+        order: [
+          ['name', 'ASC'],
+        ],
       }
     )
 
