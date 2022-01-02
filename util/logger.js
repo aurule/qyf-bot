@@ -2,7 +2,6 @@ const Pino = require("pino")
 
 require("dotenv").config()
 
-const options = {}
 const logStream = pickStream()
 
 function pickStream() {
@@ -18,8 +17,13 @@ function pickStream() {
     const devnull = require('dev-null')
     return devnull()
   }
+const default_levels = {
+  "development": "info",
+  "test": "error",
+  "ci": "error",
+  "production": "warning"
 }
 
 module.exports = {
-  logger: Pino(logStream),
+  logger: Pino({level: default_levels[process.env.NODE_ENV]}, logStream),
 }
