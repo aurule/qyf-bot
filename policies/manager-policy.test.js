@@ -1,4 +1,4 @@
-const CommandPolicy = require("./command-policy")
+const ManagerPolicy = require("./manager-policy")
 
 const { Permissions } = require('discord.js');
 
@@ -8,7 +8,7 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_GUILD)
     }
 
-    expect(CommandPolicy.allow({member})).toBeTruthy()
+    expect(ManagerPolicy.allow({member})).toBeTruthy()
   })
 
   it("returns true for channel managers", () => {
@@ -16,7 +16,7 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_CHANNELS)
     }
 
-    expect(CommandPolicy.allow({member})).toBeTruthy()
+    expect(ManagerPolicy.allow({member})).toBeTruthy()
   })
 
   it("returns false for all others", () => {
@@ -24,6 +24,6 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.DEFAULT)
     }
 
-    expect(CommandPolicy.allow({member})).toBeFalsy()
+    expect(ManagerPolicy.allow({member})).toBeFalsy()
   })
 })

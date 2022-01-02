@@ -8,7 +8,7 @@ The command object looks like this:
 {
     name: string,                       // "command-name"
     type?: string,                      // "slash"
-    policy?: Object,                    // CommandPolicy
+    policy?: Object,                    // ManagerPolicy
     data(options?): Builder,            // SlashCommandBuilder
     autocomplete?: Collection           // new Collection([['game', GameNameCompleter]])
     async execute(interaction): Promise,
