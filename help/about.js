@@ -12,7 +12,7 @@ module.exports = {
       `,
       "",
       oneLine`
-        qyf-botj is open source software released under the MIT license, reproduced below. The source code is
+        qyf-bot is open source software released under the MIT license, reproduced below. The source code is
         available at ${hideLinkEmbed("https://github.com/aurule/qyf-bot")} and contributions are welcome!
       `,
       "",
