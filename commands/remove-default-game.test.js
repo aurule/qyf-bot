@@ -2,7 +2,7 @@
 
 const remove_default_game_command = require("./remove-default-game")
 const { Guilds, Games, DefaultGames } = require("../models")
-const CommandPolicy = require("../services/command-policy")
+const ManagerPolicy = require("../policies/manager-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -98,7 +98,7 @@ describe("execute", () => {
 
   describe("permissions", () => {
     it("uses the managers policy", async () => {
-      expect(remove_default_game_command.policy).toEqual(CommandPolicy)
+      expect(remove_default_game_command.policy).toEqual(ManagerPolicy)
     })
   })
 })

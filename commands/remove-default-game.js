@@ -3,11 +3,11 @@ const { stripIndent, oneLine } = require("common-tags")
 
 const { explicitScope } = require("../services/default-game-scope")
 const { DefaultGames } = require('../models')
-const CommandPolicy = require("../services/command-policy")
+const ManagerPolicy = require("../policies/manager-policy")
 
 module.exports = {
   name: "remove-default-game",
-  policy: CommandPolicy,
+  policy: ManagerPolicy,
   data: () => new SlashCommandBuilder()
     .setName("remove-default-game")
     .setDescription("Remove the default game for this channel")
