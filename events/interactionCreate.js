@@ -1,7 +1,70 @@
 const { logger } = require("../util/logger")
 
+/**
+ * Handle command interactions
+ *
+ * We first apply the command's policy, then execute the actual command
+ *
+ * @param  {Interaction} interaction  Discord interaction object
+ * @return {Promise}                  Promise, probably from replying to the
+ *                                    interaction. Rejects if command not found.
+ */
+function handleCommand(interaction) {
+  const command = interaction.client.commands.get(interaction.commandName)
+
+  if (!command) return Promise.reject()
+
+  if (command.policy && !command.policy.allow(interaction)) {
+    return interaction
+      .reply({
+        content: command.policy.errorMessage,
+        ephemeral: true,
+      })
+  }
+
+  return command.execute(interaction)
+}
+
+/**
+ * Handle select menu interactions
+ *
+ * @param  {Interaction} interaction  Discord interaction object
+ * @return {Promise}                  Promise, probably from replying to the
+ *                                    interaction. Rejects if select menu
+ *                                    followup not found.
+ */
+function handleSelectMenu(interaction) {
+  const followup = interaction.client.followups.get(interaction.customId)
+
+  if (!followup) return Promise.reject()
+
+  return followup.execute(interaction)
+}
+
+/**
+ * Handle autocomplete interactions
+ *
+ * @param  {Interaction} interaction  Discord interaction object
+ * @return {Promise}                  Promise, probably from responding to the
+ *                                    interaction. Rejects if command or
+ *                                    completer isn't found.
+ */
+function handleAutocomplete(interaction) {
+  const command = interaction.client.commands.get(interaction.commandName)
+  if (!command) return Promise.reject()
+
+  const option = interaction.options.getFocused(true)
+  const completer = command.autocomplete.get(option.name)
+  if (!completer) return Promise.reject()
+
+  return completer.complete(interaction)
+}
+
 module.exports = {
   name: "interactionCreate",
+  handleCommand,
+  handleSelectMenu,
+  handleAutocomplete,
   execute(interaction) {
     if (
       (process.env.NODE_ENV !== "development") ==
@@ -12,29 +75,7 @@ module.exports = {
 
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
-      const command = interaction.client.commands.get(interaction.commandName)
-
-      if (!command) return
-
-      if (command.policy && !command.policy.allow(interaction)) {
-        interaction
-          .reply({
-            content: command.policy.errorMessage,
-            ephemeral: true,
-          })
-          .catch((error) => {
-            logger.error(error)
-            interaction.reply({
-              content: "There was an error while executing this command!",
-              components: [],
-              ephemeral: true,
-            })
-          })
-        return
-      }
-
-      command
-        .execute(interaction)
+      return handleCommand(interaction)
         .catch((error) => {
           logger.error(error)
           interaction.reply({
@@ -47,12 +88,7 @@ module.exports = {
 
     // handle choices on select menu components
     if (interaction.isSelectMenu()) {
-      const followup = interaction.client.followups.get(interaction.customId)
-
-      if (!followup) return
-
-      followup
-        .execute(interaction)
+      return handleSelectMenu(interaction)
         .catch((error) => {
           logger.error(error)
           interaction.reply({
@@ -65,13 +101,7 @@ module.exports = {
 
     // handle autocomplete requests
     if (interaction.isAutocomplete()) {
-      const command = interaction.client.commands.get(interaction.commandName)
-      const option = interaction.options.getFocused(true)
-
-      command
-        .autocomplete
-        .get(option.name)
-        ?.complete(interaction)
+      return handleAutocomplete(interaction)
         .catch((error) => {
           logger.error(error)
           interaction.respond([])
