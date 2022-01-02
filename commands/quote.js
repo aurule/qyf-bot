@@ -2,12 +2,14 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { followup_store } = require("../util/keyv")
 const { stripIndent, oneLine } = require("common-tags")
+const { Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
 const { gameForChannel } = require("../services/default-game-scope")
 const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { makeQuote, QuoteData } = require("../services/quote-builder")
+const GameNameWithDefaultCompleter = require("../completers/game-name-with-default-completer")
 
 module.exports = {
   name: "quote",
@@ -37,20 +39,36 @@ module.exports = {
           .setDescription(
             "A few words that describe circumstances of the quote"
           )
+      )
+      .addStringOption((option) =>
+        option
+          .setName("game")
+          .setDescription("Pick a game other than the current default")
+          .setAutocomplete(true)
       ),
+  autocomplete: new Collection([
+    ['game', GameNameWithDefaultCompleter]
+  ]),
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const context = interaction.options.getString("context")
     const user = interaction.user
+    const game_arg = Number(interaction.options.getString("game"))
 
     const speaker_name = determineName({
       nickname: await interaction.guild.members.fetch(speaker).nickname,
       username: speaker.username,
       alias: alias,
     })
-    const game = await gameForChannel(interaction.channel)
+
+    let game
+    if (game_arg) {
+      game = await Games.findOne({ where: { id: game_arg } })
+    } else {
+      game = await gameForChannel(interaction.channel)
+    }
 
     // With a default game, we can save immediately
     if (game) {
@@ -113,6 +131,8 @@ module.exports = {
             \`text\`: (required) The text of the quote's first line
             \`speaker\`: (required) The user who said it
             \`alias\`: The name to use for the speaker, in case their nickname doesn't match their character, etc.
+            \`context\`: A few words about what's going on to help the quote make sense
+            \`game\`: The game this quote is for, in case the default game isn't right
       `,
       "",
       oneLine`

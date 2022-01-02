@@ -113,22 +113,56 @@ describe("execute", () => {
           .execute(interaction)
           .catch((e) => expect(e.message).toMatch("test error"))
       })
+
+      describe("with a game arg", () => {
+        it("saves the quote to the chosen game", async () => {
+          const game2 = await Games.create({
+            name: "Test Game 2",
+            guildId: guild.id,
+          })
+          interaction.command_options.game = game2.id.toString()
+
+          await quote_command.execute(interaction)
+          const quote = await Quotes.findOne({
+            where: { gameId: game2.id },
+            include: Lines,
+          })
+
+          expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+        })
+      })
     })
   })
 
   describe("with no default game", () => {
-    it("stores the quote info for later followup", async () => {
-      const keyvSpy = jest.spyOn(followup_store, "set")
+    describe("without game arg", () => {
+      it("stores the quote info for later followup", async () => {
+        const keyvSpy = jest.spyOn(followup_store, "set")
 
-      const reply = await quote_command.execute(interaction)
+        const reply = await quote_command.execute(interaction)
 
-      expect(keyvSpy).toHaveBeenCalled()
+        expect(keyvSpy).toHaveBeenCalled()
+      })
+
+      it("replies with a game prompt", async () => {
+        const reply = await quote_command.execute(interaction)
+
+        expect(reply.content).toMatch("Which game")
+      })
     })
 
-    it("replies with a game prompt", async () => {
-      const reply = await quote_command.execute(interaction)
+    describe("with a game arg", () => {
+      it("saves the quote to the chosen game", async () => {
+        interaction.command_options.game = game.id.toString()
 
-      expect(reply.content).toMatch("Which game")
+        await quote_command.execute(interaction)
+        const quote = await Quotes.findOne({
+          where: { gameId: game.id },
+          include: Lines,
+        })
+
+        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+      })
     })
   })
 })
