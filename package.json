@@ -26,7 +26,7 @@
   },
   "name": "qyf-bot",
   "description": "Discord bot for interacting with Quote Your Friends",
-  "version": "0.9.0",
+  "version": "1.0.0-beta.1",
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test jest",
