@@ -30,6 +30,7 @@ module.exports = {
               ephemeral: true,
             })
           })
+        return
       }
 
       command
