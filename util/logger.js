@@ -21,7 +21,7 @@ function pickStream() {
     return Pino.transport({
       target: "pino/file",
       options: {
-        destination: "/var/log/qyf-bot.log",
+        destination: "/home/qyf/qyf-bot/logs/qyf-bot.log",
         mkdir: true,
       }
     })
@@ -32,7 +32,7 @@ const default_levels = {
   "development": "info",
   "test": "error",
   "ci": "error",
-  "production": "warning"
+  "production": "warn"
 }
 
 module.exports = {
