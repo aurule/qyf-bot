@@ -1,5 +1,7 @@
 const { inlineCode } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
+const commandFetch = require("../services/command-fetch")
+const ManagerPolicy = require("../policies/manager-policy")
 
 module.exports = {
   name: "permissions",
@@ -13,12 +15,11 @@ module.exports = {
         permissions. Anyone else who tries to use one of these commands will see an error message. The
         privileged commands are:
       `,
-      stripIndent`
-        • ${inlineCode("/add-game")}
-        • ${inlineCode("/update-game")}
-        • ${inlineCode("/set-default-game")}
-        • ${inlineCode("/remove-default-game")}
-      `,
+      commandFetch
+        .all()
+        .filter(c => c.policy == ManagerPolicy)
+        .map(c => `• ${inlineCode("/"+c.name)}`)
+        .join("\n"),
     ].join("\n")
   },
 }
