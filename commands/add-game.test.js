@@ -10,7 +10,6 @@ const { simpleflake } = require("simpleflakes")
 var guild
 var interaction
 var cacheDeleteSpy
-var policySpy
 
 beforeEach(async () => {
   try {
@@ -29,7 +28,6 @@ beforeEach(async () => {
   cacheDeleteSpy = jest
     .spyOn(GamesForGuild, "delete")
     .mockResolvedValue(true)
-  policySpy = jest.spyOn(CommandPolicy, "elevateMember").mockReturnValue(true)
 })
 
 afterEach(async () => {

@@ -2,13 +2,13 @@ const CommandPolicy = require("./command-policy")
 
 const { Permissions } = require('discord.js');
 
-describe("elevateMember", () => {
+describe("allow", () => {
   it("returns true for guild managers", () => {
     const member = {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_GUILD)
     }
 
-    expect(CommandPolicy.elevateMember(member)).toBeTruthy()
+    expect(CommandPolicy.allow({member})).toBeTruthy()
   })
 
   it("returns true for channel managers", () => {
@@ -16,7 +16,7 @@ describe("elevateMember", () => {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_CHANNELS)
     }
 
-    expect(CommandPolicy.elevateMember(member)).toBeTruthy()
+    expect(CommandPolicy.allow({member})).toBeTruthy()
   })
 
   it("returns false for all others", () => {
@@ -24,6 +24,6 @@ describe("elevateMember", () => {
       permissions: new Permissions(Permissions.FLAGS.DEFAULT)
     }
 
-    expect(CommandPolicy.elevateMember(member)).toBeFalsy()
+    expect(CommandPolicy.allow({member})).toBeFalsy()
   })
 })

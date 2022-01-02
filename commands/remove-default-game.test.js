@@ -9,7 +9,6 @@ const { simpleflake } = require("simpleflakes")
 
 var guild
 var interaction
-var policySpy
 
 beforeEach(async () => {
   try {
@@ -26,8 +25,6 @@ beforeEach(async () => {
   interaction.channel.guild = { id: guild.snowflake, name: guild.name }
   interaction.channel.name = "Test Channel"
   interaction.command_options["server"] = false
-
-  policySpy = jest.spyOn(CommandPolicy, 'elevateMember').mockReturnValue(true)
 })
 
 afterEach(async () => {
