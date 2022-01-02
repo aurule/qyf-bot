@@ -17,6 +17,17 @@ function pickStream() {
     const devnull = require('dev-null')
     return devnull()
   }
+  if (process.env.NODE_ENV == "production") {
+    return Pino.transport({
+      target: "pino/file",
+      options: {
+        destination: "/var/log/qyf-bot.log",
+        mkdir: true,
+      }
+    })
+  }
+}
+
 const default_levels = {
   "development": "info",
   "test": "error",
