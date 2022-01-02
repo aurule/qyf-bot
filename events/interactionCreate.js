@@ -16,6 +16,22 @@ module.exports = {
 
       if (!command) return
 
+      if (command.policy && !command.policy.allow(interaction)) {
+        interaction
+          .reply({
+            content: command.policy.errorMessage,
+            ephemeral: true,
+          })
+          .catch((error) => {
+            logger.error(error)
+            interaction.reply({
+              content: "There was an error while executing this command!",
+              components: [],
+              ephemeral: true,
+            })
+          })
+      }
+
       command
         .execute(interaction)
         .catch((error) => {
