@@ -7,6 +7,7 @@ const CommandPolicy = require("../services/command-policy")
 
 module.exports = {
   name: "remove-default-game",
+  policy: CommandPolicy,
   data: () => new SlashCommandBuilder()
     .setName("remove-default-game")
     .setDescription("Remove the default game for this channel")
@@ -17,10 +18,6 @@ module.exports = {
       option.setName("server").setDescription("Remove the server default")
     ),
   async execute(interaction) {
-    if(!CommandPolicy.elevateMember(interaction.member)) {
-      return interaction.reply({content: CommandPolicy.errorMessage, ephemeral: true})
-    }
-
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel

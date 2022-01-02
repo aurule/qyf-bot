@@ -9,6 +9,7 @@ const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "add-game",
+  policy: CommandPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName("add-game")
@@ -25,13 +26,6 @@ module.exports = {
           .setDescription("A few words about the game")
       ),
   async execute(interaction) {
-    if (!CommandPolicy.elevateMember(interaction.member)) {
-      return interaction.reply({
-        content: CommandPolicy.errorMessage,
-        ephemeral: true,
-      })
-    }
-
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")
 

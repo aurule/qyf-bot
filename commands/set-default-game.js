@@ -10,6 +10,7 @@ const GameNameCompleter = require("../completers/game-name-completer")
 
 module.exports = {
   name: "set-default-game",
+  policy: CommandPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName("set-default-game")
@@ -33,13 +34,6 @@ module.exports = {
     ['game', GameNameCompleter]
   ]),
   async execute(interaction) {
-    if (!CommandPolicy.elevateMember(interaction.member)) {
-      return interaction.reply({
-        content: CommandPolicy.errorMessage,
-        ephemeral: true,
-      })
-    }
-
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel

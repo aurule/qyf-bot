@@ -100,20 +100,8 @@ describe("execute", () => {
   })
 
   describe("permissions", () => {
-    it("allows manager users", async () => {
-      policySpy.mockReturnValue(true)
-
-      const reply = await remove_default_game_command.execute(interaction)
-
-      expect(reply).toMatch("Removed default game")
-    })
-
-    it("rejects non-managers", async () => {
-      policySpy.mockReturnValue(false)
-
-      const reply = await remove_default_game_command.execute(interaction)
-
-      expect(reply.content).toMatch(CommandPolicy.errorMessage)
+    it("uses the managers policy", async () => {
+      expect(remove_default_game_command.policy).toEqual(CommandPolicy)
     })
   })
 })

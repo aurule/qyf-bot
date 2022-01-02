@@ -184,20 +184,8 @@ describe("execute", () => {
   })
 
   describe("permissions", () => {
-    it("allows manager users", async () => {
-      policySpy.mockReturnValue(true)
-
-      const reply = await update_game_command.execute(interaction)
-
-      expect(reply.content).toMatch("need to give")
-    })
-
-    it("rejects non-managers", async () => {
-      policySpy.mockReturnValue(false)
-
-      const reply = await update_game_command.execute(interaction)
-
-      expect(reply.content).toMatch(CommandPolicy.errorMessage)
+    it("uses the managers policy", async () => {
+      expect(update_game_command.policy).toEqual(CommandPolicy)
     })
   })
 
