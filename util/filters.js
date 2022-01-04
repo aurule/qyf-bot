@@ -1,6 +1,7 @@
 "use strict"
 
 module.exports = {
-  jsNoTests: (str) => str.endsWith(".js") && !str.endsWith(".test.js"),
+  noTests: (str) => !str.endsWith(".test.js"),
+  jsNoTests: (str) => str.endsWith(".js") && module.exports.noTests(str),
   noDotFiles: (str) => str.indexOf(".") !== 0,
 }
