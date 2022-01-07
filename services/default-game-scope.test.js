@@ -9,6 +9,34 @@ var channel
 var game
 var guild
 
+describe("DefaultGameScope", () => {
+  beforeEach(() => {
+    channel = {
+      id: simpleflake().toString(),
+      name: "Test Channel",
+      guild: {
+        id: simpleflake().toString(),
+        name: "Test Guild",
+      },
+      isThread: () => false,
+    }
+  })
+
+  describe("scopeMention", () => {
+    it("returns plain text as a server scope", () => {
+      const scope = Service.explicitScope(channel, true)
+
+      expect(scope.scopeMention()).toEqual("the server")
+    })
+
+    it("returns a channel mention as a channel scope", () => {
+      const scope = Service.explicitScope(channel, false)
+
+      expect(scope.scopeMention()).toMatch(channel.id.toString())
+    })
+  })
+})
+
 describe("explicitScope", () => {
   beforeEach(() => {
     channel = {

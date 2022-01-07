@@ -1,5 +1,7 @@
 "use strict"
 
+const { channelMention } = require("@discordjs/builders")
+
 const { DefaultGames, Games } = require("../models")
 
 class DefaultGameScope {
@@ -28,6 +30,23 @@ class DefaultGameScope {
      * @type {string}
      */
     this.target_snowflake = target_snowflake
+  }
+
+  /**
+   * Get a reference for this scope's target
+   *
+   * When the scope is for a server, returns a simple string. For a channel or
+   * topic, it returns a discord channel mention string.
+   *
+   * @return {string} String description or mention of the scope's target
+   */
+  scopeMention() {
+    switch (this.target_type) {
+      case DefaultGames.TYPE_GUILD:
+        return "the server"
+      case DefaultGames.TYPE_CHANNEL:
+        return channelMention(this.target_snowflake)
+    }
   }
 }
 
