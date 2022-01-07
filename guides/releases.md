@@ -2,10 +2,10 @@
 
 Steps to do:
 
-1. make a release branch
+1. make a release branch, `release/<new version>`
 2. run `npm --no-git-tag-version version <arg>` to update the version in package.json and package-lock.json
     * arg can be one of patch, minor, major, prepatch, preminor, premajor, prerelease
-3. run `npm run build-changelog` to generate the new changelog entry
+3. run `npm run changelog:build` to generate the new version's changelog
 4. commit!
 5. merge the release branch into main
     * copy the changelog into the commit message
