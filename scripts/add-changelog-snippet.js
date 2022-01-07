@@ -8,7 +8,7 @@ const prompts = require("prompts");
     {
       type: "select",
       name: "type",
-      message: "Pick the type of change",
+      message: "What type of change is this?",
       choices: [
         { title: "Addition", value: "added" },
         { title: "Change", value: "changed" },
