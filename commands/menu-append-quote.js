@@ -7,6 +7,7 @@ const { determineName } = require("../services/speaker-name")
 const { addLine } = require("../services/quote-builder")
 const QuotePresenter = require("../presenters/quote-presenter")
 const QuoteFinder = require("../services/quote-finder")
+const { quoteReply } = require("../services/reply-builder")
 
 module.exports = {
   name: "Add to quote",
@@ -55,7 +56,12 @@ module.exports = {
     })
       .then(async (result) => {
         await interaction.reply(
-          `${user.username} added text from ${speaker_name}: ${text}`
+          quoteReply({
+            reporter: user,
+            speaker: speaker,
+            text: text,
+            action: "added text from"
+          })
         )
         return interaction.followUp(
           `The full quote is:\n${QuotePresenter.present(quote)}`

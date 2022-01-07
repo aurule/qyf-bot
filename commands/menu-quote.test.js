@@ -87,7 +87,7 @@ describe("execute", () => {
       it("says who saved the quote", async () => {
         const reply = await Command.execute(interaction)
 
-        expect(reply).toMatch(interaction.user.username)
+        expect(reply).toMatch(interaction.user.id.toString())
       })
 
       it("displays the quote text", async () => {

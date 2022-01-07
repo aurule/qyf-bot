@@ -6,6 +6,7 @@ const { addLine } = require("../services/quote-builder")
 const QuotePresenter = require("../presenters/quote-presenter")
 const QuoteFinder = require("../services/quote-finder")
 const { stripIndent, oneLine } = require("common-tags")
+const { quoteReply } = require("../services/reply-builder")
 
 /**
  * Get the correct member object
@@ -87,7 +88,13 @@ module.exports = {
     })
       .then(async (result) => {
         await interaction.reply(
-          `${user.username} added text from ${speaker_name}: ${text}`
+          quoteReply({
+            reporter: user,
+            speaker: speaker_arg,
+            alias: alias,
+            text: text,
+            action: "added text from"
+          })
         )
         return interaction.followUp(
           `The full quote is:\n${QuotePresenter.present(quote)}`

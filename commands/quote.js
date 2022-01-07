@@ -10,6 +10,7 @@ const { gameForChannel } = require("../services/default-game-scope")
 const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { makeQuote, QuoteData } = require("../services/quote-builder")
 const GameNameWithDefaultCompleter = require("../completers/game-name-with-default-completer")
+const { quoteReply } = require("../services/reply-builder")
 
 module.exports = {
   name: "quote",
@@ -83,7 +84,12 @@ module.exports = {
       })
         .then(async (result) => {
           return interaction.reply(
-            `${user.username} quoted ${speaker_name}: ${text}`
+            quoteReply({
+              reporter: user,
+              speaker: speaker,
+              alias: alias,
+              text: text
+            })
           )
         })
         .catch((error) => {

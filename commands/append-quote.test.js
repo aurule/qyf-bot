@@ -105,9 +105,7 @@ describe("execute", () => {
 
       await append_quote_command.execute(interaction)
 
-      expect(replySpy).toHaveBeenCalledWith(
-        "Test User added text from Dude Bro: Text of the quote"
-      )
+      expect(replySpy).toHaveBeenCalled()
     })
 
     it("displays the full quote", async () => {

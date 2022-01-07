@@ -79,6 +79,24 @@ describe("execute", () => {
       expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
     })
 
+    describe("with a game arg", () => {
+      it("saves the quote to the chosen game", async () => {
+        const game2 = await Games.create({
+          name: "Test Game 2",
+          guildId: guild.id,
+        })
+        interaction.command_options.game = game2.id.toString()
+
+        await quote_command.execute(interaction)
+        const quote = await Quotes.findOne({
+          where: { gameId: game2.id },
+          include: Lines,
+        })
+
+        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+      })
+    })
+
     describe("reply", () => {
       beforeEach(() => {
         jest
@@ -89,7 +107,7 @@ describe("execute", () => {
       it("says who saved the quote", async () => {
         const reply = await quote_command.execute(interaction)
 
-        expect(reply).toMatch(interaction.user.username)
+        expect(reply).toMatch(interaction.user.id.toString())
       })
 
       it("displays the quote text", async () => {
@@ -112,24 +130,6 @@ describe("execute", () => {
         return quote_command
           .execute(interaction)
           .catch((e) => expect(e.message).toMatch("test error"))
-      })
-
-      describe("with a game arg", () => {
-        it("saves the quote to the chosen game", async () => {
-          const game2 = await Games.create({
-            name: "Test Game 2",
-            guildId: guild.id,
-          })
-          interaction.command_options.game = game2.id.toString()
-
-          await quote_command.execute(interaction)
-          const quote = await Quotes.findOne({
-            where: { gameId: game2.id },
-            include: Lines,
-          })
-
-          expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
-        })
       })
     })
   })
