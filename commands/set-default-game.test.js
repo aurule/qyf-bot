@@ -51,13 +51,13 @@ describe("execute", () => {
 
     const reply = await set_default_game_command.execute(interaction)
 
-    expect(reply).toMatch(target_channel.name)
+    expect(reply).toMatch(target_channel.id.toString())
   })
 
   it("gets the scope for the current channel when no explicit option", async () => {
     const reply = await set_default_game_command.execute(interaction)
 
-    expect(reply).toMatch(interaction.channel.name)
+    expect(reply).toMatch(interaction.channel.id.toString())
   })
 
   it("updates an existing default game record if one exists", async () => {
@@ -101,7 +101,7 @@ describe("execute", () => {
     it("replies that the game was set as default", async () => {
       const reply = await set_default_game_command.execute(interaction)
 
-      expect(reply).toMatch("Test Game is now the default for test channel.")
+      expect(reply).toMatch("Test Game is now the default")
     })
 
     it("throws errors up the chain", async () => {

@@ -45,13 +45,13 @@ describe("execute", () => {
 
     const reply = await remove_default_game_command.execute(interaction)
 
-    expect(reply).toMatch(target_channel.name)
+    expect(reply).toMatch(target_channel.id.toString())
   })
 
   it("gets the scope for the current channel when no explicit option", async () => {
     const reply = await remove_default_game_command.execute(interaction)
 
-    expect(reply).toMatch(interaction.channel.name)
+    expect(reply).toMatch(interaction.channel.id.toString())
   })
 
   it("does nothing if there is no default for the scope snowflake", async () => {
@@ -93,7 +93,7 @@ describe("execute", () => {
   it("notifies the user", async () => {
     const result = await remove_default_game_command.execute(interaction)
 
-    expect(result).toMatch("Removed default game from Test Channel")
+    expect(result).toMatch("Removed default game")
   })
 
   describe("permissions", () => {

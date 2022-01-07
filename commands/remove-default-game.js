@@ -27,7 +27,7 @@ module.exports = {
 
     await DefaultGames.destroy({where: {snowflake: scope.target_snowflake}})
 
-    return interaction.reply(`Removed default game from ${scope.scope_text}`)
+    return interaction.reply(`Removed default game from ${scope.scopeMention()}`)
   },
   help({ command_name }) {
     return [

@@ -47,19 +47,19 @@ module.exports = {
       })
     }
 
-    const command_options = explicitScope(target_channel, server_wide)
+    const scope = explicitScope(target_channel, server_wide)
 
     await DefaultGames.upsert({
-      name: command_options.name,
-      type: command_options.target_type,
-      snowflake: command_options.target_snowflake,
+      name: scope.name,
+      type: scope.target_type,
+      snowflake: scope.target_snowflake,
       gameId: game_arg,
     })
 
     const game = await Games.findOne({ where: { id: game_arg } })
 
     return interaction.reply(
-      `${game.name} is now the default for ${command_options.name}.`
+      `${game.name} is now the default for ${scope.scopeMention()}.`
     )
   },
   help({ command_name }) {
