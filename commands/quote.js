@@ -57,8 +57,9 @@ module.exports = {
     const user = interaction.user
     const game_arg = Number(interaction.options.getString("game"))
 
+    const speaker_member = await interaction.guild.members.fetch(speaker)
     const speaker_name = determineName({
-      nickname: await interaction.guild.members.fetch(speaker).nickname,
+      nickname: speaker_member.nickname,
       username: speaker.username,
       alias: alias,
     })
