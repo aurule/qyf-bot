@@ -5,7 +5,7 @@ const changes = require("../changes");
 const { version } = require("../package.json");
 
 function buildSection(bucket) {
-  return bucket.map(item => `* ${item}`).join("")
+  return bucket.map(item => `* ${item}`).join("\n")
 }
 
 (async () => {
