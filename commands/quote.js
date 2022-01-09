@@ -135,7 +135,7 @@ module.exports = {
       "",
       stripIndent`
         Args:
-            \`text\`: (required) The text of the quote's first line
+            \`text\`: (required) The text of the quote
             \`speaker\`: (required) The user who said it
             \`alias\`: The name to use for the speaker, in case their nickname doesn't match their character, etc.
             \`context\`: A few words about what's going on to help the quote make sense
@@ -143,9 +143,9 @@ module.exports = {
       `,
       "",
       oneLine`
-        The given \`text\` will be added as the first line of a new quote. If you give an \`alias\`, that's
-        the text that will be used as attribution for the line. If you don't, then ${command_name} will use
-        the \`speaker\`'s server nickname (if set) or their Discord username.
+        The given \`text\` will be recorded as a new quote. If you give an \`alias\`, that will be used for the
+        attribution. If you don't, then ${command_name} will use the \`speaker\`'s server nickname (if set) or
+        their Discord username.
       `,
       "",
       "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
