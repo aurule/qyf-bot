@@ -10,7 +10,8 @@ module.exports = {
         Welcome and thanks for installing qyf-bot! This Discord bot lets you quote fun things your friends say
         and ~~hold it over their heads~~ relive the memories later. It operates mainly through slash commands,
         which are invoked by starting your message with a ${inlineCode("/")} character. You can use the
-        ${inlineCode("/qyf-help")} command if you run into trouble.
+        ${inlineCode("/qyf-help")} command if you run into trouble. Try starting with the
+        ${inlineCode("Available Commands")} help topic to see how commands work and what qyf-bot can do.
       `,
       "",
       oneLine`
