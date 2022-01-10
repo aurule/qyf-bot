@@ -8,7 +8,8 @@ module.exports = {
     return [
       oneLine`
         qyf-bot is the Discord bot component of *Quote Your Friends*, a passion project by Paige Andrews. It
-        is built on NodeJS using the excellent discord.js library, among others.
+        is built on NodeJS using the excellent discord.js library, among others. Some icons are made by
+        ${hideLinkEmbed("https://www.freepik.com")} from ${hideLinkEmbed("https://www.flaticon.com/")}.
       `,
       "",
       oneLine`
