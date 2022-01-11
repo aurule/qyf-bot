@@ -9,6 +9,8 @@ const config_file = require(__dirname + "/../.sequelizerc").config
 const config = require(config_file)[env]
 const db = {}
 
+const { jsNoTests, noDotFiles } = require("../util/filters")
+
 const sequelize = new Sequelize(
   config.database,
   config.username,
@@ -17,9 +19,11 @@ const sequelize = new Sequelize(
 )
 
 fs.readdirSync(__dirname)
+  .filter(jsNoTests)
+  .filter(noDotFiles)
   .filter((file) => {
     return (
-      file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
+      file !== basename
     )
   })
   .forEach((file) => {
