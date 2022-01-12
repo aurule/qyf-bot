@@ -12,7 +12,7 @@ const { logger } = require("../util/logger")
 async function handleCommand(interaction) {
   const command = interaction.client.commands.get(interaction.commandName)
 
-  if (!command) return Promise.reject()
+  if (!command) return Promise.reject(`no command ${interaction.commandName}`)
 
   const allowed = command.policy
     ? await command.policy.allow(interaction)
@@ -39,7 +39,8 @@ async function handleCommand(interaction) {
 async function handleSelectMenu(interaction) {
   const followup = interaction.client.followups.get(interaction.customId)
 
-  if (!followup) return Promise.reject()
+  if (!followup)
+    return Promise.reject(`no followup for ${interaction.customId}`)
 
   return followup.execute(interaction)
 }
@@ -54,11 +55,17 @@ async function handleSelectMenu(interaction) {
  */
 async function handleAutocomplete(interaction) {
   const command = interaction.client.commands.get(interaction.commandName)
-  if (!command) return Promise.reject()
+  if (!command)
+    return Promise.reject(
+      `no command ${interaction.commandName} (autocomplete)`
+    )
 
   const option = interaction.options.getFocused(true)
   const completer = command.autocomplete.get(option.name)
-  if (!completer) return Promise.reject()
+  if (!completer)
+    return Promise.reject(
+      `no autocomplete for option ${option.name} on command ${interaction.commandName}`
+    )
 
   return completer.complete(interaction)
 }
