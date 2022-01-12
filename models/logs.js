@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
 
+    /**
+     * Get the correct polymorphic loggable instance for this log
+     *
+     * @param  {Object} options   Sequelize options, like where and include
+     * @return {Promise<record>}  Promise resolving to the loggable record for this log
+     */
     getLoggable(options) {
       if (!this.loggableType) return Promise.resolve(null)
       const mixinMethodName = `get${uppercaseFirst(this.loggableType)}`
