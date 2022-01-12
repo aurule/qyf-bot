@@ -70,18 +70,22 @@ async function handleAutocomplete(interaction) {
   return completer.complete(interaction)
 }
 
+function inCorrectEnv(interaction) {
+  return (
+    !(process.env.NODE_ENV !== "development") ==
+    process.env.DEV_GUILDS.includes(interaction.guildId)
+  )
+}
+
 module.exports = {
   name: "interactionCreate",
   handleCommand,
   handleSelectMenu,
   handleAutocomplete,
+  inCorrectEnv,
   execute(interaction) {
-    if (
-      (process.env.NODE_ENV !== "development") ==
-      process.env.DEV_GUILDS.includes(interaction.guildId)
-    ) {
-      return
-    }
+    if (!module.exports.inCorrectEnv(interaction))
+      return Promise.resolve("wrong guild for env")
 
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
