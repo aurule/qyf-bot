@@ -8,7 +8,7 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_GUILD)
     }
 
-    expect(ManagerPolicy.allow({member})).toBeTruthy()
+    expect(ManagerPolicy.allow({member})).resolves.toBeTruthy()
   })
 
   it("returns true for channel managers", () => {
@@ -16,7 +16,7 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.MANAGE_CHANNELS)
     }
 
-    expect(ManagerPolicy.allow({member})).toBeTruthy()
+    expect(ManagerPolicy.allow({member})).resolves.toBeTruthy()
   })
 
   it("returns false for all others", () => {
@@ -24,6 +24,6 @@ describe("allow", () => {
       permissions: new Permissions(Permissions.FLAGS.DEFAULT)
     }
 
-    expect(ManagerPolicy.allow({member})).toBeFalsy()
+    expect(ManagerPolicy.allow({member})).resolves.toBeFalsy()
   })
 })
