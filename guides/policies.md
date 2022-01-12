@@ -6,7 +6,7 @@ The policy object looks like this:
 
 ```ts
 {
-    allow(interaction): boolean
+    async allow(interaction): boolean
     errorMessage: string
 }
 ```

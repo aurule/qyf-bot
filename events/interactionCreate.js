@@ -9,12 +9,14 @@ const { logger } = require("../util/logger")
  * @return {Promise}                  Promise, probably from replying to the
  *                                    interaction. Rejects if command not found.
  */
-function handleCommand(interaction) {
+async function handleCommand(interaction) {
   const command = interaction.client.commands.get(interaction.commandName)
 
   if (!command) return Promise.reject()
 
-  if (command.policy && !command.policy.allow(interaction)) {
+  const allowed = command.policy ? await command.policy.allow(interaction) : true
+
+  if (!allowed) {
     return interaction
       .reply({
         content: command.policy.errorMessage,
@@ -33,7 +35,7 @@ function handleCommand(interaction) {
  *                                    interaction. Rejects if select menu
  *                                    followup not found.
  */
-function handleSelectMenu(interaction) {
+async function handleSelectMenu(interaction) {
   const followup = interaction.client.followups.get(interaction.customId)
 
   if (!followup) return Promise.reject()
@@ -49,7 +51,7 @@ function handleSelectMenu(interaction) {
  *                                    interaction. Rejects if command or
  *                                    completer isn't found.
  */
-function handleAutocomplete(interaction) {
+async function handleAutocomplete(interaction) {
   const command = interaction.client.commands.get(interaction.commandName)
   if (!command) return Promise.reject()
 
