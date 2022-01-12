@@ -2,7 +2,7 @@
 
 const { Model } = require("sequelize")
 
-const {forceArray} = require("../util/force-array")
+const { forceArray } = require("../util/force-array")
 
 module.exports = (sequelize, DataTypes) => {
   class Logs extends Model {

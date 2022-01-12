@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "loggableId",
         constraints: false,
         scope: {
-          loggableType: "Feedback"
-        }
+          loggableType: "Feedback",
+        },
       })
     }
 
