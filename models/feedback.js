@@ -14,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
         as: "reporter",
         foreignKey: "reporterId",
       })
+      Feedback.hasMany(models.Logs, {
+        foreignKey: "loggableId",
+        constraints: false,
+        scope: {
+          loggableType: "Feedback"
+        }
+      })
     }
 
     // static "constants" to ensure correct type enum values
