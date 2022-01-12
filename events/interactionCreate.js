@@ -14,14 +14,15 @@ async function handleCommand(interaction) {
 
   if (!command) return Promise.reject()
 
-  const allowed = command.policy ? await command.policy.allow(interaction) : true
+  const allowed = command.policy
+    ? await command.policy.allow(interaction)
+    : true
 
   if (!allowed) {
-    return interaction
-      .reply({
-        content: command.policy.errorMessage,
-        ephemeral: true,
-      })
+    return interaction.reply({
+      content: command.policy.errorMessage,
+      ephemeral: true,
+    })
   }
 
   return command.execute(interaction)
