@@ -89,37 +89,34 @@ module.exports = {
 
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
-      return handleCommand(interaction)
-        .catch((error) => {
-          logger.error(error)
-          interaction.reply({
-            content: "There was an error while executing this command!",
-            components: [],
-            ephemeral: true,
-          })
+      return module.exports.handleCommand(interaction).catch((error) => {
+        logger.error(error)
+        return interaction.reply({
+          content: "There was an error while executing this command!",
+          components: [],
+          ephemeral: true,
         })
+      })
     }
 
     // handle choices on select menu components
     if (interaction.isSelectMenu()) {
-      return handleSelectMenu(interaction)
-        .catch((error) => {
-          logger.error(error)
-          interaction.reply({
-            content: "There was an error while executing this command!",
-            components: [],
-            ephemeral: true,
-          })
+      return module.exports.handleSelectMenu(interaction).catch((error) => {
+        logger.error(error)
+        return interaction.reply({
+          content: "There was an error while executing this command!",
+          components: [],
+          ephemeral: true,
         })
+      })
     }
 
     // handle autocomplete requests
     if (interaction.isAutocomplete()) {
-      return handleAutocomplete(interaction)
-        .catch((error) => {
-          logger.error(error)
-          interaction.respond([])
-        })
+      return module.exports.handleAutocomplete(interaction).catch((error) => {
+        logger.error(error)
+        return interaction.respond([])
+      })
     }
   },
 }
