@@ -12,7 +12,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Logs.belongsTo(models.Feedback, { foreignKey: "loggableId", constraints: false })
+      Logs.belongsTo(models.Feedback, {
+        foreignKey: "loggableId",
+        constraints: false,
+      })
+      Logs.belongsTo(models.Bans, {
+        foreignKey: "loggableId",
+        constraints: false,
+      })
     }
 
     /**
@@ -24,13 +31,22 @@ module.exports = (sequelize, DataTypes) => {
       Logs.addHook("afterFind", (findResult) => {
         findResult = forceArray(findResult)
         for (const instance of findResult) {
-          if (instance.loggableType === "Feedback" && instance.Feedback !== undefined) {
-            instance.loggable = instance.Feedback
+          switch (instance.loggableType) {
+            case "Feedback":
+              if (instance.Feedback === undefined) break
+              instance.loggable = instance.Feedback
+              break
+            case "Bans":
+              if (instance.Bans === undefined) break
+              instance.loggable = instance.Bans
+              break
           }
 
           // to prevent mistakes
           delete instance.Feedback
           delete instance.dataValues.Feedback
+          delete instance.Bans
+          delete instance.dataValues.Bans
         }
       })
     }
