@@ -13,6 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       Users.hasMany(models.Lines, { foreignKey: "speakerId" })
       Users.hasMany(models.Quotes, { foreignKey: "quoterId" })
       Users.hasMany(models.Feedback, { foreignKey: "reporterId" })
+      Users.hasMany(models.Bans, {
+        foreignKey: "bannableId",
+        constraints: false,
+        scope: {
+          bannableType: "Users",
+        },
+      })
     }
   }
   Users.init(

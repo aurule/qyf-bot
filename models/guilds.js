@@ -11,6 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Guilds.hasMany(models.Games, { foreignKey: "guildId" })
+      Guilds.hasMany(models.Bans, {
+        foreignKey: "bannableId",
+        constraints: false,
+        scope: {
+          bannableType: "Guilds",
+        },
+      })
     }
 
     /**
