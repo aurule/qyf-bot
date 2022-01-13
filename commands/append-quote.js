@@ -72,10 +72,10 @@ module.exports = {
       include: 'speaker',
     })
 
-    const speaker = await getSpeakerMember(speaker_arg, interaction, last_line)
+    const speaker_member = await getSpeakerMember(speaker_arg, interaction, last_line)
     const speaker_name = determineName({
-      nickname: speaker.nickname,
-      username: speaker.user.username,
+      nickname: speaker_member.nickname,
+      username: speaker_member.user.username,
       alias: alias,
     })
 
@@ -83,14 +83,14 @@ module.exports = {
     return addLine({
       text: text,
       attribution: speaker_name,
-      speaker: speaker.user,
+      speaker: speaker_member.user,
       quote,
     })
       .then(async (result) => {
         await interaction.reply(
           quoteReply({
             reporter: user,
-            speaker: speaker_arg,
+            speaker: speaker_member.user,
             alias: alias,
             text: text,
             action: "added text from"
