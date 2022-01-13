@@ -1,11 +1,6 @@
 const Followup = require("./new-quote-game-select")
 
-const {
-  Guilds,
-  Games,
-  Quotes,
-  Lines,
-} = require("../models")
+const { Guilds, Games, Quotes, Lines } = require("../models")
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
 const { followup_store } = require("../util/keyv.js")
@@ -19,8 +14,8 @@ const quote_options = new QuoteData({
   attribution: "The Person",
   speaker: {
     id: 1,
-    username: "TheFiddler"
-  }
+    username: "TheFiddler",
+  },
 })
 const caller_id = simpleflake()
 
@@ -40,7 +35,7 @@ beforeEach(async () => {
   }
 
   interaction.values = [game.id.toString()]
-  interaction.message.interaction = {id: caller_id}
+  interaction.message.interaction = { id: caller_id }
   followup_store.set(caller_id, quote_options)
 })
 
@@ -74,7 +69,7 @@ describe("reply", () => {
   it("says who saved the quote", async () => {
     const reply = await Followup.execute(interaction)
 
-    expect(reply).toMatch(interaction.user.username)
+    expect(reply).toMatch(interaction.user.id.toString())
   })
 
   it("displays the quote text", async () => {
@@ -89,11 +84,13 @@ describe("reply", () => {
     expect(reply).toMatch(quote_options.attribution)
   })
 
-  it("notifies if there is an error", async () => {
-    jest.spyOn(Quotes, 'create').mockRejectedValue(new Error("test error"))
+  it("throws errors up the chain", async () => {
+    jest.spyOn(Quotes, "create").mockRejectedValue(new Error("test error"))
 
-    const reply = await Followup.execute(interaction)
+    expect.assertions(1)
 
-    expect(reply).toMatch("Something went wrong")
+    return Followup.execute(interaction).catch((e) =>
+      expect(e.message).toMatch("test error")
+    )
   })
 })

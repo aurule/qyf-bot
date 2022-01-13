@@ -1,6 +1,7 @@
 const { Quotes, Games } = require("../models")
 const { makeQuote } = require("../services/quote-builder")
 const { followup_store } = require("../util/keyv.js")
+const { quoteReply } = require("../services/reply-builder")
 
 module.exports = {
   name: "newQuoteGameSelect",
@@ -8,7 +9,9 @@ module.exports = {
     const game = await Games.findByPk(interaction.values[0])
     interaction.update({ content: `Chose ${game.name}`, components: [] })
 
-    options = await followup_store.get(interaction.message.interaction.id.toString())
+    options = await followup_store.get(
+      interaction.message.interaction.id.toString()
+    )
 
     return makeQuote({
       text: options.text,
@@ -17,13 +20,18 @@ module.exports = {
       speaker: options.speaker,
       context: options.context,
     })
-      .then((result) => {
-        return interaction.followUp(
-          `${interaction.user.username} quoted ${options.attribution}: ${options.text}`
+      .then(async (result) => {
+        return interaction.reply(
+          quoteReply({
+            reporter: interaction.user,
+            speaker: options.speaker,
+            alias: options.attribution,
+            text: options.text,
+          })
         )
       })
       .catch((error) => {
-        return interaction.followUp("Something went wrong :-(")
+        throw error
       })
   },
 }
