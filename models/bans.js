@@ -80,9 +80,9 @@ module.exports = (sequelize, DataTypes) => {
       bannableId: DataTypes.INTEGER,
       expiresAt: DataTypes.DATE,
       active: {
-        type: DataTypes.VIRTUAL,
+        type: new DataTypes.VIRTUAL(DataTypes.BOOLEAN, ['expiresAt']),
         get() {
-          return this.expiresAt >= Date.now()
+          return this.get("expiresAt") >= Date.now()
         },
         set(value) {
           throw new Error("Do not try to set the `active` value!")
