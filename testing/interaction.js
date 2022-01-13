@@ -27,11 +27,11 @@ class Interaction {
         return this.partial_text
       },
     }
-    ;(this.guildId = snowflake),
-      (this.guild = {
-        id: snowflake,
-        members: [],
-      })
+    this.guildId = snowflake
+    this.guild = {
+      id: snowflake,
+      members: [],
+    }
     this.guild.members.fetch = (user) => user
     this.channel = {
       id: simpleflake(),
