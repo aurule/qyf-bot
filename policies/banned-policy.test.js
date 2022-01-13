@@ -2,7 +2,6 @@ const BannedPolicy = require("./banned-policy")
 const { Bans, Users } = require("../models")
 
 const { Interaction } = require("../testing/interaction")
-const { simpleflake } = require("simpleflakes")
 const { addMinutes, subMinutes } = require("date-fns")
 
 let user
@@ -13,12 +12,14 @@ describe("allow", () => {
     interaction = new Interaction()
     user = await Users.create({
       name: "Test User",
-      snowflake: interaction.user.id.toString()
+      snowflake: interaction.user.id.toString(),
     })
   })
 
   afterEach(async () => {
-    await Bans.destroy({where: {bannableType: "Users", bannableId: user.id}})
+    await Bans.destroy({
+      where: { bannableType: "Users", bannableId: user.id },
+    })
     await user.destroy()
   })
 
@@ -31,7 +32,7 @@ describe("allow", () => {
   it("returns true if the user has only expired bans", async () => {
     await user.createBan({
       reason: "testing bans",
-      expiresAt: subMinutes(new Date(), 15)
+      expiresAt: subMinutes(new Date(), 15),
     })
 
     const result = await BannedPolicy.allow(interaction)
@@ -42,7 +43,7 @@ describe("allow", () => {
   it("returns false if the user has any active bans", async () => {
     await user.createBan({
       reason: "testing bans",
-      expiresAt: addMinutes(new Date(), 15)
+      expiresAt: addMinutes(new Date(), 15),
     })
 
     const result = await BannedPolicy.allow(interaction)
