@@ -198,6 +198,30 @@ describe("handleCommand", () => {
       ).resolves.toMatchObject({ content: "not allowed" })
     })
   })
+
+  describe("when command is in a DM", () => {
+    beforeEach(() => {
+      interaction.guild = null
+    })
+
+    afterEach(() => {
+      testCommand.dm = undefined
+    })
+
+    it("runs the command's dm method if present", () => {
+      testCommand.dm = function (interaction) { return "DM worked" }
+
+      return expect(
+        InteractionCreateEvent.handleCommand(interaction)
+      ).resolves.toMatch("DM worked")
+    })
+
+    it("replies with an error if the command has no dm method", () => {
+      return expect(
+        InteractionCreateEvent.handleCommand(interaction)
+      ).resolves.toMatchObject({content: "This command does not work in DMs. Sorry!"})
+    })
+  })
 })
 
 describe("handleSelectMenu", () => {
