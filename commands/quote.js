@@ -61,7 +61,7 @@ module.exports = {
     const speaker_member = await interaction.guild.members.fetch(speaker)
     const speaker_name = determineName({
       nickname: speaker_member.nickname,
-      username: speaker.username,
+      username: speaker_member.user.username,
       alias: alias,
     })
 
@@ -78,7 +78,7 @@ module.exports = {
         text: text,
         attribution: speaker_name,
         game: game,
-        speaker: speaker,
+        speaker: speaker_member.user,
         quoter: user,
         context: context,
       })
@@ -86,7 +86,7 @@ module.exports = {
           return interaction.reply(
             quoteReply({
               reporter: user,
-              speaker: speaker,
+              speaker: speaker_member.user,
               alias: alias,
               text: text
             })
@@ -103,7 +103,7 @@ module.exports = {
       new QuoteData({
         text: text,
         attribution: speaker_name,
-        speaker: speaker,
+        speaker: speaker_member.user,
         context: context,
       }),
       900000 // expire in 15 minutes

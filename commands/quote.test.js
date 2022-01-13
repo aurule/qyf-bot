@@ -33,10 +33,16 @@ beforeEach(async () => {
     console.log(err)
   }
 
+  const speaker_snowflake = simpleflake()
+
   interaction.command_options.text = "Text of the quote"
   interaction.command_options.speaker = {
-    username: "Test Speaker User",
-    id: simpleflake(),
+    nickname: "Test Nickname",
+    user: {
+      id: speaker_snowflake,
+      username: "Test Speaker User",
+    },
+    id: speaker_snowflake,
   }
   interaction.command_options.alias = "Dude Bro"
 })
