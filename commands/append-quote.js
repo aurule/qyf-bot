@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
+const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 
 const { Lines } = require("../models")
 const { determineName } = require("../services/speaker-name")
@@ -7,6 +7,7 @@ const QuotePresenter = require("../presenters/quote-presenter")
 const QuoteFinder = require("../services/quote-finder")
 const { stripIndent, oneLine } = require("common-tags")
 const { quoteReply } = require("../services/reply-builder")
+const { memberOrAnonymous } = require("../services/member-injector")
 
 /**
  * Get the correct member object
@@ -16,9 +17,9 @@ const { quoteReply } = require("../services/reply-builder")
  * @return {Member}                   Discord member object to user for the line attribution
  */
 async function getSpeakerMember(arg, interaction, last_line) {
-  if (arg) return interaction.guild.members.fetch(arg)
+  if (arg) return memberOrAnonymous(interaction.guild, arg)
 
-  return interaction.guild.members.fetch(last_line.speaker.snowflake)
+  return memberOrAnonymous(interaction.guild, {id: last_line.speaker.snowflake})
 }
 
 module.exports = {
@@ -129,7 +130,8 @@ module.exports = {
       oneLine`
         If you give a new \`speaker\`, the new line will use their current server nickname (if set) or their
         Discord username as the attribution. If you give an \`alias\`, the new line will use it for the
-        attribution with no exceptions.
+        attribution with no exceptions. To record a line from someone who isn't on Discord, or from an
+        anonymous source, use the ${userMention(process.env.CLIENT_ID)} user as the speaker.
       `,
     ].join("\n")
   },

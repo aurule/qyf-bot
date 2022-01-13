@@ -147,7 +147,7 @@ describe("getSpeakerMember", () => {
 
     const result = await append_quote_command.getSpeakerMember(null, interaction, line)
 
-    expect(result).toEqual(speaker.snowflake)
+    expect(result).toMatchObject({id: speaker.snowflake})
   })
 })
 

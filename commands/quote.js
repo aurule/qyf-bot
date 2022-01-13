@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
+const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { followup_store } = require("../util/keyv")
 const { stripIndent, oneLine } = require("common-tags")
@@ -11,6 +11,7 @@ const GameSelectTransformer = require("../transformers/game-select-transformer")
 const { makeQuote, QuoteData } = require("../services/quote-builder")
 const GameNameWithDefaultCompleter = require("../completers/game-name-with-default-completer")
 const { quoteReply } = require("../services/reply-builder")
+const { memberOrAnonymous } = require("../services/member-injector")
 
 module.exports = {
   name: "quote",
@@ -58,7 +59,7 @@ module.exports = {
     const user = interaction.user
     const game_arg = Number(interaction.options.getString("game"))
 
-    const speaker_member = await interaction.guild.members.fetch(speaker)
+    const speaker_member = await memberOrAnonymous(interaction.guild, speaker)
     const speaker_name = determineName({
       nickname: speaker_member.nickname,
       username: speaker_member.user.username,
@@ -136,7 +137,7 @@ module.exports = {
       stripIndent`
         Args:
             \`text\`: (required) The text of the quote
-            \`speaker\`: (required) The user who said it
+            \`speaker\`: (required) The user who said it.
             \`alias\`: The name to use for the speaker, in case their nickname doesn't match their character, etc.
             \`context\`: A few words about what's going on to help the quote make sense
             \`game\`: The game this quote is for, in case the default game isn't right
@@ -146,6 +147,11 @@ module.exports = {
         The given \`text\` will be recorded as a new quote. If you give an \`alias\`, that will be used for the
         attribution. If you don't, then ${command_name} will use the \`speaker\`'s server nickname (if set) or
         their Discord username.
+      `,
+      "",
+      oneLine`
+        To record a quote from someone who isn't on Discord, or from an anonymous source, use the
+        ${userMention(process.env.CLIENT_ID)} user as the speaker.
       `,
       "",
       "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
