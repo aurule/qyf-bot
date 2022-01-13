@@ -1,4 +1,4 @@
-const { inlineCode, hideLinkEmbed } = require("@discordjs/builders")
+const { inlineCode, hideLinkEmbed, hyperlink } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 
 module.exports = {
@@ -9,15 +9,17 @@ module.exports = {
     return [
       oneLine`
         qyf-bot is the Discord bot component of *Quote Your Friends*, a passion project by Paige Andrews. It
-        is built on NodeJS using the excellent discord.js library, among others. Some icons are made by
-        ${hideLinkEmbed("https://www.freepik.com")} from ${hideLinkEmbed("https://www.flaticon.com/")}.
+        is built on NodeJS using the excellent discord.js library, among others. qyf-bot is open source
+        software released under the MIT license, reproduced below. The source code is available at
+        ${hideLinkEmbed("https://github.com/aurule/qyf-bot")} and contributions are welcome!
       `,
       "",
       oneLine`
-        qyf-bot is open source software released under the MIT license, reproduced below. The source code is
-        available at ${hideLinkEmbed("https://github.com/aurule/qyf-bot")} and contributions are welcome!
+        Some icons are made by ${hyperlink("freepik.com", hideLinkEmbed("https://www.freepik.com"))} from
+        ${hyperlink("flaticon.com", hideLinkEmbed("https://www.flaticon.com/"))}.
       `,
       "",
+      "===== LICENSE =====",
       "MIT License",
       "",
       "Copyright (c) 2021 Paige Andrews",
