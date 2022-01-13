@@ -21,10 +21,14 @@ module.exports = {
 
     lines.push(memberNicknameMention(reporter.id))
     lines.push(` ${action} `)
-    lines.push(memberNicknameMention(speaker.id))
-    if (alias) {
-      lines.push(" as ")
-      lines.push(alias)
+    if (speaker.anonymous) {
+      alias ? lines.push(alias) : lines.push(speaker.username)
+    } else {
+      lines.push(memberNicknameMention(speaker.id))
+      if (alias) {
+        lines.push(" as ")
+        lines.push(alias)
+      }
     }
     lines.push(": ")
     lines.push(text)
