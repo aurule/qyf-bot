@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
-const { stripIndent } = require("common-tags")
+const { SlashCommandBuilder, italic, underscore } = require("@discordjs/builders")
+const { stripIndent, oneLine } = require("common-tags")
 
 const commandFetch = require("../services/command-fetch")
 const CommandChoicesTransformer = require("../transformers/command-choices-transformer")
@@ -54,16 +54,29 @@ module.exports = {
     return module.exports.execute(interaction)
   },
   help({ command_name }) {
-    return stripIndent`
-      ${command_name} shows helpful information about a command or topic.
-
-      Args:
-          \`topic\`: The topic you want help with
-          \`command\`: The command you want help with
-
-      Both args let you pick from a list, so you don't need to memorize command or topic names.
-
-      If you give both a command and a topic, ${command_name} will only show help for the topic.
-    `
+    return [
+      `${command_name} shows helpful information about a command or topic.`,
+      "",
+      stripIndent`
+        Args:
+            \`topic\`: The topic you want help with
+            \`command\`: The command you want help with
+      `,
+      "",
+      oneLine`
+        Both args let you pick from a list, so you don't need to memorize command or topic names. If you give
+        both a command and a topic, ${command_name} will only show help for the topic.
+      `,
+      "",
+      oneLine`
+        If you haven't used qyf-bot before, start with the ${underscore(Topics.get("welcome").title)} help
+        topic, then take a look at the ${underscore(Topics.get("commands").title)} topic to learn about commands.
+      `,
+      "",
+      "Here are the available help topics:",
+      Topics
+        .map(t => `• ${t.title} - ${italic(t.description)}`)
+        .join("\n")
+    ].join("\n")
   },
 }
