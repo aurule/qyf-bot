@@ -50,6 +50,9 @@ module.exports = {
     // return reply with the command's help text
     return interaction.reply(CommandHelpPresenter.present(command))
   },
+  async dm(interaction) {
+    return module.exports.execute(interaction)
+  },
   help({ command_name }) {
     return stripIndent`
       ${command_name} shows helpful information about a command or topic.
