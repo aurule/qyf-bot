@@ -7,6 +7,31 @@ const { simpleflake } = require("simpleflakes")
 var user
 var interaction
 
+beforeEach(async () => {
+  try {
+    user = await Users.create({
+      name: "Test User",
+      snowflake: simpleflake().toString(),
+    })
+    interaction = new Interaction()
+    interaction.member_snowflake = user.snowflake
+  } catch (err) {
+    console.log(err)
+  }
+
+  interaction.command_options.type = Feedback.TYPE_COMMENT
+  interaction.command_options.content = "test comment"
+})
+
+afterEach(async () => {
+  try {
+    await Feedback.destroy({ where: { reporterId: user.id } })
+    await user.destroy()
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 describe("execute", () => {
   describe("with an existing user", () => {
     beforeEach(async () => {
@@ -83,29 +108,14 @@ describe("execute", () => {
   })
 })
 
-beforeEach(async () => {
-  try {
-    user = await Users.create({
-      name: "Test User",
-      snowflake: simpleflake().toString(),
-    })
-    interaction = new Interaction()
-    interaction.member_snowflake = user.snowflake
-  } catch (err) {
-    console.log(err)
-  }
+describe("dm", () => {
+  it("calls execute", async () => {
+    const executeMock = jest.spyOn(feedback_command, "execute")
 
-  interaction.command_options.type = Feedback.TYPE_COMMENT
-  interaction.command_options.content = "test comment"
-})
+    await feedback_command.dm(interaction)
 
-afterEach(async () => {
-  try {
-    await Feedback.destroy({ where: { reporterId: user.id } })
-    await user.destroy()
-  } catch (err) {
-    console.log(err)
-  }
+    expect(executeMock).toHaveBeenCalled()
+  })
 })
 
 describe("data", () => {
