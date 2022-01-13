@@ -4,6 +4,7 @@ const { stripIndent, oneLine } = require("common-tags")
 module.exports = {
   name: "about",
   title: "About qyf-bot",
+  description: "Author and license info",
   help() {
     return [
       oneLine`

@@ -4,6 +4,7 @@ const { stripIndent, oneLine } = require("common-tags")
 module.exports = {
   name: "default-games",
   title: "Default Games",
+  description: "Explanation of how default games work",
   help() {
     return [
       oneLine`

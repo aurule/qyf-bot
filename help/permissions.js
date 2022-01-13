@@ -6,6 +6,7 @@ const ManagerPolicy = require("../policies/manager-policy")
 module.exports = {
   name: "permissions",
   title: "Command Permissions",
+  description: "Explanation of who can use which commands",
   help() {
     return [
       "Most of qyf-bot's commands can be used by anyone in the server who has the *Use Application Commands* permission.",

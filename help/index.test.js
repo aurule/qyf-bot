@@ -11,6 +11,10 @@ describe("all help topics", () => {
         expect(topic.title).toBeTruthy()
       })
 
+      it("has a description", () => {
+        expect(topic.description).toBeTruthy()
+      })
+
       it("has some content", () => {
         expect(topic.help()).toBeTruthy()
       })

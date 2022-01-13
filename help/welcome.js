@@ -4,6 +4,7 @@ const { oneLine } = require("common-tags")
 module.exports = {
   name: "welcome",
   title: "Welcome to qyf-bot",
+  description: "A friendly introduction",
   help() {
     return [
       oneLine`

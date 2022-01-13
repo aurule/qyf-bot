@@ -6,9 +6,10 @@ The help object looks like this:
 
 ```ts
 {
-    name: string,   // "topic-name"
-    title: string,  // "Formatted Topic Name"
-    help(): string  // "my very long help text"
+    name: string,        // "topic-name"
+    title: string,       // "Formatted Topic Name"
+    description: string, // "a few clarifying words"
+    help(): string       // "my very long help text"
 }
 ```
 
@@ -17,6 +18,7 @@ The help object looks like this:
 Requirements:
 
 * The `name` must be unique across all help topics
+* The `title` can be any short string for the topic's contents
 * The `title` can be any descriptive string for the topic's contents
 * The `help` method must return a string
 

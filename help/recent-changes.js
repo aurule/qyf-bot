@@ -16,6 +16,7 @@ function getChangelog() {
 module.exports = {
   name: "changes",
   title: "Recent Changes",
+  description: "See what's new!",
   help() {
     return [
       `qyf-bot is on version ${version}. Here's what's new!`,

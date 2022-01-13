@@ -4,7 +4,8 @@ const commandFetch = require("../services/command-fetch")
 
 module.exports = {
   name: "commands",
-  title: "Available Commands",
+  title: "Commands",
+  description: "How to use slash commands and what's available",
   help() {
     return [
       oneLine`
