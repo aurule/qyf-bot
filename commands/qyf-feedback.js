@@ -2,9 +2,11 @@ const { SlashCommandBuilder } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { Feedback, Users } = require("../models")
+const BannedPolicy = require("../policies/banned-policy")
 
 module.exports = {
   name: "qyf-feedback",
+  policy: BannedPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName("qyf-feedback")
