@@ -5,6 +5,7 @@ const { Collection } = require("discord.js")
 const { Interaction } = require("../testing/interaction")
 
 var interaction
+var envSpy
 
 beforeEach(() => {
   interaction = new Interaction()
@@ -13,8 +14,12 @@ beforeEach(() => {
 describe("execute", () => {
   var handleSpy
 
+  beforeEach(() => {
+    envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
+  })
+
   it("aborts when not in correct env", () => {
-    jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(false)
+    envSpy.mockReturnValue(false)
 
     return expect(InteractionCreateEvent.execute(interaction)).resolves.toMatch(
       "wrong guild for env"
@@ -154,6 +159,7 @@ describe("handleCommand", () => {
   beforeEach(() => {
     interaction.client.commands.set("testing", testCommand)
     interaction.commandName = "testing"
+    envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
   })
 
   it("rejects on unknown command", () => {
@@ -231,6 +237,7 @@ describe("handleSelectMenu", () => {
 
   beforeEach(() => {
     interaction.client.followups.set("testing", testFollowup)
+    envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
   })
 
   it("rejects on unknown followup", () => {
@@ -262,6 +269,7 @@ describe("handleAutocomplete", () => {
   beforeEach(() => {
     interaction.client.commands.set("testing", testCommand)
     testCommand.autocomplete.set("testOption", testAutocomplete)
+    envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
   })
 
   it("rejects on unknown command", () => {
