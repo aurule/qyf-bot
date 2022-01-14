@@ -131,7 +131,10 @@ describe("execute", () => {
 
 describe("getSpeakerMember", () => {
   it("uses the provided speaker if given", async () => {
-    const speaker_arg = { nickname: "test mann" }
+    const speaker_arg = {
+      id: simpleflake(),
+      nickname: "test mann",
+    }
 
     const result = await append_quote_command.getSpeakerMember(
       speaker_arg,
