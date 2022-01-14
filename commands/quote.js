@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
+const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { followup_store } = require("../util/keyv")
 const { stripIndent, oneLine } = require("common-tags")
@@ -154,7 +154,7 @@ module.exports = {
         ${userMention(process.env.CLIENT_ID)} user as the speaker.
       `,
       "",
-      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+      `For more info on how default games work, check out the ${underscore("Default Games")} topic in \`/qyf-help\`.`
     ].join("\n")
   },
 }

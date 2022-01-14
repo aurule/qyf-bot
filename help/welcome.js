@@ -1,4 +1,4 @@
-const { inlineCode } = require("@discordjs/builders")
+const { inlineCode, underscore } = require("@discordjs/builders")
 const { oneLine } = require("common-tags")
 
 module.exports = {
@@ -23,9 +23,9 @@ module.exports = {
       `,
       "",
       oneLine`
-        If you're handling multiple games in your server, take a look at the ${inlineCode("Default Games")} help
+        If you're handling multiple games in your server, take a look at the ${underscore("Default Games")} help
         topic. The default games system is pretty flexible! Also, some commands can only be used by users with
-        certain roles on the server. See the ${inlineCode("Command Permissions")} help topic for more about that.
+        certain roles on the server. See the ${underscore("Command Permissions")} help topic for more about that.
       `,
       "",
       "Thanks again, and happy quoting!",

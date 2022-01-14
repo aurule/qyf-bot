@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, userMention } = require("@discordjs/builders")
+const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { Collection } = require("discord.js")
 
@@ -184,7 +184,7 @@ module.exports = {
       oneLine`
         ${command_name} finds a quote which matches *all* of the options given. The quote is pulled from the
         channel's default game, or from all games if no default is set. For more info on how default games
-        work, check out the *Default Games* topic in \`/qyf-help\`.
+        work, check out the ${underscore("Default Games")} topic in \`/qyf-help\`.
       `,
     ].join("\n")
   },

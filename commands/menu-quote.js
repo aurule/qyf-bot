@@ -1,4 +1,4 @@
-const { ContextMenuCommandBuilder } = require("@discordjs/builders")
+const { ContextMenuCommandBuilder, underscore } = require("@discordjs/builders")
 const { ApplicationCommandType } = require("discord-api-types/v9")
 const { MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
@@ -99,7 +99,7 @@ module.exports = {
         line's attribution.
       `,
       "",
-      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+      `For more info on how default games work, check out the ${underscore("Default Games")} topic in \`/qyf-help\`.`
     ].join("\n")
   },
 }

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
+const { SlashCommandBuilder, underscore } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { Collection } = require("discord.js")
 
@@ -86,7 +86,7 @@ module.exports = {
         server-wide default.
       `,
       "",
-      "For more info on how default games work, check out the *Default Games* topic in `/qyf-help`."
+      `For more info on how default games work, check out the ${underscore("Default Games")} topic in \`/qyf-help\`.`
     ].join("\n")
   },
 }
