@@ -3,13 +3,16 @@
 const fs = require("fs")
 const path = require("path")
 const Sequelize = require("sequelize")
+const { Collection } = require("discord.js")
+
+const { jsNoTests, noDotFiles } = require("../util/filters")
+
 const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || "development"
 const config_file = require(__dirname + "/../.sequelizerc").config
 const config = require(config_file)[env]
 const db = {}
-
-const { jsNoTests, noDotFiles } = require("../util/filters")
+const models = new Collection()
 
 const sequelize = new Sequelize(
   config.database,
@@ -22,9 +25,7 @@ fs.readdirSync(__dirname)
   .filter(jsNoTests)
   .filter(noDotFiles)
   .filter((file) => {
-    return (
-      file !== basename
-    )
+    return file !== basename
   })
   .forEach((file) => {
     const model = require(path.join(__dirname, file))(
@@ -42,9 +43,10 @@ fs.readdirSync(__dirname)
      * @return {Promise}
      */
     model.destroyByPk = async (ids) => {
-      return model.destroy({where: {id: ids}})
+      return model.destroy({ where: { id: ids } })
     }
     db[model.name] = model
+    models.set(model.name, model)
   })
 
 Object.keys(db).forEach((modelName) => {
@@ -58,5 +60,6 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize
+db.models = models
 
 module.exports = db
