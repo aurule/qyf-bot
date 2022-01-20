@@ -21,6 +21,19 @@ module.exports = (sequelize, DataTypes) => {
         },
       })
     }
+
+    /**
+     * Find a user by an explicit snowflake
+     * @param  {String} snowflake     Snowflake value
+     * @param  {Object} options       Additional options to pass to the findOne() method
+     * @return {Promise<Users|null>} User object or null
+     */
+    static async findBySnowflake(snowflake, options = {}) {
+      return Users.findOne({
+        where: { snowflake: snowflake },
+        ...options,
+      })
+    }
   }
   Users.init(
     {
