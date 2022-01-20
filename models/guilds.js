@@ -21,16 +21,26 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     /**
+     * Find a guild by an explicit snowflake
+     * @param  {String} snowflake     Snowflake value
+     * @param  {Object} options       Additional options to pass to the findOne() method
+     * @return {Promise<Guilds|null>} Guild object or null
+     */
+    static async findBySnowflake(snowflake, options = {}) {
+      return Guilds.findOne({
+        where: { snowflake: snowflake },
+        ...options,
+      })
+    }
+
+    /**
      * Find a guild by the guild snowflake in a discord interaction
      * @param  {Interaction}  interaction Discordjs interaction object
      * @param  {Object}       options     Additional options to pass to the findOne() method
      * @return {Promise<Guilds|null>}     Guild object or null
      */
     static async findByInteraction(interaction, options = {}) {
-      return Guilds.findOne({
-        where: { snowflake: interaction.guildId },
-        ...options,
-      })
+      return Guilds.findBySnowflake(interaction.guildId, options)
     }
   }
   Guilds.init(
