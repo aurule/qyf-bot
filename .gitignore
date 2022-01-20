@@ -105,3 +105,6 @@ dist
 
 # Local testing databases
 .sqlite/
+
+# mac files
+.DS_STORE
