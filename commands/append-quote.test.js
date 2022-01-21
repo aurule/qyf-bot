@@ -154,6 +154,16 @@ describe("getSpeakerMember", () => {
   })
 })
 
+describe("dm", () => {
+  it("calls execute", async () => {
+    const executeMock = jest.spyOn(append_quote_command, "execute")
+
+    await append_quote_command.dm(interaction)
+
+    expect(executeMock).toHaveBeenCalled()
+  })
+})
+
 describe("data", () => {
   // This test is very bare-bones because we're really just
   // testing that the various calls to discord.js functions

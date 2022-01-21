@@ -105,6 +105,9 @@ module.exports = {
         throw(error)
       })
   },
+  async dm(interaction) {
+    return module.exports.execute(interaction)
+  },
   help({ command_name }) {
     return [
       oneLine`
