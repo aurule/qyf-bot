@@ -27,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
      * @return {Promise<Guilds|null>} Guild object or null
      */
     static async findBySnowflake(snowflake, options = {}) {
+      if (!snowflake) return null
+
       return Guilds.findOne({
         where: { snowflake: snowflake },
         ...options,

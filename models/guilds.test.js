@@ -46,4 +46,10 @@ describe("findBySnowflake", () => {
 
     expect(findSpy).toHaveBeenCalledWith({ where: { snowflake: "12345" }, test: "yes" })
   })
+
+  it("returns null with a missing snowflake", async () => {
+    const result = await Guilds.findBySnowflake()
+
+    expect(result).toBeNull()
+  })
 })

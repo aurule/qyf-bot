@@ -29,6 +29,8 @@ module.exports = (sequelize, DataTypes) => {
      * @return {Promise<Users|null>} User object or null
      */
     static async findBySnowflake(snowflake, options = {}) {
+      if (!snowflake) return null
+
       return Users.findOne({
         where: { snowflake: snowflake },
         ...options,
