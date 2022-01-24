@@ -1,4 +1,4 @@
-const { inlineCode, italic } = require('@discordjs/builders');
+const { inlineCode, italic, userMention } = require('@discordjs/builders');
 
 module.exports = {
   /**
@@ -14,6 +14,11 @@ module.exports = {
     lines.push(`Showing help for ${command_name}:`)
 
     lines.push(command.help({command_name: command_name}))
+
+    if (command.dm) {
+      lines.push("")
+      lines.push(`${command_name} can be used in DMs with ${userMention(process.env.CLIENT_ID)}`)
+    }
 
     return lines.join("\n")
   }
