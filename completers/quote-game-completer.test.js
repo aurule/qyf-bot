@@ -1,4 +1,4 @@
-const GameNameWithDefaultCompleter = require("./game-name-with-default-completer")
+const QuoteGameCompleter = require("./quote-game-completer")
 const { Guilds, Games, DefaultGames } = require("../models")
 
 const { Interaction } = require("../testing/interaction")
@@ -50,7 +50,7 @@ describe("complete", () => {
       guildId: wrong_guild.id,
     })
 
-    const result = await GameNameWithDefaultCompleter.complete(interaction)
+    const result = await QuoteGameCompleter.complete(interaction)
 
     expect(result.length).toEqual(1)
     expect(result[0]).not.toMatchObject({ name: wrong_game.name })
@@ -61,7 +61,7 @@ describe("complete", () => {
   })
 
   it("gets games that match the partial text", async () => {
-    const result = await GameNameWithDefaultCompleter.complete(interaction)
+    const result = await QuoteGameCompleter.complete(interaction)
 
     expect(result[0]).toMatchObject({ name: game.name, value: `${game.id}` })
   })
@@ -69,7 +69,7 @@ describe("complete", () => {
   it("gracefully handles no results", async () => {
     interaction.partial_text = "nothing matches"
 
-    const result = await GameNameWithDefaultCompleter.complete(interaction)
+    const result = await QuoteGameCompleter.complete(interaction)
 
     expect(result.length).toEqual(0)
   })
@@ -89,7 +89,7 @@ describe("complete", () => {
 
     interaction.partial_text = "second"
 
-    const result = await GameNameWithDefaultCompleter.complete(interaction)
+    const result = await QuoteGameCompleter.complete(interaction)
 
     expect(result[0]).toMatchObject({ name: `${game2.name} (default)`, value: `${game2.id}` })
   })

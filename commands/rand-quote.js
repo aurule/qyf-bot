@@ -7,7 +7,7 @@ const GameChoicesTransformer = require("../transformers/game-choices-transformer
 const QuoteFinder = require("../services/quote-finder")
 const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
-const GameNameWithAllCompleter = require("../completers/game-name-with-all-completer")
+const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
 
 /**
  * Get the correct game or fall back on default data
@@ -30,7 +30,7 @@ async function getGameOrDefault(game_arg, channel) {
     name: "all games",
   }
 
-  if (game_arg == GameNameWithAllCompleter.ALL_GAMES) return null_game
+  if (game_arg == QuoteListGameCompleter.ALL_GAMES) return null_game
 
   var game
   if (game_arg) {
@@ -109,7 +109,7 @@ module.exports = {
           .setAutocomplete(true)
       ),
   autocomplete: new Collection([
-    ['game', GameNameWithAllCompleter]
+    ['game', QuoteListGameCompleter]
   ]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")

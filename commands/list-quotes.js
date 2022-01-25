@@ -8,7 +8,7 @@ const QuoteFinder = require("../services/quote-finder")
 const { clamp } = require("../util/clamp")
 const QuotePresenter = require("../presenters/quote-presenter")
 const { gameForChannel } = require("../services/default-game-scope")
-const GameNameWithAllCompleter = require("../completers/game-name-with-all-completer")
+const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
 
 /**
  * Maximum number of quotes that can be displayed
@@ -43,7 +43,7 @@ async function getGameOrDefault(game_arg, channel) {
     name: "all games",
   }
 
-  if (game_arg == GameNameWithAllCompleter.ALL_GAMES) return null_game
+  if (game_arg == QuoteListGameCompleter.ALL_GAMES) return null_game
 
   var game
   if (game_arg) {
@@ -135,7 +135,7 @@ module.exports = {
           .setMaxValue(MAX_LIMIT)
       ),
   autocomplete: new Collection([
-    ['game', GameNameWithAllCompleter]
+    ['game', QuoteListGameCompleter]
   ]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")

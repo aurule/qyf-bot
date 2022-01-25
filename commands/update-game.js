@@ -6,7 +6,7 @@ const { Collection } = require("discord.js")
 const { Guilds, Games } = require("../models")
 const { logger } = require("../util/logger")
 const ManagerPolicy = require("../policies/manager-policy")
-const GameNameCompleter = require("../completers/game-name-completer")
+const GameManageCompleter = require("../completers/game-manage-completer")
 const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
           .setDescription("A few words about the game")
       ),
   autocomplete: new Collection([
-    ['game', GameNameCompleter]
+    ['game', GameManageCompleter]
   ]),
   async execute(interaction) {
     const game_arg = Number(interaction.options.getString("game"))

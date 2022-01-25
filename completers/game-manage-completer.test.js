@@ -1,4 +1,4 @@
-const GameNameWithAllCompleter = require("./game-name-with-all-completer")
+const GameManageCompleter = require("./game-manage-completer")
 const { Guilds, Games } = require("../models")
 
 const { Interaction } = require("../testing/interaction")
@@ -46,18 +46,18 @@ describe("complete", () => {
       guildId: wrong_guild.id,
     })
 
-    const result = await GameNameWithAllCompleter.complete(interaction)
+    const result = await GameManageCompleter.complete(interaction)
 
-    expect(result.length).toEqual(2)
+    expect(result.length).toEqual(1)
     expect(result[0]).not.toMatchObject({ name: wrong_game.name })
     expect(result[0]).toMatchObject({ name: game.name })
 
-    await wrong_game.destroy()
-    await wrong_guild.destroy()
+    wrong_game.destroy()
+    wrong_guild.destroy()
   })
 
   it("gets games that match the partial text", async () => {
-    const result = await GameNameWithAllCompleter.complete(interaction)
+    const result = await GameManageCompleter.complete(interaction)
 
     expect(result[0]).toMatchObject({ name: game.name, value: `${game.id}` })
   })
@@ -65,16 +65,8 @@ describe("complete", () => {
   it("gracefully handles no results", async () => {
     interaction.partial_text = "nothing matches"
 
-    const result = await GameNameWithAllCompleter.complete(interaction)
+    const result = await GameManageCompleter.complete(interaction)
 
-    expect(result.length).toEqual(1)
-  })
-
-  it("includes a valid All Games entry", async () => {
-    interaction.partial_text = "nothing matches"
-
-    const result = await GameNameWithAllCompleter.complete(interaction)
-
-    expect(result[0]).toEqual({name: "All Games", value: "-1"})
+    expect(result.length).toEqual(0)
   })
 })

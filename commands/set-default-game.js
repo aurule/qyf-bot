@@ -6,7 +6,7 @@ const { Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const { logger } = require("../util/logger")
 const ManagerPolicy = require("../policies/manager-policy")
-const GameNameCompleter = require("../completers/game-name-completer")
+const GameManageCompleter = require("../completers/game-manage-completer")
 
 module.exports = {
   name: "set-default-game",
@@ -31,7 +31,7 @@ module.exports = {
           .setDescription("Apply default to the whole server")
       ),
   autocomplete: new Collection([
-    ['game', GameNameCompleter]
+    ['game', GameManageCompleter]
   ]),
   async execute(interaction) {
     const current_channel = interaction.channel
