@@ -56,8 +56,8 @@ describe("complete", () => {
     expect(result[0]).not.toMatchObject({ name: wrong_game.name })
     expect(result[0]).toMatchObject({ name: game.name })
 
-    wrong_game.destroy()
-    wrong_guild.destroy()
+    await wrong_game.destroy()
+    await wrong_guild.destroy()
   })
 
   it("gets games that match the partial text", async () => {
@@ -80,7 +80,7 @@ describe("complete", () => {
       name: "Second test game",
     })
 
-    await DefaultGames.create({
+    const defgame2 = await DefaultGames.create({
       name: guild.name,
       snowflake: guild.snowflake,
       type: DefaultGames.TYPE_GUILD,
@@ -92,5 +92,8 @@ describe("complete", () => {
     const result = await QuoteGameCompleter.complete(interaction)
 
     expect(result[0]).toMatchObject({ name: `${game2.name} (default)`, value: `${game2.id}` })
+
+    await defgame2.destroy()
+    await game2.destroy()
   })
 })
