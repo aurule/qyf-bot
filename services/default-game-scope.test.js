@@ -284,4 +284,12 @@ describe("gameForChannel", () => {
       expect(result.id).toEqual(game.id)
     })
   })
+
+  describe("missing channel", () => {
+    it("returns null", async () => {
+      const result = await Service.gameForChannel()
+
+      expect(result).toBeNull()
+    })
+  })
 })

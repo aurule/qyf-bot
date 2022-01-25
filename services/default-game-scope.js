@@ -89,6 +89,8 @@ module.exports = {
    * @return {Game|null}               The default game for the channel, or null if none can be found.
    */
   gameForChannel: async (current_channel) => {
+    if (!current_channel) return null
+
     const search_ids = []
     var target_channel
 
