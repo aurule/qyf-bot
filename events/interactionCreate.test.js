@@ -185,7 +185,7 @@ describe("handleCommand", () => {
 
     it("executes the command when the policy allows", () => {
       testCommand.policy = {
-        allow: (interaction) => true,
+        allow: async (interaction) => true,
       }
 
       return expect(
@@ -195,7 +195,7 @@ describe("handleCommand", () => {
 
     it("replies with the policy error message when the policy disallows", () => {
       testCommand.policy = {
-        allow: (interaction) => false,
+        allow: async (interaction) => false,
         errorMessage: "not allowed",
       }
 

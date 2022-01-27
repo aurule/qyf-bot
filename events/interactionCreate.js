@@ -1,5 +1,7 @@
 const { logger } = require("../util/logger")
 
+const PolicyChecker = require("../services/policy-checker")
+
 /**
  * Handle command interactions
  *
@@ -14,13 +16,11 @@ async function handleCommand(interaction) {
 
   if (!command) return Promise.reject(`no command ${interaction.commandName}`)
 
-  const allowed = command.policy
-    ? await command.policy.allow(interaction)
-    : true
+  const policyResult = await PolicyChecker.check(command.policy, interaction)
 
-  if (!allowed) {
+  if (!policyResult.allowed) {
     return interaction.reply({
-      content: command.policy.errorMessage,
+      content: policyResult.errorMessages.join(". "),
       ephemeral: true,
     })
   }

@@ -8,7 +8,7 @@ The command object looks like this:
 {
     name: string,                       // "command-name"
     type?: string,                      // "slash"
-    policy?: Object,                    // ManagerPolicy
+    policy?: Object|Array<Object>,      // ManagerPolicy
     data(options?): Builder,            // SlashCommandBuilder
     autocomplete?: Collection,          // new Collection([['game', GameNameCompleter]])
     async execute(interaction): Promise,
@@ -23,7 +23,7 @@ Requirements:
 
 * The `name` *must* be the same as used in the builder.setName() call within `data`
 * `type` is optional and describes the type of command: "menu" or "slash". `Undefined` is interpreted as `"slash"`.
-* `policy` is optional and contains a policy object for allowing access to the command. `Undefined` allows all users.
+* `policy` is optional and contains a policy object (or array of them) for allowing access to the command. `Undefined` allows all users.
 * `data` must return an instance of a discordjs command builder
 * `data` receives a `guild` argument for guild commands. This can be discarded if the command arguments don't need it. It does not receive arguments for global commands.
 * `autocomplete` must be present if any options are marked with `.setAutocomplete(true)`
