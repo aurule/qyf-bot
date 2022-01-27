@@ -16,16 +16,11 @@ module.exports = {
       },
       defaults: {
         name: discord_guild.name,
-        snowflake: discord_guild.id.toString(),
       },
     })
 
     const [game, _isNewGame] = await Games.findOrCreate({
       where: {
-        name: "No Game",
-        guildId: guild.id,
-      },
-      defaults: {
         name: "No Game",
         guildId: guild.id,
       },

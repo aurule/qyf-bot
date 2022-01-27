@@ -57,10 +57,7 @@ module.exports = {
     if (quoter) {
       const [quoter_user, _isNewQuoter] = await Users.findOrCreate({
         where: { snowflake: quoter.id.toString() },
-        defaults: {
-          name: quoter.username,
-          snowflake: quoter.id.toString(),
-        },
+        defaults: { name: quoter.username },
       })
       quote_attrs.quoterId = quoter_user.id
     }
@@ -70,10 +67,7 @@ module.exports = {
     // create the line
     const [speaker_user, _isNewSpeaker] = await Users.findOrCreate({
       where: { snowflake: speaker.id.toString() },
-      defaults: {
-        name: speaker.username,
-        snowflake: speaker.id.toString(),
-      },
+      defaults: { name: speaker.username },
     })
 
     await Lines.create({
@@ -98,10 +92,7 @@ module.exports = {
   addLine: async ({ text, attribution, speaker, quote }) => {
     const [speaker_user, _isNewSpeaker] = await Users.findOrCreate({
       where: { snowflake: speaker.id.toString() },
-      defaults: {
-        name: speaker.username,
-        snowflake: speaker.id.toString(),
-      },
+      defaults: { name: speaker.username },
     })
 
     const currentOrdinal = await Lines.max("lineOrder", {

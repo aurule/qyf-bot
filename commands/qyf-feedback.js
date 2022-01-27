@@ -35,10 +35,7 @@ module.exports = {
 
     const [feedback_user, _isNewQuoter] = await Users.findOrCreate({
       where: { snowflake: user.id.toString() },
-      defaults: {
-        name: user.username,
-        snowflake: user.id.toString(),
-      },
+      defaults: { name: user.username },
     })
 
     await Feedback.create({
