@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
           bannableType: "Users",
         },
       })
+      Users.belongsToMany(models.Guilds, { through: models.Participations, foreignKey: "userId" })
     }
 
     /**
