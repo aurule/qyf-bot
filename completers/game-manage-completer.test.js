@@ -52,8 +52,8 @@ describe("complete", () => {
     expect(result[0]).not.toMatchObject({ name: wrong_game.name })
     expect(result[0]).toMatchObject({ name: game.name })
 
-    wrong_game.destroy()
-    wrong_guild.destroy()
+    await wrong_game.destroy()
+    await wrong_guild.destroy()
   })
 
   it("gets games that match the partial text", async () => {
