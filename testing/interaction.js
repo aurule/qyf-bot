@@ -31,6 +31,7 @@ class Interaction {
     this.guild = {
       id: snowflake,
       members: [],
+      name: "test guild",
     }
     this.guild.members.fetch = (user) => user
     this.channel = {
