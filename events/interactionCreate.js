@@ -1,6 +1,7 @@
 const { logger } = require("../util/logger")
 
 const PolicyChecker = require("../services/policy-checker")
+const ParticipationCreator = require("../services/participation-creator")
 
 /**
  * Handle command interactions
@@ -32,6 +33,8 @@ async function handleCommand(interaction) {
       ephemeral: true,
     })
   }
+
+  ParticipationCreator.findOrCreateByInteraction(interaction)
 
   return command.execute(interaction)
 }

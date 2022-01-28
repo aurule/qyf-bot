@@ -1,6 +1,7 @@
 const InteractionCreateEvent = require("./interactionCreate")
 const { logger } = require("../util/logger")
 const { Collection } = require("discord.js")
+const ParticipationCreator = require("../services/participation-creator")
 
 const { Interaction } = require("../testing/interaction")
 
@@ -156,10 +157,13 @@ describe("handleCommand", () => {
     execute: (interaction) => "worked",
   }
 
+  var participationSpy
+
   beforeEach(() => {
     interaction.client.commands.set("testing", testCommand)
     interaction.commandName = "testing"
     envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
+    participationSpy = jest.spyOn(ParticipationCreator, "findOrCreateByInteraction").mockResolvedValue(null)
   })
 
   it("rejects on unknown command", () => {
@@ -168,6 +172,14 @@ describe("handleCommand", () => {
     return expect(
       InteractionCreateEvent.handleCommand(interaction)
     ).rejects.toMatch("no command")
+  })
+
+  describe("when command is in a guild", () => {
+    it("creates a participation record", async () => {
+      await InteractionCreateEvent.handleCommand(interaction)
+
+      expect(participationSpy).toHaveBeenCalled()
+    })
   })
 
   describe("when command has no policy", () => {
