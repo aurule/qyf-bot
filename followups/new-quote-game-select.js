@@ -7,7 +7,7 @@ module.exports = {
   name: "newQuoteGameSelect",
   async execute(interaction) {
     const game = await Games.findByPk(interaction.values[0])
-    interaction.update({ content: `Chose ${game.name}`, components: [] })
+    await interaction.update({ content: `Chose ${game.name}`, components: [] })
 
     options = await followup_store.get(
       interaction.message.interaction.id.toString()
@@ -21,7 +21,7 @@ module.exports = {
       context: options.context,
     })
       .then(async (result) => {
-        return interaction.reply(
+        return interaction.followUp(
           quoteReply({
             reporter: interaction.user,
             speaker: options.speaker,
