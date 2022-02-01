@@ -5,7 +5,7 @@ const GamesForGuild = require("../caches/games-for-guild")
  * The special value for the all games selector
  * @type {Number}
  */
-const ALL_GAMES = -1
+const ALL_GAMES = "All Games"
 
 module.exports = {
   /**
@@ -23,9 +23,9 @@ module.exports = {
     const options = data
       .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused().toLowerCase()))
       .map((game) => {
-        return { name: game.name, value: game.id.toString() }
+        return { name: game.name, value: game.name }
       })
-    options.push({ name: "All Games", value: ALL_GAMES.toString()})
+    options.push({ name: "All Games", value: ALL_GAMES})
 
     return interaction.respond(options)
   },

@@ -26,7 +26,7 @@ module.exports = {
           let name = game.name
           if (default_game?.id == game.id) name += " (default)"
 
-          return { name: name, value: game.id.toString() }
+          return { name: name, value: game.name }
         })
     )
   }

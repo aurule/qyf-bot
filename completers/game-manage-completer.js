@@ -18,7 +18,7 @@ module.exports = {
       data
         .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused().toLowerCase()))
         .map((game) => {
-          return { name: game.name, value: game.id.toString() }
+          return { name: game.name, value: game.name }
         })
     )
   }

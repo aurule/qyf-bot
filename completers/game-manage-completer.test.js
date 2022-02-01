@@ -59,7 +59,7 @@ describe("complete", () => {
   it("gets games that match the partial text", async () => {
     const result = await GameManageCompleter.complete(interaction)
 
-    expect(result[0]).toMatchObject({ name: game.name, value: `${game.id}` })
+    expect(result[0]).toMatchObject({ name: game.name, value: game.name })
   })
 
   it("matches regardless of case", async () => {
@@ -76,5 +76,11 @@ describe("complete", () => {
     const result = await GameManageCompleter.complete(interaction)
 
     expect(result.length).toEqual(0)
+  })
+
+  it("uses the game name as its value", async () => {
+    const result = await GameManageCompleter.complete(interaction)
+
+    expect(result[0].value).toEqual(result[0].name)
   })
 })

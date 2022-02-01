@@ -63,7 +63,7 @@ describe("complete", () => {
   it("gets games that match the partial text", async () => {
     const result = await QuoteGameCompleter.complete(interaction)
 
-    expect(result[0]).toMatchObject({ name: game.name, value: `${game.id}` })
+    expect(result[0]).toMatchObject({ name: game.name, value: game.name })
   })
 
   it("matches regardless of case", async () => {
@@ -82,26 +82,34 @@ describe("complete", () => {
     expect(result.length).toEqual(0)
   })
 
-  it("shows which game is the current default", async () => {
-    const game2 = await Games.create({
-      guildId: guild.id,
-      name: "Second test game",
-    })
-
-    const defgame2 = await DefaultGames.create({
-      name: guild.name,
-      snowflake: guild.snowflake,
-      type: DefaultGames.TYPE_GUILD,
-      gameId: game2.id,
-    })
-
-    interaction.partial_text = "second"
-
+  it("uses the game name as its value", async () => {
     const result = await QuoteGameCompleter.complete(interaction)
 
-    expect(result[0]).toMatchObject({ name: `${game2.name} (default)`, value: `${game2.id}` })
+    expect(result[0].value).toEqual(result[0].name)
+  })
 
-    await defgame2.destroy()
-    await game2.destroy()
+  describe("with a default game", () => {
+    it("shows which game is the current default", async () => {
+      const game2 = await Games.create({
+        guildId: guild.id,
+        name: "Second test game",
+      })
+
+      const defgame2 = await DefaultGames.create({
+        name: guild.name,
+        snowflake: guild.snowflake,
+        type: DefaultGames.TYPE_GUILD,
+        gameId: game2.id,
+      })
+
+      interaction.partial_text = "second"
+
+      const result = await QuoteGameCompleter.complete(interaction)
+
+      expect(result[0]).toMatchObject({ name: `${game2.name} (default)`, value: game2.name })
+
+      await defgame2.destroy()
+      await game2.destroy()
+    })
   })
 })
