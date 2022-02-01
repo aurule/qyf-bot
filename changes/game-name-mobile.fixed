@@ -1,0 +1,1 @@
+Commands where you can select a game now work properly on phones. Affected commands are `/set-default-game`, `/update-game`, `/list-quotes`, `/rand-quote`.

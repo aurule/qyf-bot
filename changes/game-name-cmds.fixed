@@ -1,0 +1,1 @@
+Commands where you can select a game no longer require a selection from the autocomplete list. Previously, these commands would fail with an error if you typed out the full name of a game instead of selecting one of the presented options. Affected commands are `/set-default-game`, `/update-game`, `/list-quotes`, `/rand-quote`.
