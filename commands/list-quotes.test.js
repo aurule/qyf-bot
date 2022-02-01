@@ -9,6 +9,7 @@ const {
   Users,
 } = require("../models")
 const QuoteFinder = require("../services/quote-finder")
+const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -254,7 +255,7 @@ describe("getGameOrDefault", () => {
   describe("with the special All Game", () => {
     it("returns a null id", async () => {
       const result = await list_quotes_command.getGameOrDefault(
-        "All Games",
+        QuoteListGameCompleter.ALL_GAMES,
         interaction.channel,
         guild.id,
       )

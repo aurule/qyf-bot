@@ -9,6 +9,7 @@ const {
   Users,
 } = require("../models")
 const QuoteFinder = require("../services/quote-finder")
+const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -156,6 +157,7 @@ describe("execute", () => {
     })
   })
 })
+
 describe("getGameOrDefault", () => {
   describe("with a selected game", () => {
     it("returns the chosen game", async () => {
@@ -212,10 +214,10 @@ describe("getGameOrDefault", () => {
     })
   })
 
-  describe("with the special All Game", () => {
+  describe("with the special All Games", () => {
     it("returns a null id", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
-        -1,
+        QuoteListGameCompleter.ALL_GAMES,
         interaction.channel,
         guild.id,
       )
