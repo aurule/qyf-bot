@@ -62,6 +62,14 @@ describe("complete", () => {
     expect(result[0]).toMatchObject({ name: game.name, value: `${game.id}` })
   })
 
+  it("matches regardless of case", async () => {
+    interaction.partial_text = "test game"
+
+    const result = await QuoteListGameCompleter.complete(interaction)
+
+    expect(result[0].value).toMatch(game.name)
+  })
+
   it("gracefully handles no results", async () => {
     interaction.partial_text = "nothing matches"
 

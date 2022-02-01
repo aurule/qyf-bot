@@ -21,7 +21,7 @@ module.exports = {
     const data = await GamesForGuild.get(interaction.guildId.toString())
 
     const options = data
-      .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused()))
+      .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused().toLowerCase()))
       .map((game) => {
         return { name: game.name, value: game.id.toString() }
       })
