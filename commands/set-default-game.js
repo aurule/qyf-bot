@@ -2,7 +2,7 @@ const { SlashCommandBuilder, underscore } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { Collection } = require("discord.js")
 
-const { Games, DefaultGames } = require("../models")
+const { Guilds, Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const { logger } = require("../util/logger")
 const ManagerPolicy = require("../policies/manager-policy")
@@ -38,25 +38,24 @@ module.exports = {
     const channel_option = interaction.options.getChannel("channel")
     const target_channel = channel_option ? channel_option : current_channel
     const server_wide = interaction.options.getBoolean("server")
-    const game_arg = Number(interaction.options.getString("game"))
-
-    if (!game_arg) {
-      return interaction.reply({
-        content: `There is no game called "${interaction.options.getString("game")}"`,
-        ephemeral: true,
-      })
-    }
+    const game_arg = interaction.options.getString("game")
 
     const scope = explicitScope(target_channel, server_wide)
+
+    const guild = await Guilds.findByInteraction(interaction)
+    const game = await Games.findOne({ where: { name: game_arg, guildId: guild.id } })
+
+    if (!game) {
+      logger.error(`Game ${game_arg} not found for guild ${guild.id}`)
+      return interaction.reply(`There is no game called "${game_arg}" on this server`)
+    }
 
     await DefaultGames.upsert({
       name: scope.name,
       type: scope.target_type,
       snowflake: scope.target_snowflake,
-      gameId: game_arg,
+      gameId: game.id,
     })
-
-    const game = await Games.findOne({ where: { id: game_arg } })
 
     return interaction.reply(
       `${game.name} is now the default for ${scope.scopeMention()}.`

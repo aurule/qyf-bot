@@ -30,7 +30,7 @@ beforeEach(async () => {
   interaction.channel.guild = { id: guild.snowflake, name: guild.name }
   interaction.channel.name = "test channel"
   interaction.command_options["server"] = false
-  interaction.command_options["game"] = game.id
+  interaction.command_options["game"] = game.name
 })
 
 afterEach(async () => {
@@ -93,8 +93,23 @@ describe("execute", () => {
 
     const result = await set_default_game_command.execute(interaction)
 
-    expect(result.content).toMatch("There is no game")
-    expect(result.content).toMatch("fiddlesticks")
+    expect(result).toMatch("There is no game")
+    expect(result).toMatch("fiddlesticks")
+  })
+
+  it("works with a game from the completer", async () => {
+    interaction.partial_text = game.name
+    const completer = set_default_game_command.autocomplete.get("game")
+    const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+    interaction.command_options.game = game_arg
+    const finderSpy = jest.spyOn(Games, "findOne")
+
+    await set_default_game_command.execute(interaction)
+
+    // finderSpy was called with an object including where name:game.name
+    expect(
+      finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0].where
+    ).toMatchObject({ name: game.name })
   })
 
   describe("reply", () => {
