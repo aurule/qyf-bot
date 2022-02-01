@@ -34,23 +34,9 @@ module.exports = {
     ['game', GameManageCompleter]
   ]),
   async execute(interaction) {
-    const game_arg = Number(interaction.options.getString("game"))
+    const game_arg = interaction.options.getString("game")
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")
-
-    if (!game_arg) {
-      return interaction.reply({
-        content: `There is no game called "${interaction.options.getString("game")}"`,
-        ephemeral: true,
-      })
-    }
-
-    if (!(game_name || description)) {
-      return interaction.reply({
-        content: `You need to give a new name or new description!`,
-        ephemeral: true,
-      })
-    }
 
     var guild
     var game
@@ -59,7 +45,7 @@ module.exports = {
       guild = await Guilds.findByInteraction(interaction)
 
       game = await Games.findOne({
-        where: { id: game_arg, guildId: guild.id },
+        where: { name: game_arg, guildId: guild.id },
       })
     } catch (error) {
       logger.error("Error fetching guild or game", error)
@@ -68,7 +54,14 @@ module.exports = {
 
     if (!game) {
       logger.error(`Game ${game_arg} not found for guild ${guild.id}`)
-      return interaction.reply("Something went wrong :-(")
+      return interaction.reply(`There is no game called "${game_arg}" on this server`)
+    }
+
+    if (!(game_name || description)) {
+      return interaction.reply({
+        content: "You need to give a new name or new description!",
+        ephemeral: true,
+      })
     }
 
     const update_params = {}

@@ -28,7 +28,7 @@ beforeEach(async () => {
   }
 
   interaction = new Interaction(guild.snowflake)
-  interaction.command_options.game = game.id
+  interaction.command_options.game = game.name
   interaction.command_options.name = ""
   interaction.command_options.description = ""
 
@@ -118,7 +118,7 @@ describe("execute", () => {
 
       const reply = await update_game_command.execute(interaction)
 
-      expect(reply).toMatch("Something went wrong")
+      expect(reply).toMatch("There is no game")
     })
 
     it("throws errors up the chain when the update goes wrong", async () => {
@@ -187,13 +187,28 @@ describe("execute", () => {
     })
   })
 
+  it("works with a game from the completer", async () => {
+    interaction.partial_text = game.name
+    const completer = update_game_command.autocomplete.get("game")
+    const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+    interaction.command_options.game = game_arg
+    const finderSpy = jest.spyOn(Games, "findOne")
+
+    await update_game_command.execute(interaction)
+
+    // finderSpy was called with an object including where name:game.name
+    expect(
+      finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0].where
+    ).toMatchObject({ name: game.name })
+  })
+
   it("warns about an invalid game choice", async () => {
     interaction.command_options.game = "fiddlesticks"
 
     const result = await update_game_command.execute(interaction)
 
-    expect(result.content).toMatch("There is no game")
-    expect(result.content).toMatch("fiddlesticks")
+    expect(result).toMatch("There is no game")
+    expect(result).toMatch("fiddlesticks")
   })
 })
 
