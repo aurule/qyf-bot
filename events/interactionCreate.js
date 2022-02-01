@@ -98,12 +98,29 @@ function inCorrectEnv(interaction) {
   )
 }
 
+/**
+ * Get the correct response function to use for error messages based on the interaction's reply state
+ *
+ * Replied: followUp
+ * Deferred and not replied: editReply
+ * neither: reply
+ *
+ * @param  {Interaction} interaction Discord interaction object
+ * @return {string}                  Name of the response method to use
+ */
+function errorReplyFunction(interaction) {
+  if (interaction.replied) return "followUp"
+  if (interaction.deferred) return "editReply"
+  return "reply"
+}
+
 module.exports = {
   name: "interactionCreate",
   handleCommand,
   handleSelectMenu,
   handleAutocomplete,
   inCorrectEnv,
+  errorReplyFunction,
 
   /**
    * Handle the incoming interaction event
@@ -120,7 +137,8 @@ module.exports = {
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
       return module.exports.handleCommand(interaction).catch((error) => {
         logger.error(error)
-        return interaction.reply({
+        const fn = errorReplyFunction(interaction)
+        return interaction[fn]({
           content: "There was an error while executing this command!",
           components: [],
           ephemeral: true,
@@ -132,7 +150,8 @@ module.exports = {
     if (interaction.isSelectMenu()) {
       return module.exports.handleSelectMenu(interaction).catch((error) => {
         logger.error(error)
-        return interaction.reply({
+        const fn = errorReplyFunction(interaction)
+        return interaction[fn]({
           content: "There was an error while executing this command!",
           components: [],
           ephemeral: true,
