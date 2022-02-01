@@ -36,6 +36,7 @@ beforeEach(async () => {
 
   interaction.values = [game.id.toString()]
   interaction.message.interaction = { id: caller_id }
+  interaction.replied = true
   followup_store.set(caller_id, quote_options)
 })
 

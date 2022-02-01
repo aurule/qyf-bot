@@ -61,17 +61,34 @@ class Interaction {
 
     this.interactionType = "command"
     this.customId = ""
+    this.replied = false
+    this.deferred = false
   }
 
   async reply(msg) {
+    if (this.replied) return Promise.reject("cannot reply: interaction is already in replied state")
+    this.replied = true
+    return msg
+  }
+
+  async editReply(msg) {
+    if (!this.replied) return Promise.reject("cannot editReply: interaction has no reply to edit")
+    return msg
+  }
+
+  async deferReply(obj) {
+    if (this.replied) return Promise.reject("cannot defer: interaction is already in replied state")
+    if (this.deferred) return Promise.reject("cannot defer: interaction is already in deferred state")
+    this.deferred = true
+    return obj
+  }
+
+  async followUp(msg) {
+    if (!this.replied) return Promise.reject("cannot followUp: interaction has no reply")
     return msg
   }
 
   async update(msg) {
-    return msg
-  }
-
-  async followUp(msg) {
     return msg
   }
 
