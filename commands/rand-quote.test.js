@@ -72,9 +72,24 @@ describe("execute", () => {
   })
 
   describe("game selection", () => {
+    it("works with a game from the completer", async () => {
+      interaction.partial_text = game.name
+      const completer = rand_quotes_command.autocomplete.get("game")
+      const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+      interaction.command_options.game = game_arg
+      const finderSpy = jest.spyOn(QuoteFinder, "findOne")
+
+      await rand_quotes_command.execute(interaction)
+
+      // finderSpy was called with an object including gameId:game.id
+      expect(
+        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0]
+      ).toMatchObject({ gameId: [game.id] })
+    })
+
     it("sends the chosen game to the finder", async () => {
       const finderSpy = jest.spyOn(QuoteFinder, "findOne")
-      interaction.command_options.game = game.id
+      interaction.command_options.game = game.name
 
       await rand_quotes_command.execute(interaction)
 
@@ -141,13 +156,13 @@ describe("execute", () => {
     })
   })
 })
-
 describe("getGameOrDefault", () => {
   describe("with a selected game", () => {
     it("returns the chosen game", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
-        game.id,
-        interaction.channel
+        game.name,
+        interaction.channel,
+        guild.id,
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -167,7 +182,8 @@ describe("getGameOrDefault", () => {
     it("returns the default game", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
         null,
-        interaction.channel
+        interaction.channel,
+        guild.id,
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -178,7 +194,8 @@ describe("getGameOrDefault", () => {
     it("returns a null id", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
         null,
-        interaction.channel
+        interaction.channel,
+        guild.id,
       )
 
       expect(result).toMatchObject({ id: null })
@@ -187,7 +204,8 @@ describe("getGameOrDefault", () => {
     it("returns 'all games' text for game name", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
         null,
-        interaction.channel
+        interaction.channel,
+        guild.id,
       )
 
       expect(result).toMatchObject({ name: "all games" })
@@ -198,7 +216,8 @@ describe("getGameOrDefault", () => {
     it("returns a null id", async () => {
       const result = await rand_quotes_command.getGameOrDefault(
         -1,
-        interaction.channel
+        interaction.channel,
+        guild.id,
       )
 
       expect(result).toMatchObject({ name: "all games" })

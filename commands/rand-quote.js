@@ -12,7 +12,7 @@ const QuoteListGameCompleter = require("../completers/quote-list-game-completer"
 /**
  * Get the correct game or fall back on default data
  *
- * If game_arg is provided, it will look up that game and ignore the default.
+ * If gameName is provided, it will look up that game and ignore the default.
  * If it is not provided and there is a default, it will return the default.
  * If it is not provided and there is no default, it will return a null object:
  * {
@@ -20,21 +20,22 @@ const QuoteListGameCompleter = require("../completers/quote-list-game-completer"
  *    name: "all games",
  *  }
  *
- * @param  {Int}      game_arg  ID of the game to use
+ * @param  {String}   gameName  Name of the game to use
  * @param  {Channel}  channel   Discord channel object to use for finding a default
+ * @param  {Int}      guildId   ID of the guild for the game
  * @return {Game}               Game object or truncated lookalike with id and name properties
  */
-async function getGameOrDefault(game_arg, channel) {
+async function getGameOrDefault(gameName, channel, guildId) {
   let null_game = {
     id: null,
     name: "all games",
   }
 
-  if (game_arg == QuoteListGameCompleter.ALL_GAMES) return null_game
+  if (gameName == QuoteListGameCompleter.ALL_GAMES) return null_game
 
   var game
-  if (game_arg) {
-    game = await Games.findByPk(game_arg)
+  if (gameName) {
+    game = await Games.findOne({ where: { name: gameName, guildId: guildId } })
   } else {
     game = await gameForChannel(channel)
   }
@@ -115,10 +116,10 @@ module.exports = {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
-    const game_arg = Number(interaction.options.getString("game"))
+    const game_arg = interaction.options.getString("game")
 
     const guild = await Guilds.findByInteraction(interaction)
-    const game = await getGameOrDefault(game_arg, interaction.channel)
+    const game = await getGameOrDefault(game_arg, interaction.channel, guild.id)
 
     // This section is a workaround for a bug in sequelize that causes a SQL
     // error we pass a snowflake to the quote finder. For a summary, see
