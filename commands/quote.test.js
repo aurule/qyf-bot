@@ -9,6 +9,7 @@ const {
   Lines,
 } = require("../models")
 const DefaultGameScopeService = require("../services/default-game-scope")
+const QuoteBuilder = require("../services/quote-builder")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -86,12 +87,27 @@ describe("execute", () => {
     })
 
     describe("with a game arg", () => {
+      it("works with a game from the completer", async () => {
+        interaction.partial_text = game.name
+        const completer = quote_command.autocomplete.get("game")
+        const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+        interaction.command_options.game = game_arg
+
+        await quote_command.execute(interaction)
+        const quote = await Quotes.findOne({
+          where: { gameId: game.id },
+          include: Lines,
+        })
+
+        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+      })
+
       it("saves the quote to the chosen game", async () => {
         const game2 = await Games.create({
           name: "Test Game 2",
           guildId: guild.id,
         })
-        interaction.command_options.game = game2.id.toString()
+        interaction.command_options.game = game2.name
 
         await quote_command.execute(interaction)
         const quote = await Quotes.findOne({
@@ -158,8 +174,23 @@ describe("execute", () => {
     })
 
     describe("with a game arg", () => {
+      it("works with a game from the completer", async () => {
+        interaction.partial_text = game.name
+        const completer = quote_command.autocomplete.get("game")
+        const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+        interaction.command_options.game = game_arg
+
+        await quote_command.execute(interaction)
+        const quote = await Quotes.findOne({
+          where: { gameId: game.id },
+          include: Lines,
+        })
+
+        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+      })
+
       it("saves the quote to the chosen game", async () => {
-        interaction.command_options.game = game.id.toString()
+        interaction.command_options.game = game.name
 
         await quote_command.execute(interaction)
         const quote = await Quotes.findOne({

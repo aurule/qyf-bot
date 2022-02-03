@@ -57,7 +57,7 @@ module.exports = {
     const alias = interaction.options.getString("alias")
     const context = interaction.options.getString("context")
     const user = interaction.user
-    const game_arg = Number(interaction.options.getString("game"))
+    const game_arg = interaction.options.getString("game")
 
     const speaker_member = await memberOrAnonymous(interaction.guild, speaker)
     const speaker_name = determineName({
@@ -66,9 +66,13 @@ module.exports = {
       alias: alias,
     })
 
+    const guild = await Guilds.findByInteraction(interaction, {
+      include: Games,
+    })
+
     let game
     if (game_arg) {
-      game = await Games.findOne({ where: { id: game_arg } })
+      game = await Games.findOne({ where: { name: game_arg, guildId: guild.id } })
     } else {
       game = await gameForChannel(interaction.channel)
     }
@@ -110,9 +114,6 @@ module.exports = {
       900000 // expire in 15 minutes
     )
 
-    const guild = await Guilds.findByInteraction(interaction, {
-      include: Games,
-    })
     const gameSelectRow = new MessageActionRow().addComponents(
       new MessageSelectMenu()
         .setCustomId("newQuoteGameSelect")
