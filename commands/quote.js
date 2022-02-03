@@ -110,8 +110,7 @@ module.exports = {
         attribution: speaker_name,
         speaker: speaker_member.user,
         context: context,
-      }),
-      900000 // expire in 15 minutes
+      })
     )
 
     const gameSelectRow = new MessageActionRow().addComponents(

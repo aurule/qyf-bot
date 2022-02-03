@@ -63,8 +63,7 @@ module.exports = {
         text: text,
         attribution: speaker_name,
         speaker: speaker,
-      }),
-      900000 // expire in 15 minutes
+      })
     )
 
     const guild = await Guilds.findByInteraction(interaction, {
