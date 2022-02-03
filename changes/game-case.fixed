@@ -1,1 +1,0 @@
-Game selection arguments now ignore capitalization when showing suggestions. Affected commands are `/set-default-game`, `/update-game`, `/list-quotes`, `/rand-quote`, and `/quote`.
