@@ -28,10 +28,14 @@ const prompts = require("prompts");
     },
   ]
 
-  const response = await prompts(questions)
-
-  fs.writeFileSync(
-    path.join(__dirname, "../changes", `${response.label}.${response.type}`),
-    response.message
-  )
+  prompts(questions)
+    .then((response) => {
+      fs.writeFileSync(
+        path.join(__dirname, "../changes", `${response.label}.${response.type}`),
+        response.message
+      )
+    })
+    .catch((err) => {
+      console.log("Cancelled")
+    })
 })()
