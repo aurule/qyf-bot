@@ -18,13 +18,22 @@ function pickStream() {
     return devnull()
   }
   if (process.env.NODE_ENV == "production") {
-    return Pino.transport({
-      target: "pino/file",
-      options: {
-        destination: "/home/qyf/qyf-bot/logs/qyf-bot.log",
-        mkdir: true,
-      }
-    })
+    const papertrail = require("pino-papertrail")
+    return papertrail.createWriteStream(
+      {
+        host: "logs5.papertrailapp.com",
+        port: 15191,
+        echo: false,
+      },
+      "qyf-bot")
+    // NOTE: Leaving the file config here for ease of reference
+    // return Pino.transport({
+    //   target: "pino/file",
+    //   options: {
+    //     destination: "/home/qyf/qyf-bot/logs/qyf-bot.log",
+    //     mkdir: true,
+    //   }
+    // })
   }
 }
 
