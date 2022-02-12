@@ -18,19 +18,19 @@ qyf-bot uses [semantic versioning](https://semver.org/). In addition to the stan
 
 # ENVVARS
 
-BOT_TOKEN: discord bot application token
-REDIS_URL: URL of the redis instance to use
-NODE_ENV: one of "development", "test", "ci", or "production"
-CLIENT_ID: ID of the bot's discord user
-DEV_GUILDS: [ "guild_snowflake" ]
-DB_HOST: Host for the postgres database (only used in production)
-DB_PW: password for the postgres database (only used in production)
+* BOT_TOKEN: discord bot application token 
+* REDIS_URL: URL of the redis instance to use 
+* NODE_ENV: one of "development", "test", "ci", or "production"
+* CLIENT_ID: ID of the bot's discord user 
+* DEV_GUILDS: [ "guild_snowflake" ] 
+* DB_HOST: Host for the postgres database (only used in production) 
+* DB_PW: password for the postgres database (only used in production)
 
 # Deployment
 
-copy code
-run `npm install`
-run `npm run migrate`
-run `npm run commands:deploy-globals`
-run `npm run commands:deploy-guilds`
-restart daemon (`node index.js`)
+* copy code 
+* run `npm install` 
+* run `npm run migrate` 
+* run `npm run commands:deploy-globals` 
+* run `npm run commands:deploy-guilds` 
+* restart daemon (`node index.js`)
