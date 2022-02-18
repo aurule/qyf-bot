@@ -22,6 +22,7 @@ module.exports = {
 
     const options = data
       .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused().toLowerCase()))
+      .slice(0, 24)
       .map((game) => {
         return { name: game.name, value: game.name }
       })

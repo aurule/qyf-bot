@@ -22,6 +22,7 @@ module.exports = {
     return interaction.respond(
       data
         .filter((game) => game.name.toLowerCase().includes(interaction.options.getFocused().toLowerCase()))
+        .slice(0, 25)
         .map((game) => {
           let name = game.name
           if (default_game?.id == game.id) name += " (default)"

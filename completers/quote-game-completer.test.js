@@ -1,5 +1,6 @@
 const QuoteGameCompleter = require("./quote-game-completer")
 const { Guilds, Games, DefaultGames } = require("../models")
+const GamesForGuild = require("../caches/games-for-guild")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -111,5 +112,15 @@ describe("complete", () => {
       await defgame2.destroy()
       await game2.destroy()
     })
+  })
+
+  it("gets at most 25 games", async () => {
+    jest.spyOn(GamesForGuild, 'get').mockResolvedValue(
+      Array.from(Array(30).keys(), (x, i) => { return { name: `partial game ${i}` } })
+    )
+
+    const result = await QuoteGameCompleter.complete(interaction)
+
+    expect(result.length).toEqual(25)
   })
 })
