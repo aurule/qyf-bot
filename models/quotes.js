@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Quotes.belongsTo(models.Games, { foreignKey: "gameId" })
       Quotes.hasMany(models.Lines, { foreignKey: "quoteId" })
       Quotes.belongsTo(models.Users, { as: "quoter", foreignKey: "quoterId" })
+      Quotes.hasMany(models.QuoteEditCodes, { foreignKey: "quoteId" })
     }
   }
   Quotes.init(
