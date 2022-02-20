@@ -86,6 +86,9 @@ class SearchOptions {
 
 /**
  * Find all quotes that match the given criteria
+ *
+ * Orders by quote saidAt timestamp by default.
+ *
  * @param  {SearchOptions}  search_options      Search criteria object
  * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findAll(). Items
  *                                              in where and incliude will overwrite the generated clauses
