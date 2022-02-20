@@ -109,6 +109,30 @@ async function findAll(search_options, passthrough_options = {}) {
 }
 
 /**
+ * Find all quotes that match the given criteria and include the total count
+ *
+ * Orders by quote saidAt timestamp by default.
+ *
+ * @param  {SearchOptions}  search_options      Search criteria object
+ * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findAndCountAll(). Items
+ *                                              in where and incliude will overwrite the generated clauses
+ *                                              from search_options.
+ * @return {Promise<Array<Quotes>>}             Promise resolving to an array of Quote objects matching the criteria
+ */
+async function findAndCountAll(search_options, passthrough_options = {}) {
+  const defaults = { order: [["saidAt", "DESC"]] }
+  const options = search_options.build()
+
+  const final = {
+    ...defaults,
+    ...options,
+    ...passthrough_options,
+  }
+
+  return Quotes.findAndCountAll(final)
+}
+
+/**
  * Find one quote that matches the given criteria
  * @param  {SearchOptions}  search_options      Search criteria object
  * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findOne(). Items
@@ -164,6 +188,7 @@ async function findLastEditable(quoter, passthrough_options = {}) {
 module.exports = {
   SearchOptions,
   findAll,
+  findAndCountAll,
   findOne,
   findLastEditable,
 }
