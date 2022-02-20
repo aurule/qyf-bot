@@ -135,10 +135,10 @@ module.exports = {
 
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
-      return module.exports.handleCommand(interaction).catch((error) => {
+      return module.exports.handleCommand(interaction).catch((err) => {
         logger.error({
           origin: "command",
-          error: error,
+          error: err,
           command: interaction.commandName,
         })
         const fn = errorReplyFunction(interaction)
@@ -152,10 +152,10 @@ module.exports = {
 
     // handle choices on select menu components
     if (interaction.isSelectMenu()) {
-      return module.exports.handleSelectMenu(interaction).catch((error) => {
+      return module.exports.handleSelectMenu(interaction).catch((err) => {
         logger.error({
           origin: "select menu",
-          error: error,
+          error: err,
           select: interaction.customId,
         })
         const fn = errorReplyFunction(interaction)
@@ -169,10 +169,10 @@ module.exports = {
 
     // handle autocomplete requests
     if (interaction.isAutocomplete()) {
-      return module.exports.handleAutocomplete(interaction).catch((error) => {
+      return module.exports.handleAutocomplete(interaction).catch((err) => {
         logger.error({
           origin: "autocomplete",
-          error: error,
+          error: err,
           command: interaction.commandName,
           option: interaction.options.getFocused(true),
         })
