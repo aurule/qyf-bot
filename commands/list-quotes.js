@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
-const { Collection } = require("discord.js")
+const { Collection, MessageActionRow, MessageButton } = require("discord.js")
 
 const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -11,16 +11,17 @@ const { gameForChannel } = require("../services/default-game-scope")
 const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
 
 /**
- * Maximum number of quotes that can be displayed
+ * Total number of quotes to show at a time
  * @type {Number}
  */
-const MAX_LIMIT = 10
+const PAGE_SIZE = 5
 
 /**
- * Default number of quotes to display
+ * Delay before controls are removed. Five minutes.
  * @type {Number}
  */
-const DEFAULT_LIMIT = 5
+const PAGINATION_TIMEOUT = 300000
+
 /**
  * Get the correct game or fall back on default data
  *
@@ -57,6 +58,7 @@ async function getGameOrDefault(gameName, channel, guildId) {
 
 /**
  * Build a string that represents the filters and options to the command
+ * @param  {Int}              pageNum         Which page we're on
  * @param  {Int}              total           Total quotes found
  * @param  {Games}            game            The game object the qutoes are from
  * @param  {String}           quote_contents  The quotes themselves, already formatted
@@ -66,6 +68,7 @@ async function getGameOrDefault(gameName, channel, guildId) {
  * @return {String}                           The final human-readable output
  */
 function describeResults(
+  pageNum,
   total,
   game,
   quote_contents,
@@ -74,18 +77,12 @@ function describeResults(
   const desc_lines = []
 
   if (total) {
-    desc_lines.push("Showing the")
+    desc_lines.push(`Showing page ${pageNum} of ${Math.ceil(total / PAGE_SIZE)}`)
   } else {
     desc_lines.push("No quotes found")
   }
 
-  if (total > 1) {
-    desc_lines.push(`${total} most recent quotes`)
-  } else if (total == 1) {
-    desc_lines.push(`most recent quote`)
-  }
-
-  desc_lines.push(`from ${game.name}`)
+  desc_lines.push(`of quotes from ${game.name}`)
 
   if (alias) {
     desc_lines.push("by")
@@ -101,6 +98,80 @@ function describeResults(
     return `${description}:\n\n${quote_contents}`
   } else {
     return description
+  }
+}
+
+/**
+ * Construct the pagination controls
+ *
+ * Right now, this is a back and next button pair. They are disabled
+ * on the first and last page, respectively, and are not shown when
+ * there is only one page of quotes.
+ *
+ * @param  {Int}              pageNum Which page we're on
+ * @param  {Int}              total   Total count of matching quotes
+ * @return {Array[Component]}         Array of pagination controls
+ */
+function paginationControls(pageNum, total) {
+  if(total <= PAGE_SIZE) return []
+
+  const actions = new MessageActionRow()
+    .addComponents(
+      new MessageButton()
+        .setCustomId('paginateBack')
+        .setLabel('Back')
+        .setStyle('SECONDARY')
+        .setDisabled(pageNum == 1),
+      new MessageButton()
+        .setCustomId('paginateNext')
+        .setLabel('Next')
+        .setStyle('SECONDARY')
+        .setDisabled(pageNum * PAGE_SIZE >= total),
+      )
+
+  return [actions]
+}
+
+/**
+ * [Get the quotes for a given page]
+ *
+ * @param  {Int}            pageNum         Which page we're on
+ * @param  {SearchOptions}  finder_options  Options for the quote finder
+ * @return {Promise}                        Results object with data in .rows and total in .count
+ */
+function getPageResults(pageNum, finder_options) {
+  return QuoteFinder.findAndCountAll(
+    finder_options,
+    {
+      limit: PAGE_SIZE,
+      offset: (pageNum - 1) * PAGE_SIZE
+    }
+  )
+}
+
+/**
+ * Construct the reply data for a full page of quote results
+ *
+ * @param  {Int}              pageNum         Which page we're on
+ * @param  {SearchOptions}    finder_options  Options for the quote finder
+ * @param  {Games}            game            The game object the qutoes are from
+ * @param  {String|null}      alias           The alias used to find quotes
+ * @param  {DiscordUser|null} speaker         The speaker object used to find quotes
+ * @param  {String|null}      text            The text searched for in the quotes
+ * @return {Object}                           Message data object with content and components attributes
+ */
+async function buildPageContents(pageNum, finder_options, game, alias, speaker, text) {
+  const result = await getPageResults(pageNum, finder_options)
+  const quote_contents = QuotePresenter.present(result.rows)
+  const content = describeResults(pageNum, result.count, game, quote_contents, {
+    alias: alias,
+    speaker: speaker,
+    text: text,
+  })
+
+  return {
+    content: content,
+    components: paginationControls(pageNum, result.count),
   }
 }
 
@@ -126,13 +197,6 @@ module.exports = {
             "Game the quote is from. Defaults to channel's current game"
           )
           .setAutocomplete(true)
-      )
-      .addIntegerOption((option) =>
-        option
-          .setName("amount")
-          .setDescription(`Number of quotes to show (1-${MAX_LIMIT})`)
-          .setMinValue(1)
-          .setMaxValue(MAX_LIMIT)
       ),
   autocomplete: new Collection([
     ['game', QuoteListGameCompleter]
@@ -142,12 +206,8 @@ module.exports = {
     const alias = interaction.options.getString("alias")
     const text = interaction.options.getString("text")
     const game_arg = interaction.options.getString("game")
-    const amount = interaction.options.getInteger("amount")
 
     const guild = await Guilds.findByInteraction(interaction)
-
-    // enforce min and max number of quotes
-    const limit = amount ? clamp(amount, 1, MAX_LIMIT) : DEFAULT_LIMIT
 
     const game = await getGameOrDefault(game_arg, interaction.channel, guild.id)
 
@@ -181,19 +241,37 @@ module.exports = {
       text: text,
       guild: guild,
     })
-    const quotes = await QuoteFinder.findAll(finder_options, { limit: limit })
-    const quote_contents = QuotePresenter.present(quotes)
 
-    return interaction.reply(
-      describeResults(quotes.length, game, quote_contents, {
-        alias: alias,
-        speaker: speaker,
-        text: text,
-      })
-    )
+    let pageNum = 1
+
+    let content = await buildPageContents(pageNum, finder_options, game, alias, speaker, text)
+    const replyMessage = await interaction.reply({
+      ...content,
+      fetchReply: true,
+    })
+
+    const paginationCollector = replyMessage.createMessageComponentCollector({
+      componentType: "BUTTON",
+      time: PAGINATION_TIMEOUT,
+    });
+    paginationCollector.on('collect', async i => {
+      if (i.customId == 'paginateNext') pageNum++
+      if (i.customId == 'paginateBack') pageNum--
+
+      content = await buildPageContents(pageNum, finder_options, game, alias, speaker, text)
+      await i.update(content)
+    })
+    paginationCollector.on('end', async collected => {
+      await interaction.editReply({ components: [] })
+    })
+
+    return replyMessage
   },
   getGameOrDefault,
   describeResults,
+  paginationControls,
+  buildPageContents,
+  getPageResults,
   help({ command_name }) {
     return [
       oneLine`
@@ -207,14 +285,12 @@ module.exports = {
             \`alias\`: One or more lines are attributed to this name
             \`text\`: One or more lines contain this text
             \`game\`: Show quotes from a game other than the channel's default
-            \`amount\`: Number of quotes from 1-${MAX_LIMIT}. Defaults to ${DEFAULT_LIMIT}
       `,
       "",
       oneLine`
-        ${command_name} finds quotes which match *all* of the options given. It can only display the first
-        few, however, due to restrictions on message length set by Discord. Listing long quotes might still
-        prevent a response from being posted thanks to these restrictions, so lower the \`amount\` if this
-        happens.
+        ${command_name} finds quotes which match *all* of the options given. It can only display a few on each
+        page, due to restrictions on message length set by Discord, so use the Next and Back buttons to see
+        more. The buttons remain active for ${PAGINATION_TIMEOUT / 60000} minutes.
       `,
       "",
       oneLine`

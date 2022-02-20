@@ -33,7 +33,6 @@ beforeEach(async () => {
     interaction.command_options.alias = ""
     interaction.command_options.text = ""
     interaction.command_options.game = null
-    interaction.command_options.amount = null
   } catch (err) {
     console.log(err)
   }
@@ -132,44 +131,6 @@ describe("execute", () => {
       const reply = await list_quotes_command.execute(interaction)
 
       expect(reply).toMatch("Quote text is cool")
-    })
-  })
-
-  describe("amount", () => {
-    it("defaults to five quotes", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
-      interaction.command_options.amount = null
-
-      await list_quotes_command.execute(interaction)
-
-      // finderSpy was called with an object including limit:5
-      expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
-      ).toMatchObject({ limit: 5 })
-    })
-
-    it("shows the requested number of quotes", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
-      interaction.command_options.amount = 6
-
-      await list_quotes_command.execute(interaction)
-
-      // finderSpy was called with an object including limit:6
-      expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
-      ).toMatchObject({ limit: 6 })
-    })
-
-    it("shows at most ten quotes", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
-      interaction.command_options.amount = 20
-
-      await list_quotes_command.execute(interaction)
-
-      // finderSpy was called with an object including limit:10
-      expect(
-        finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
-      ).toMatchObject({ limit: 10 })
     })
   })
 
