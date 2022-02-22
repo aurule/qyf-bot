@@ -18,6 +18,16 @@ var guild
 var interaction
 var game
 
+class Collector {
+  constructor(options) {
+    this.callbacks = {}
+  }
+
+  on(eventName, callback) {
+    this.callbacks[eventName] = callback
+  }
+}
+
 beforeEach(async () => {
   try {
     guild = await Guilds.create({
@@ -33,6 +43,15 @@ beforeEach(async () => {
     interaction.command_options.alias = ""
     interaction.command_options.text = ""
     interaction.command_options.game = null
+
+    interaction.reply = data => {
+      return {
+        data: data,
+        createMessageComponentCollector: (options) => {
+          return new Collector(options)
+        }
+      }
+    }
   } catch (err) {
     console.log(err)
   }
@@ -77,7 +96,7 @@ describe("execute", () => {
       const completer = list_quotes_command.autocomplete.get("game")
       const game_arg = await completer.complete(interaction).then((values) => values[0].value)
       interaction.command_options.game = game_arg
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      const finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll")
 
       await list_quotes_command.execute(interaction)
 
@@ -88,7 +107,7 @@ describe("execute", () => {
     })
 
     it("sends the chosen game to the finder", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      const finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll")
       interaction.command_options.game = game.name
 
       await list_quotes_command.execute(interaction)
@@ -102,7 +121,7 @@ describe("execute", () => {
 
   describe("quote contents", () => {
     it("gets quotes from finder", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      const finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll")
 
       await list_quotes_command.execute(interaction)
 
@@ -130,13 +149,13 @@ describe("execute", () => {
 
       const reply = await list_quotes_command.execute(interaction)
 
-      expect(reply).toMatch("Quote text is cool")
+      expect(reply.data.content).toMatch("Quote text is cool")
     })
   })
 
   describe("speaker", () => {
     it("with an existing speaker, queries by speaker's user ID", async () => {
-      const finderSpy = jest.spyOn(QuoteFinder, "findAll")
+      const finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll")
       interaction.command_options.speaker = { id: speaker.snowflake }
 
       await list_quotes_command.execute(interaction)
@@ -152,7 +171,7 @@ describe("execute", () => {
 
       const result = await list_quotes_command.execute(interaction)
 
-      expect(result).toMatch("No quotes found")
+      expect(result.data).toMatch("No quotes found")
     })
   })
 })
@@ -227,46 +246,27 @@ describe("getGameOrDefault", () => {
 })
 
 describe("describeResults", () => {
-  describe("total quotes", () => {
-    it("with a total over 1, it describes the total quotes", () => {
-      const result = list_quotes_command.describeResults(2, game, "things")
+  it("shows the current page number", () => {
+    const result = list_quotes_command.describeResults(1, 3, game, "things")
 
-      expect(result).toMatch("the 2 most recent quotes")
-    })
+    expect(result).toMatch("page 1 of")
+  })
 
-    it("with a total of one, it describes the single quote", () => {
-      const result = list_quotes_command.describeResults(1, game, "things")
+  it("shows the max page number", () => {
+    const result = list_quotes_command.describeResults(1, 9, game, "things")
 
-      expect(result).toMatch("the most recent quote")
-    })
-
-    it("with a total of zero, it describes the lack of quotes", () => {
-      const result = list_quotes_command.describeResults(0, game, "things")
-
-      expect(result).toMatch("No quotes found")
-    })
-
-    it("with a positive total, it shows the quote contents", () => {
-      const result = list_quotes_command.describeResults(1, game, "things")
-
-      expect(result).toMatch("things")
-    })
-
-    it("with a zero total, it does not show the quote contents", () => {
-      const result = list_quotes_command.describeResults(0, game, "things")
-
-      expect(result).not.toMatch("things")
-    })
+    expect(result).toMatch("page 1 of 2")
   })
 
   it("shows the game name", () => {
-    const result = list_quotes_command.describeResults(3, game, "things")
+    const result = list_quotes_command.describeResults(3, 3, game, "things")
 
     expect(result).toMatch("from Test Game")
   })
 
   it("includes the quote contents", () => {
     const result = list_quotes_command.describeResults(
+      3,
       3,
       game,
       "things that were said"
@@ -276,7 +276,7 @@ describe("describeResults", () => {
   })
 
   it("with an alias, says 'by alias'", () => {
-    const result = list_quotes_command.describeResults(3, game, "things", {
+    const result = list_quotes_command.describeResults(3, 3, game, "things", {
       alias: "alias",
     })
 
@@ -285,7 +285,7 @@ describe("describeResults", () => {
 
   it("with an alias and a speaker, says 'by speaker as alias'", () => {
     const speaker = { id: simpleflake().toString() }
-    const result = list_quotes_command.describeResults(0, game, "things", {
+    const result = list_quotes_command.describeResults(0, 0, game, "things", {
       speaker: speaker,
       alias: "alias",
     })
@@ -295,7 +295,7 @@ describe("describeResults", () => {
 
   it("with a speaker, says 'by speaker'", () => {
     const speaker = { id: simpleflake().toString() }
-    const result = list_quotes_command.describeResults(0, game, "things", {
+    const result = list_quotes_command.describeResults(0, 0, game, "things", {
       speaker: speaker,
     })
 
@@ -303,7 +303,7 @@ describe("describeResults", () => {
   })
 
   it("with search text, shows the text", () => {
-    const result = list_quotes_command.describeResults(1, game, "things", {
+    const result = list_quotes_command.describeResults(1, 1, game, "things", {
       text: "search text",
     })
 
@@ -335,4 +335,3 @@ describe("help", () => {
     expect(help_text).toMatch("sillyness")
   })
 })
-
