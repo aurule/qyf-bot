@@ -10,6 +10,7 @@ const {
 } = require("../models")
 const QuoteFinder = require("../services/quote-finder")
 const QuoteListGameCompleter = require("../completers/quote-list-game-completer")
+const QuotePresenter = require("../presenters/quote-presenter")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -28,66 +29,66 @@ class Collector {
   }
 }
 
-beforeEach(async () => {
-  try {
-    guild = await Guilds.create({
-      name: "Test Guild",
-      snowflake: simpleflake().toString(),
-    })
-    game = await Games.create({
-      name: "Test Game",
-      guildId: guild.id,
-    })
-    interaction = new Interaction(guild.snowflake)
-    interaction.command_options.speaker = undefined
-    interaction.command_options.alias = ""
-    interaction.command_options.text = ""
-    interaction.command_options.game = null
-
-    interaction.reply = data => {
-      return {
-        data: data,
-        createMessageComponentCollector: (options) => {
-          return new Collector(options)
-        }
-      }
-    }
-  } catch (err) {
-    console.log(err)
-  }
-})
-
-afterEach(async () => {
-  try {
-    const games = await Games.findAll({ where: { guildId: guild.id } })
-    const game_ids = games.map((g) => g.id)
-    const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
-    const quote_ids = quotes.map((q) => q.id)
-    const lines = await Lines.findAll({
-      where: { quoteId: quote_ids },
-      include: "speaker",
-    })
-    const line_speaker_ids = lines.map((line) => line.speaker.id)
-
-    await Lines.destroy({ where: { quoteId: quote_ids } })
-    await Quotes.destroy({ where: { gameId: game_ids } })
-    await Users.destroyByPk(line_speaker_ids)
-    await DefaultGames.destroy({ where: { gameId: game_ids } })
-    await Games.destroy({ where: { guildId: guild.id } })
-    await guild.destroy()
-  } catch (err) {
-    console.log(err)
-  }
-})
-
 describe("execute", () => {
   var speaker
 
   beforeEach(async () => {
-    speaker = await Users.create({
-      name: "Speaker Man",
-      snowflake: simpleflake().toString(),
-    })
+    try {
+      speaker = await Users.create({
+        name: "Speaker Man",
+        snowflake: simpleflake().toString(),
+      })
+
+      guild = await Guilds.create({
+        name: "Test Guild",
+        snowflake: simpleflake().toString(),
+      })
+      game = await Games.create({
+        name: "Test Game",
+        guildId: guild.id,
+      })
+      interaction = new Interaction(guild.snowflake)
+      interaction.command_options.speaker = undefined
+      interaction.command_options.alias = ""
+      interaction.command_options.text = ""
+      interaction.command_options.game = null
+      interaction.collector = new Collector()
+
+      interaction.reply = data => {
+        return {
+          data: data,
+          createMessageComponentCollector: (options) => {
+            return interaction.collector
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  afterEach(async () => {
+    try {
+      const games = await Games.findAll({ where: { guildId: guild.id } })
+      const game_ids = games.map((g) => g.id)
+      const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
+      const quote_ids = quotes.map((q) => q.id)
+      const lines = await Lines.findAll({
+        where: { quoteId: quote_ids },
+        include: "speaker",
+      })
+      const line_speaker_ids = lines.map((line) => line.speaker.id)
+
+      await Lines.destroy({ where: { quoteId: quote_ids } })
+      await Quotes.destroy({ where: { gameId: game_ids } })
+      await Users.destroyByPk(line_speaker_ids)
+      await DefaultGames.destroy({ where: { gameId: game_ids } })
+      await Games.destroy({ where: { guildId: guild.id } })
+      await guild.destroy()
+      await speaker.destroy()
+    } catch (err) {
+      console.log(err)
+    }
   })
 
   describe("game selection", () => {
@@ -174,9 +175,98 @@ describe("execute", () => {
       expect(result.data).toMatch("No quotes found")
     })
   })
+
+  describe("pagination", () => {
+    it("next button gets the next page", async () => {
+      const buttonInteraction = {
+        customId: "paginateNext",
+        update: msg => msg
+      }
+      const updateSpy = jest.spyOn(buttonInteraction, "update")
+      await list_quotes_command.execute(interaction)
+
+      await interaction.collector.callbacks.collect(buttonInteraction)
+
+      expect(updateSpy).toHaveBeenCalled()
+    })
+
+    it("back button gets the previous page", async () => {
+      const buttonInteraction = {
+        customId: "paginateBack",
+        update: msg => msg
+      }
+      const updateSpy = jest.spyOn(buttonInteraction, "update")
+      await list_quotes_command.execute(interaction)
+
+      await interaction.collector.callbacks.collect(buttonInteraction)
+
+      expect(updateSpy).toHaveBeenCalled()
+    })
+
+    it("expiration clears the buttons", async () => {
+      const editReplySpy = jest.spyOn(interaction, "editReply").mockResolvedValue(true)
+      await list_quotes_command.execute(interaction)
+
+      await interaction.collector.callbacks.end()
+
+      expect(editReplySpy).toHaveBeenCalledWith({ components: [] })
+    })
+  })
 })
 
 describe("getGameOrDefault", () => {
+  beforeEach(async () => {
+    try {
+      guild = await Guilds.create({
+        name: "Test Guild",
+        snowflake: simpleflake().toString(),
+      })
+      game = await Games.create({
+        name: "Test Game",
+        guildId: guild.id,
+      })
+      interaction = new Interaction(guild.snowflake)
+      interaction.command_options.speaker = undefined
+      interaction.command_options.alias = ""
+      interaction.command_options.text = ""
+      interaction.command_options.game = null
+
+      interaction.reply = data => {
+        return {
+          data: data,
+          createMessageComponentCollector: (options) => {
+            return new Collector(options)
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  afterEach(async () => {
+    try {
+      const games = await Games.findAll({ where: { guildId: guild.id } })
+      const game_ids = games.map((g) => g.id)
+      const quotes = await Quotes.findAll({ where: { gameId: game_ids } })
+      const quote_ids = quotes.map((q) => q.id)
+      const lines = await Lines.findAll({
+        where: { quoteId: quote_ids },
+        include: "speaker",
+      })
+      const line_speaker_ids = lines.map((line) => line.speaker.id)
+
+      await Lines.destroy({ where: { quoteId: quote_ids } })
+      await Quotes.destroy({ where: { gameId: game_ids } })
+      await Users.destroyByPk(line_speaker_ids)
+      await DefaultGames.destroy({ where: { gameId: game_ids } })
+      await Games.destroy({ where: { guildId: guild.id } })
+      await guild.destroy()
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
   describe("with a selected game", () => {
     it("returns the chosen game", async () => {
       const result = await list_quotes_command.getGameOrDefault(
@@ -308,6 +398,76 @@ describe("describeResults", () => {
     })
 
     expect(result).toMatch('including "search text"')
+  })
+})
+
+describe("paginationControls", () => {
+  it("returns empty array when there's only one page", () => {
+    const result = list_quotes_command.paginationControls(1, 1)
+
+    expect(result).toEqual([])
+  })
+
+  it("adds a back button", () => {
+    const result = list_quotes_command.paginationControls(1, 9)
+
+    expect(result[0].components[0]).toMatchObject({ customId: "paginateBack"})
+  })
+
+  it("disables the back button on the first page", () => {
+    const result = list_quotes_command.paginationControls(1, 9)
+
+    expect(result[0].components[0]).toMatchObject({ disabled: true})
+  })
+
+  it("enables the back button on later pages", () => {
+    const result = list_quotes_command.paginationControls(2, 9)
+
+    expect(result[0].components[0]).toMatchObject({ disabled: false})
+  })
+
+  it("adds a next button", () => {
+    const result = list_quotes_command.paginationControls(1, 9)
+
+    expect(result[0].components[1]).toMatchObject({ customId: "paginateNext"})
+  })
+
+  it("disables the next button on the first page", () => {
+    const result = list_quotes_command.paginationControls(2, 9)
+
+    expect(result[0].components[1]).toMatchObject({ disabled: true})
+  })
+
+  it("enables the next button on earlier pages", () => {
+    const result = list_quotes_command.paginationControls(1, 9)
+
+    expect(result[0].components[1]).toMatchObject({ disabled: false})
+  })
+})
+
+describe("getPageResults", () => {
+  var finderSpy
+
+  beforeEach(() => {
+    finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll").mockReturnValue(true)
+  })
+
+  it("limits results to one page", () => {
+    list_quotes_command.getPageResults(2, {})
+
+    // finderSpy was called with passthrough_options including limit:5
+    expect(
+      finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
+    ).toMatchObject({ limit: 5 })
+  })
+
+  it("offsets by the current page", () => {
+    list_quotes_command.getPageResults(2, {})
+
+    // finderSpy was called with passthrough_options including offset:5
+    expect(
+      finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
+    ).toMatchObject({ offset: 5 })
   })
 })
 
