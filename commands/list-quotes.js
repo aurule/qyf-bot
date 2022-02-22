@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
+const {
+  SlashCommandBuilder,
+  userMention,
+  underscore,
+} = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { Collection, MessageActionRow, MessageButton } = require("discord.js")
 
@@ -77,7 +81,9 @@ function describeResults(
   const desc_lines = []
 
   if (total) {
-    desc_lines.push(`Showing page ${pageNum} of ${Math.ceil(total / PAGE_SIZE)}`)
+    desc_lines.push(
+      `Showing page ${pageNum} of ${Math.ceil(total / PAGE_SIZE)}`
+    )
   } else {
     desc_lines.push("No quotes found")
   }
@@ -113,21 +119,20 @@ function describeResults(
  * @return {Array[Component]}         Array of pagination controls
  */
 function paginationControls(pageNum, total) {
-  if(total <= PAGE_SIZE) return []
+  if (total <= PAGE_SIZE) return []
 
-  const actions = new MessageActionRow()
-    .addComponents(
-      new MessageButton()
-        .setCustomId('paginateBack')
-        .setLabel('Back')
-        .setStyle('SECONDARY')
-        .setDisabled(pageNum == 1),
-      new MessageButton()
-        .setCustomId('paginateNext')
-        .setLabel('Next')
-        .setStyle('SECONDARY')
-        .setDisabled(pageNum * PAGE_SIZE >= total),
-      )
+  const actions = new MessageActionRow().addComponents(
+    new MessageButton()
+      .setCustomId("paginateBack")
+      .setLabel("Back")
+      .setStyle("SECONDARY")
+      .setDisabled(pageNum == 1),
+    new MessageButton()
+      .setCustomId("paginateNext")
+      .setLabel("Next")
+      .setStyle("SECONDARY")
+      .setDisabled(pageNum * PAGE_SIZE >= total)
+  )
 
   return [actions]
 }
@@ -140,13 +145,10 @@ function paginationControls(pageNum, total) {
  * @return {Promise}                        Results object with data in .rows and total in .count
  */
 function getPageResults(pageNum, finder_options) {
-  return QuoteFinder.findAndCountAll(
-    finder_options,
-    {
-      limit: PAGE_SIZE,
-      offset: (pageNum - 1) * PAGE_SIZE
-    }
-  )
+  return QuoteFinder.findAndCountAll(finder_options, {
+    limit: PAGE_SIZE,
+    offset: (pageNum - 1) * PAGE_SIZE,
+  })
 }
 
 /**
@@ -160,7 +162,14 @@ function getPageResults(pageNum, finder_options) {
  * @param  {String|null}      text            The text searched for in the quotes
  * @return {Object}                           Message data object with content and components attributes
  */
-async function buildPageContents(pageNum, finder_options, game, alias, speaker, text) {
+async function buildPageContents(
+  pageNum,
+  finder_options,
+  game,
+  alias,
+  speaker,
+  text
+) {
   const result = await getPageResults(pageNum, finder_options)
   const quote_contents = QuotePresenter.present(result.rows)
   const content = describeResults(pageNum, result.count, game, quote_contents, {
@@ -198,9 +207,7 @@ module.exports = {
           )
           .setAutocomplete(true)
       ),
-  autocomplete: new Collection([
-    ['game', QuoteListGameCompleter]
-  ]),
+  autocomplete: new Collection([["game", QuoteListGameCompleter]]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")
     const alias = interaction.options.getString("alias")
@@ -244,7 +251,14 @@ module.exports = {
 
     let pageNum = 1
 
-    let content = await buildPageContents(pageNum, finder_options, game, alias, speaker, text)
+    let content = await buildPageContents(
+      pageNum,
+      finder_options,
+      game,
+      alias,
+      speaker,
+      text
+    )
     const replyMessage = await interaction.reply({
       ...content,
       fetchReply: true,
@@ -253,15 +267,22 @@ module.exports = {
     const paginationCollector = replyMessage.createMessageComponentCollector({
       componentType: "BUTTON",
       time: PAGINATION_TIMEOUT,
-    });
-    paginationCollector.on('collect', async i => {
-      if (i.customId == 'paginateNext') pageNum++
-      if (i.customId == 'paginateBack') pageNum--
+    })
+    paginationCollector.on("collect", async (i) => {
+      if (i.customId == "paginateNext") pageNum++
+      if (i.customId == "paginateBack") pageNum--
 
-      content = await buildPageContents(pageNum, finder_options, game, alias, speaker, text)
+      content = await buildPageContents(
+        pageNum,
+        finder_options,
+        game,
+        alias,
+        speaker,
+        text
+      )
       await i.update(content)
     })
-    paginationCollector.on('end', async collected => {
+    paginationCollector.on("end", async (collected) => {
       await interaction.editReply({ components: [] })
     })
 
@@ -290,12 +311,16 @@ module.exports = {
       oneLine`
         ${command_name} finds quotes which match *all* of the options given. It can only display a few on each
         page, due to restrictions on message length set by Discord, so use the Next and Back buttons to see
-        more. The buttons remain active for ${PAGINATION_TIMEOUT / 60000} minutes.
+        more. The buttons remain active for ${
+          PAGINATION_TIMEOUT / 60000
+        } minutes.
       `,
       "",
       oneLine`
         Quotes are pulled from the channel's default game, or from all games if no default is set. For more
-        info on how default games work, check out the ${underscore("Default Games")} topic in \`/qyf-help\`.
+        info on how default games work, check out the ${underscore(
+          "Default Games"
+        )} topic in \`/qyf-help\`.
       `,
     ].join("\n")
   },
