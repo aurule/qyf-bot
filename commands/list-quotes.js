@@ -224,7 +224,7 @@ module.exports = {
       })
       if (!user) {
         return interaction.reply(
-          describeResults(0, game, "", {
+          describeResults(1, 0, game, "", {
             alias: alias,
             speaker: speaker,
             text: text,
