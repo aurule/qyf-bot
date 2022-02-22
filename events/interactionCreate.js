@@ -176,7 +176,6 @@ module.exports = {
           command: interaction.commandName,
           option: interaction.options.getFocused(true),
         })
-        logger.error(error)
         return interaction.respond([])
       })
     }
