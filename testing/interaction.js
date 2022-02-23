@@ -83,6 +83,12 @@ class Interaction {
     return obj
   }
 
+  async deferUpdate() {
+    if (this.replied) return Promise.reject("cannot defer: interaction is already in replied state")
+    if (this.deferred) return Promise.reject("cannot defer: interaction is already in deferred state")
+    return
+  }
+
   async followUp(msg) {
     if (!this.replied) return Promise.reject("cannot followUp: interaction has no reply")
     return msg
