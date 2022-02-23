@@ -66,6 +66,59 @@ afterEach(async () => {
 })
 
 describe("execute", () => {
+  beforeEach(() => {
+    interaction.command_options.game = game.name
+  })
+
+  it("gets the correct game", async () => {
+    const getterSpy = jest.spyOn(quote_command, "getGame")
+
+    await quote_command.execute(interaction)
+
+    expect(getterSpy).toHaveBeenCalled()
+  })
+
+  it("aborts without a game", async () => {
+    jest.spyOn(quote_command, "getGame").mockResolvedValue(null)
+    const makerSpy = jest.spyOn(QuoteBuilder, "makeQuote")
+
+    await quote_command.execute(interaction)
+
+    expect(makerSpy).not.toHaveBeenCalled()
+  })
+
+  describe("reply", () => {
+    it("says who saved the quote", async () => {
+      const reply = await quote_command.execute(interaction)
+
+      expect(reply).toMatch(interaction.user.id.toString())
+    })
+
+    it("displays the quote text", async () => {
+      const reply = await quote_command.execute(interaction)
+
+      expect(reply).toMatch(interaction.command_options.text)
+    })
+
+    it("displays the quote speaker", async () => {
+      const reply = await quote_command.execute(interaction)
+
+      expect(reply).toMatch(interaction.command_options.alias)
+    })
+
+    it("throws errors up the chain", async () => {
+      jest.spyOn(Quotes, 'create').mockRejectedValue(new Error("test error"))
+
+      expect.assertions(1)
+
+      return quote_command
+        .execute(interaction)
+        .catch((e) => expect(e.message).toMatch("test error"))
+    })
+  })
+})
+
+describe("getGame", () => {
   describe("with a default game", () => {
     beforeEach(async () => {
       await DefaultGames.create({
@@ -76,14 +129,10 @@ describe("execute", () => {
       })
     })
 
-    it("saves the quote for the default game", async () => {
-      await quote_command.execute(interaction)
-      const quote = await Quotes.findOne({
-        where: { gameId: game.id },
-        include: Lines,
-      })
+    it("returns the default game", async () => {
+      const result = await quote_command.getGame(null, guild, interaction)
 
-      expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+      expect(result.id).toEqual(game.id)
     })
 
     describe("with a game arg", () => {
@@ -91,85 +140,43 @@ describe("execute", () => {
         interaction.partial_text = game.name
         const completer = quote_command.autocomplete.get("game")
         const game_arg = await completer.complete(interaction).then((values) => values[0].value)
-        interaction.command_options.game = game_arg
 
-        await quote_command.execute(interaction)
-        const quote = await Quotes.findOne({
-          where: { gameId: game.id },
-          include: Lines,
-        })
+        const result = await quote_command.getGame(game_arg, guild, interaction)
 
-        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+        expect(result.id).toEqual(game.id)
       })
 
-      it("saves the quote to the chosen game", async () => {
+      it("returns the chosen game", async () => {
         const game2 = await Games.create({
           name: "Test Game 2",
           guildId: guild.id,
         })
-        interaction.command_options.game = game2.name
+        const result = await quote_command.getGame(game2.name, guild, interaction)
 
-        await quote_command.execute(interaction)
-        const quote = await Quotes.findOne({
-          where: { gameId: game2.id },
-          include: Lines,
-        })
-
-        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
-      })
-    })
-
-    describe("reply", () => {
-      beforeEach(() => {
-        jest
-          .spyOn(DefaultGameScopeService, "gameForChannel")
-          .mockReturnValue(game)
-      })
-
-      it("says who saved the quote", async () => {
-        const reply = await quote_command.execute(interaction)
-
-        expect(reply).toMatch(interaction.user.id.toString())
-      })
-
-      it("displays the quote text", async () => {
-        const reply = await quote_command.execute(interaction)
-
-        expect(reply).toMatch(interaction.command_options.text)
-      })
-
-      it("displays the quote speaker", async () => {
-        const reply = await quote_command.execute(interaction)
-
-        expect(reply).toMatch(interaction.command_options.alias)
-      })
-
-      it("throws errors up the chain", async () => {
-        jest.spyOn(Quotes, 'create').mockRejectedValue(new Error("test error"))
-
-        expect.assertions(1)
-
-        return quote_command
-          .execute(interaction)
-          .catch((e) => expect(e.message).toMatch("test error"))
+        expect(result.id).toEqual(game2.id)
       })
     })
   })
 
   describe("with no default game", () => {
     describe("without game arg", () => {
-      it("stores the quote info for later followup", async () => {
-        const keyvSpy = jest.spyOn(followup_store, "set")
-
-        const reply = await quote_command.execute(interaction)
-
-        expect(keyvSpy).toHaveBeenCalled()
+      beforeEach(() => {
+        interaction.reply = async (data) => {
+          interaction.replied = true
+          return {
+            data: data,
+            awaitMessageComponent: (options) => { return Promise.resolve({ values: [game.id] }) }
+          }
+        }
       })
 
-      it("replies with a game prompt", async () => {
-        const reply = await quote_command.execute(interaction)
+      it("gets the game from a prompt", async () => {
+        const promptSpy = jest.spyOn(quote_command, "promptForGame")
+        await guild.reload({include: Games})
 
-        expect(reply.content).toMatch("Which game")
+        const result = await quote_command.getGame(null, guild, interaction)
+
+        expect(promptSpy).toHaveBeenCalled()
       })
     })
 
@@ -178,27 +185,115 @@ describe("execute", () => {
         interaction.partial_text = game.name
         const completer = quote_command.autocomplete.get("game")
         const game_arg = await completer.complete(interaction).then((values) => values[0].value)
-        interaction.command_options.game = game_arg
 
-        await quote_command.execute(interaction)
-        const quote = await Quotes.findOne({
-          where: { gameId: game.id },
-          include: Lines,
-        })
+        const result = await quote_command.getGame(game_arg, guild, interaction)
 
-        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+        expect(result.id).toEqual(game.id)
       })
 
-      it("saves the quote to the chosen game", async () => {
-        interaction.command_options.game = game.name
+      it("returns the chosen game", async () => {
+        const result = await quote_command.getGame(game.name, guild, interaction)
 
-        await quote_command.execute(interaction)
-        const quote = await Quotes.findOne({
-          where: { gameId: game.id },
-          include: Lines,
-        })
+        expect(result.id).toEqual(game.id)
+      })
+    })
+  })
+})
 
-        expect(quote.Lines[0].content).toEqual(interaction.command_options.text)
+describe("promptForGame", () => {
+  let selection
+
+  beforeEach(async () => {
+    await guild.reload({ include: Games })
+
+    selection = (result, options) => Promise.resolve({ values: [result] })
+
+    interaction.reply = async (data) => {
+      interaction.replied = true
+      return {
+        data: data,
+        awaitMessageComponent: async (options) => { return selection(game.id, options) }
+      }
+    }
+  })
+
+  it("replies with a select menu", async () => {
+    const replySpy = jest.spyOn(interaction, "reply")
+
+    const result = await quote_command.promptForGame(interaction, guild)
+
+    // replySpy was called with the correct select component
+    expect(
+      replySpy.mock.calls[replySpy.mock.calls.length - 1][0].components[0].components[0]
+    ).toMatchObject({ customId: "newQuoteGameSelect" })
+  })
+
+  it("returns the selected game", async () => {
+    const result = await quote_command.promptForGame(interaction, guild)
+
+    expect(result.id).toEqual(game.id)
+  })
+
+  it("warns if there is no response", async () => {
+    selection = result => Promise.reject({ code: "INTERACTION_COLLECTOR_ERROR" })
+    const editReplySpy = jest.spyOn(interaction, "editReply")
+
+    const result = await quote_command.promptForGame(interaction, guild)
+
+    expect(editReplySpy).toHaveBeenCalled()
+    expect(result).toBeNull()
+  })
+
+  it("throws on an unknown error", async () => {
+    selection = result => Promise.reject({ code: "OH NO", message: "test error" })
+    const editReplySpy = jest.spyOn(interaction, "editReply")
+
+    expect.assertions(1)
+
+    return quote_command
+      .promptForGame(interaction, guild)
+      .catch((e) => expect(e.message).toMatch("test error"))
+  })
+
+  describe("filter", () => {
+    let selectInteraction
+
+    beforeEach(() => {
+      selectInteraction = new Interaction(guild.snowflake)
+      selection = jest.fn((result, options) => {
+        const filterStatus = options.filter(selectInteraction)
+        return {
+          values: [game.id],
+          filterStatus,
+        }
+      })
+    })
+
+    it("calls deferUpdate immediately", async () => {
+      const deferSpy = jest.spyOn(selectInteraction, "deferUpdate")
+
+      await quote_command.promptForGame(interaction, guild)
+
+      expect(deferSpy).toHaveBeenCalled()
+    })
+
+    it("returns true when the user matches the original user", async () => {
+      selectInteraction.user = interaction.user
+
+      await quote_command.promptForGame(interaction, guild)
+
+      expect(selection).toHaveReturnedWith({
+        values: [game.id],
+        filterStatus: true,
+      })
+    })
+
+    it("returns false when the user does not match the original user", async () => {
+      await quote_command.promptForGame(interaction, guild)
+
+      expect(selection).toHaveReturnedWith({
+        values: [game.id],
+        filterStatus: false,
       })
     })
   })

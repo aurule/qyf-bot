@@ -12,6 +12,69 @@ const { makeQuote, QuoteData } = require("../services/quote-builder")
 const QuoteGameCompleter = require("../completers/quote-game-completer")
 const { quoteReply } = require("../services/reply-builder")
 const { memberOrAnonymous } = require("../services/member-injector")
+const { getReplyFn } = require("../util/getReplyFn")
+
+/**
+ * Get the correct game for the quote
+ *
+ * Uses the game provided in args first, then tries the current default, then
+ * falls back on prompting the user.
+ *
+ * @param  {string}       game_arg    Game name from command arguments
+ * @param  {Guilds}       guild       Guild the game is from
+ * @param  {Interaction}  interaction Discord interaction object for the command
+ * @return {Promise<Games|null>}      The correct game, or null if the prompt timed out
+ */
+async function getGame(game_arg, guild, interaction) {
+  if (game_arg) return Games.findOne({ where: { name: game_arg, guildId: guild.id } })
+
+  const default_game = await gameForChannel(interaction.channel)
+  if (default_game) return default_game
+
+  // use the version from module.exports so we can mock it in tests
+  return module.exports.promptForGame(interaction, guild)
+}
+
+/**
+ * Prompt the user to pick a game
+ *
+ * @param  {Interaction}  interaction Discord interaction object for the command
+ * @param  {Guilds}       guild       Guild the game is from
+ * @return {Promise<Games|null>}      The chosen game, or null if the prompt timed out
+ */
+async function promptForGame(interaction, guild) {
+  const gameSelectRow = new MessageActionRow().addComponents(
+    new MessageSelectMenu()
+      .setCustomId("newQuoteGameSelect")
+      .setPlaceholder("Pick a game")
+      .addOptions(GameSelectTransformer.transform(guild.Games))
+  )
+
+  const gameSelectMessage = await interaction.reply({
+    content: "Which game is this quote from?",
+    components: [gameSelectRow],
+    ephemeral: true,
+    fetchReply: true,
+  })
+  const filter = (i) => {
+    i.deferUpdate()
+    return i.user.id === interaction.user.id
+  }
+  return gameSelectMessage.awaitMessageComponent({ filter, componentType: 'SELECT_MENU', time: 60000 })
+    .then(async (i) => {
+      const game = await Games.findByPk(i.values[0])
+      await interaction.editReply({ content: `Saving your quote to ${game.name}...`, components: [] })
+      return game
+    })
+    .catch(async (err) => {
+      if(err.code == 'INTERACTION_COLLECTOR_ERROR') {
+        await interaction.editReply({ content: "You didn't pick a game, so I could not save the quote!", components: [] })
+        return null
+      } else {
+        throw err
+      }
+    })
+}
 
 module.exports = {
   name: "quote",
@@ -51,6 +114,8 @@ module.exports = {
   autocomplete: new Collection([
     ['game', QuoteGameCompleter]
   ]),
+  promptForGame,
+  getGame,
   async execute(interaction) {
     const text = interaction.options.getString("text")
     const speaker = interaction.options.getUser("speaker")
@@ -70,61 +135,34 @@ module.exports = {
       include: Games,
     })
 
-    let game
-    if (game_arg) {
-      game = await Games.findOne({ where: { name: game_arg, guildId: guild.id } })
-    } else {
-      game = await gameForChannel(interaction.channel)
-    }
+    // get the game from args, from the current default, or from a prompt
+    const game = await module.exports.getGame(game_arg, guild, interaction) // using module.exports so we can mock this out in tests
+    if(!game) return
 
-    // With a default game, we can save immediately
-    if (game) {
-      return makeQuote({
-        text: text,
-        attribution: speaker_name,
-        game: game,
-        speaker: speaker_member.user,
-        quoter: user,
-        context: context,
-      })
-        .then(async (result) => {
-          return interaction.reply(
-            quoteReply({
-              reporter: user,
-              speaker: speaker_member.user,
-              alias: alias,
-              text: text
-            })
-          )
-        })
-        .catch((error) => {
-          throw(error)
-        })
-    }
-
-    // With no default game, we need a followup to pick the right game
-    followup_store.set(
-      interaction.id.toString(),
-      new QuoteData({
-        text: text,
-        attribution: speaker_name,
-        speaker: speaker_member.user,
-        context: context,
-      })
-    )
-
-    const gameSelectRow = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId("newQuoteGameSelect")
-        .setPlaceholder("Pick a game")
-        .addOptions(GameSelectTransformer.transform(guild.Games))
-    )
-
-    return interaction.reply({
-      content: "Which game is this quote from?",
-      components: [gameSelectRow],
-      ephemeral: true,
+    // Save the quote
+    return makeQuote({
+      text: text,
+      attribution: speaker_name,
+      game: game,
+      speaker: speaker_member.user,
+      quoter: user,
+      context: context,
     })
+      .then(async (result) => {
+        const fn = getReplyFn(interaction)
+        return interaction[fn](
+          quoteReply({
+            reporter: user,
+            speaker: speaker_member.user,
+            alias: alias,
+            text: text
+          })
+        )
+      })
+      .catch((error) => {
+        throw(error)
+      })
+
   },
   help({ command_name }) {
     return [
