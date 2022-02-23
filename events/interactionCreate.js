@@ -41,23 +41,6 @@ async function handleCommand(interaction) {
 }
 
 /**
- * Handle select menu interactions
- *
- * @param  {Interaction} interaction  Discord interaction object
- * @return {Promise}                  Promise, probably from replying to the
- *                                    interaction. Rejects if select menu
- *                                    followup not found.
- */
-async function handleSelectMenu(interaction) {
-  const followup = interaction.client.followups.get(interaction.customId)
-
-  if (!followup)
-    return Promise.reject(`no followup for ${interaction.customId}`)
-
-  return followup.execute(interaction)
-}
-
-/**
  * Handle autocomplete interactions
  *
  * @param  {Interaction} interaction  Discord interaction object
@@ -99,26 +82,9 @@ function inCorrectEnv(interaction) {
   )
 }
 
-/**
- * Get the correct response function to use for error messages based on the interaction's reply state
- *
- * Replied: followUp
- * Deferred and not replied: editReply
- * neither: reply
- *
- * @param  {Interaction} interaction Discord interaction object
- * @return {string}                  Name of the response method to use
- */
-function errorReplyFunction(interaction) {
-  if (interaction.replied) return "followUp"
-  if (interaction.deferred) return "editReply"
-  return "reply"
-}
-
 module.exports = {
   name: "interactionCreate",
   handleCommand,
-  handleSelectMenu,
   handleAutocomplete,
   inCorrectEnv,
 
@@ -139,24 +105,8 @@ module.exports = {
         logger.error({
           origin: "command",
           error: err,
+          guild: interaction.guildId,
           command: interaction.commandName,
-        })
-        const fn = errorReplyFunction(interaction)
-        return interaction[fn]({
-          content: "There was an error while executing this command!",
-          components: [],
-          ephemeral: true,
-        })
-      })
-    }
-
-    // handle choices on select menu components
-    if (interaction.isSelectMenu()) {
-      return module.exports.handleSelectMenu(interaction).catch((err) => {
-        logger.error({
-          origin: "select menu",
-          error: err,
-          select: interaction.customId,
         })
         const fn = getReplyFn(interaction)
         return interaction[fn]({
@@ -173,6 +123,7 @@ module.exports = {
         logger.error({
           origin: "autocomplete",
           error: err,
+          guild: interaction.guildId,
           command: interaction.commandName,
           option: interaction.options.getFocused(true),
         })

@@ -59,28 +59,6 @@ describe("execute", () => {
     })
   })
 
-  describe("dispatches select menus", () => {
-    beforeEach(() => {
-      interaction.interactionType = "selectMenu"
-      handleSpy = jest.spyOn(InteractionCreateEvent, "handleSelectMenu")
-    })
-
-    it("executes select menus", () => {
-      handleSpy.mockResolvedValue("worked")
-
-      return expect(
-        InteractionCreateEvent.execute(interaction)
-      ).resolves.toMatch("worked")
-    })
-    it("gracefully handles select menu errors", async () => {
-      handleSpy.mockRejectedValue("ƒailed")
-
-      const result = await InteractionCreateEvent.execute(interaction)
-
-      expect(result.content).toMatch("There was an error")
-    })
-  })
-
   describe("dispatches autocompletes", () => {
     beforeEach(() => {
       interaction.interactionType = "autocomplete"
@@ -239,33 +217,6 @@ describe("handleCommand", () => {
         InteractionCreateEvent.handleCommand(interaction)
       ).resolves.toMatchObject({content: "This command does not work in DMs. Sorry!"})
     })
-  })
-})
-
-describe("handleSelectMenu", () => {
-  const testFollowup = {
-    execute: (interaction) => "worked",
-  }
-
-  beforeEach(() => {
-    interaction.client.followups.set("testing", testFollowup)
-    envSpy = jest.spyOn(InteractionCreateEvent, "inCorrectEnv").mockReturnValue(true)
-  })
-
-  it("rejects on unknown followup", () => {
-    interaction.customId = "nope"
-
-    return expect(
-      InteractionCreateEvent.handleSelectMenu(interaction)
-    ).rejects.toMatch("no followup")
-  })
-
-  it("executes the followup", () => {
-    interaction.customId = "testing"
-
-    return expect(
-      InteractionCreateEvent.handleSelectMenu(interaction)
-    ).resolves.toMatch("worked")
   })
 })
 
