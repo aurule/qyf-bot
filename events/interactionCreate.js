@@ -1,4 +1,5 @@
 const { logger } = require("../util/logger")
+const { getReplyFn } = require("../util/getReplyFn")
 
 const PolicyChecker = require("../services/policy-checker")
 const ParticipationCreator = require("../services/participation-creator")
@@ -120,7 +121,6 @@ module.exports = {
   handleSelectMenu,
   handleAutocomplete,
   inCorrectEnv,
-  errorReplyFunction,
 
   /**
    * Handle the incoming interaction event
@@ -158,7 +158,7 @@ module.exports = {
           error: err,
           select: interaction.customId,
         })
-        const fn = errorReplyFunction(interaction)
+        const fn = getReplyFn(interaction)
         return interaction[fn]({
           content: "There was an error while executing this command!",
           components: [],
