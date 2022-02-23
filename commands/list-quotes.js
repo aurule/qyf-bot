@@ -5,6 +5,7 @@ const {
 } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { Collection, MessageActionRow, MessageButton } = require("discord.js")
+const { logger } = require("../util/logger")
 
 const { Guilds, Games, Users } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")
@@ -156,7 +157,7 @@ function getPageResults(pageNum, finder_options) {
  *
  * @param  {Int}              pageNum         Which page we're on
  * @param  {SearchOptions}    finder_options  Options for the quote finder
- * @param  {Games}            game            The game object the qutoes are from
+ * @param  {Games}            game            The game object the quotes are from
  * @param  {String|null}      alias           The alias used to find quotes
  * @param  {DiscordUser|null} speaker         The speaker object used to find quotes
  * @param  {String|null}      text            The text searched for in the quotes
@@ -172,16 +173,42 @@ async function buildPageContents(
 ) {
   const result = await getPageResults(pageNum, finder_options)
   const quote_contents = QuotePresenter.present(result.rows)
-  const content = describeResults(pageNum, result.count, game, quote_contents, {
+  let content = describeResults(pageNum, result.count, game, quote_contents, {
     alias: alias,
     speaker: speaker,
     text: text,
   })
 
+  if (content.length > 2000) {
+    const warning = `... Can't show more because the quotes on page ${pageNum} exceed Discord's message limit`
+    content = content.substring(0, 2000 - warning.length) + warning
+    logMessageLengthWarning(game, pageNum, result.rows)
+  }
+
   return {
     content: content,
     components: paginationControls(pageNum, result.count),
   }
+}
+
+/**
+ * Log a warning message about a quotes page exceeding Discord's message length limit
+ *
+ * @param  {Games}          game    The game the quotes are from
+ * @param  {Int}            pageNum Current page of results
+ * @param  {Array<Quotes>}  rows    Array of quotes which were on the offending page
+ * @return {undefined}              Nothing
+ */
+function logMessageLengthWarning(game, pageNum, rows) {
+  return logger.warn({
+    description: "quotes page exceeded 2000 characters",
+    command: "list-quotes",
+    details: {
+      game: game.id,
+      page: pageNum,
+      quotes: rows.map(r => r.id)
+    },
+  })
 }
 
 module.exports = {
@@ -309,9 +336,9 @@ module.exports = {
       `,
       "",
       oneLine`
-        ${command_name} finds quotes which match *all* of the options given. It can only display a few on each
-        page, due to restrictions on message length set by Discord, so use the Next and Back buttons to see
-        more. The buttons remain active for ${
+        ${command_name} finds quotes which match *all* of the options given. It can only display ${PAGE_SIZE}
+        on each page, due to restrictions on message length set by Discord, so use the Next and Back buttons
+        to see more. The buttons remain active for ${
           PAGINATION_TIMEOUT / 60000
         } minutes.
       `,

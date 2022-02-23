@@ -445,6 +445,42 @@ describe("paginationControls", () => {
   })
 })
 
+describe("buildPageContents", () => {
+  beforeEach(async () => {
+    try {
+      guild = await Guilds.create({
+        name: "Test Guild",
+        snowflake: simpleflake().toString(),
+      })
+      game = await Games.create({
+        name: "Test Game",
+        guildId: guild.id,
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  afterEach(async () => {
+    try {
+      await game.destroy()
+      await guild.destroy()
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  it("warns when quotes are too big for Discord", async () => {
+    jest.spyOn(QuoteFinder, "findAndCountAll").mockResolvedValue({ rows: [], count: 1 })
+    jest.spyOn(QuotePresenter, "present").mockReturnValue("x".repeat(2001))
+    const finder_opts = new QuoteFinder.SearchOptions()
+
+    const result = await list_quotes_command.buildPageContents(1, finder_opts, game, null, null, null)
+
+    expect(result.content).toMatch("exceed Discord's message limit")
+  })
+})
+
 describe("getPageResults", () => {
   var finderSpy
 
