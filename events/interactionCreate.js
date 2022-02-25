@@ -102,6 +102,7 @@ module.exports = {
     // handle command invocations
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
       return module.exports.handleCommand(interaction).catch((err) => {
+        console.log(err)
         logger.error({
           origin: "command",
           error: err,
