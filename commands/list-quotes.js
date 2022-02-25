@@ -330,7 +330,9 @@ module.exports = {
     })
     paginationCollector.on("collect", async (i) => {
       if (i.customId == "paginateNext") pageNum++
-      if (i.customId == "paginateBack") pageNum--
+      if (i.customId == "paginateBack") {
+        pageNum = Math.max(1, pageNum - 1)
+      }
 
       pageContent = await buildPageContents(
         pageNum,
