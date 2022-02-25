@@ -76,13 +76,6 @@ class Interaction {
     return msg
   }
 
-  async deferReply(obj) {
-    if (this.replied) return Promise.reject("cannot defer: interaction is already in replied state")
-    if (this.deferred) return Promise.reject("cannot defer: interaction is already in deferred state")
-    this.deferred = true
-    return obj
-  }
-
   async deferUpdate() {
     if (this.replied) return Promise.reject("cannot defer: interaction is already in replied state")
     if (this.deferred) return Promise.reject("cannot defer: interaction is already in deferred state")
@@ -91,10 +84,6 @@ class Interaction {
 
   async followUp(msg) {
     if (!this.replied) return Promise.reject("cannot followUp: interaction has no reply")
-    return msg
-  }
-
-  async update(msg) {
     return msg
   }
 
@@ -108,10 +97,6 @@ class Interaction {
 
   isApplicationCommand() {
     return this.interactionType == "applicationCommand"
-  }
-
-  isSelectMenu() {
-    return this.interactionType == "selectMenu"
   }
 
   isAutocomplete() {
