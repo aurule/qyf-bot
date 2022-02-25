@@ -63,9 +63,11 @@ class QuotePageEmbed extends MessageEmbed {
     }
 
     this.setTitle(`Quotes from ${this.criteria.game.name}`)
-    this.setFooter({
-      text: `Page ${this.pageNum} of ${this.maxPage}`,
-    })
+    if (quoteResults.count) {
+      this.setFooter({
+        text: `Page ${this.pageNum} of ${this.maxPage}`,
+      })
+    }
     this.setTimestamp()
 
     this.setDescription(

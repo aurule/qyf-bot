@@ -491,6 +491,16 @@ describe("QuotePageEmbed", () => {
 
       expect(embed.footer.text).toMatch("of 4")
     })
+
+    it("is empty with no results", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: { rows: [], count: 0 },
+        pageNum: 1,
+        game: { name: "Test Game" },
+      })
+
+      expect(embed.footer).toBeNull()
+    })
   })
 
   describe("description", () => {
