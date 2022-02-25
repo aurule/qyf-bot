@@ -54,12 +54,12 @@ describe("execute", () => {
       interaction.command_options.game = null
       interaction.collector = new Collector()
 
-      interaction.reply = data => {
+      interaction.reply = (data) => {
         return {
           data: data,
           createMessageComponentCollector: (options) => {
             return interaction.collector
-          }
+          },
         }
       }
     } catch (err) {
@@ -95,7 +95,9 @@ describe("execute", () => {
     it("works with a game from the completer", async () => {
       interaction.partial_text = game.name
       const completer = list_quotes_command.autocomplete.get("game")
-      const game_arg = await completer.complete(interaction).then((values) => values[0].value)
+      const game_arg = await completer
+        .complete(interaction)
+        .then((values) => values[0].value)
       interaction.command_options.game = game_arg
       const finderSpy = jest.spyOn(QuoteFinder, "findAndCountAll")
 
@@ -180,7 +182,7 @@ describe("execute", () => {
     it("next button gets the next page", async () => {
       const buttonInteraction = {
         customId: "paginateNext",
-        update: msg => msg
+        update: (msg) => msg,
       }
       const updateSpy = jest.spyOn(buttonInteraction, "update")
       await list_quotes_command.execute(interaction)
@@ -193,7 +195,7 @@ describe("execute", () => {
     it("back button gets the previous page", async () => {
       const buttonInteraction = {
         customId: "paginateBack",
-        update: msg => msg
+        update: (msg) => msg,
       }
       const updateSpy = jest.spyOn(buttonInteraction, "update")
       await list_quotes_command.execute(interaction)
@@ -204,7 +206,9 @@ describe("execute", () => {
     })
 
     it("expiration clears the buttons", async () => {
-      const editReplySpy = jest.spyOn(interaction, "editReply").mockResolvedValue(true)
+      const editReplySpy = jest
+        .spyOn(interaction, "editReply")
+        .mockResolvedValue(true)
       await list_quotes_command.execute(interaction)
 
       await interaction.collector.callbacks.end()
@@ -231,12 +235,12 @@ describe("getGameOrDefault", () => {
       interaction.command_options.text = ""
       interaction.command_options.game = null
 
-      interaction.reply = data => {
+      interaction.reply = (data) => {
         return {
           data: data,
           createMessageComponentCollector: (options) => {
             return new Collector(options)
-          }
+          },
         }
       }
     } catch (err) {
@@ -272,7 +276,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         game.name,
         interaction.channel,
-        guild.id,
+        guild.id
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -293,7 +297,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id,
+        guild.id
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -305,7 +309,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id,
+        guild.id
       )
 
       expect(result).toMatchObject({ id: null })
@@ -315,7 +319,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id,
+        guild.id
       )
 
       expect(result).toMatchObject({ name: "all games" })
@@ -327,7 +331,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         QuoteListGameCompleter.ALL_GAMES,
         interaction.channel,
-        guild.id,
+        guild.id
       )
 
       expect(result).toMatchObject({ name: "all games" })
@@ -394,37 +398,37 @@ describe("paginationControls", () => {
   it("adds a back button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0]).toMatchObject({ customId: "paginateBack"})
+    expect(result[0].components[0]).toMatchObject({ customId: "paginateBack" })
   })
 
   it("disables the back button on the first page", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0]).toMatchObject({ disabled: true})
+    expect(result[0].components[0]).toMatchObject({ disabled: true })
   })
 
   it("enables the back button on later pages", () => {
     const result = list_quotes_command.paginationControls(2, 9)
 
-    expect(result[0].components[0]).toMatchObject({ disabled: false})
+    expect(result[0].components[0]).toMatchObject({ disabled: false })
   })
 
   it("adds a next button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[1]).toMatchObject({ customId: "paginateNext"})
+    expect(result[0].components[1]).toMatchObject({ customId: "paginateNext" })
   })
 
   it("disables the next button on the first page", () => {
     const result = list_quotes_command.paginationControls(2, 9)
 
-    expect(result[0].components[1]).toMatchObject({ disabled: true})
+    expect(result[0].components[1]).toMatchObject({ disabled: true })
   })
 
   it("enables the next button on earlier pages", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[1]).toMatchObject({ disabled: false})
+    expect(result[0].components[1]).toMatchObject({ disabled: false })
   })
 })
 
@@ -458,9 +462,9 @@ describe("QuotePageEmbed", () => {
   describe("title", () => {
     it("includes the game name", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 0},
+        quoteResults: { rows: [], count: 0 },
         pageNum: 1,
-        game: { name: "Test Game" }
+        game: { name: "Test Game" },
       })
 
       expect(embed.title).toMatch("Test Game")
@@ -470,9 +474,9 @@ describe("QuotePageEmbed", () => {
   describe("footer", () => {
     it("includes the current page", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 20},
+        quoteResults: { rows: [], count: 20 },
         pageNum: 3,
-        game: { name: "Test Game" }
+        game: { name: "Test Game" },
       })
 
       expect(embed.footer.text).toMatch("3 of")
@@ -480,9 +484,9 @@ describe("QuotePageEmbed", () => {
 
     it("includes the max page", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 20},
+        quoteResults: { rows: [], count: 20 },
         pageNum: 3,
-        game: { name: "Test Game" }
+        game: { name: "Test Game" },
       })
 
       expect(embed.footer.text).toMatch("of 4")
@@ -492,23 +496,25 @@ describe("QuotePageEmbed", () => {
   describe("description", () => {
     it("includes the criteria description", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 20},
+        quoteResults: { rows: [], count: 20 },
         pageNum: 3,
         game: { name: "Test Game" },
-        alias: "tester"
+        alias: "tester",
       })
 
       expect(embed.description).toMatch("by tester")
     })
 
     it("includes the quote contents", () => {
-      const presenterSpy = jest.spyOn(QuotePresenter, "present").mockReturnValue("test quote text")
+      const presenterSpy = jest
+        .spyOn(QuotePresenter, "present")
+        .mockReturnValue("test quote text")
 
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 20},
+        quoteResults: { rows: [], count: 20 },
         pageNum: 3,
         game: { name: "Test Game" },
-        alias: "tester"
+        alias: "tester",
       })
 
       expect(embed.description).toMatch("test quote text")
@@ -518,7 +524,7 @@ describe("QuotePageEmbed", () => {
   describe("maxPage", () => {
     it("with an exact multiple, shows the right max page", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 20},
+        quoteResults: { rows: [], count: 20 },
         pageNum: 3,
         game: { name: "Test Game" },
       })
@@ -528,7 +534,7 @@ describe("QuotePageEmbed", () => {
 
     it("with an inexact multiple, shows the right max page", () => {
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 19},
+        quoteResults: { rows: [], count: 19 },
         pageNum: 3,
         game: { name: "Test Game" },
       })
@@ -539,9 +545,11 @@ describe("QuotePageEmbed", () => {
 
   describe("quoteTexts", () => {
     it("presents the quotes", () => {
-      const presenterSpy = jest.spyOn(QuotePresenter, "present").mockReturnValue("test quote text")
+      const presenterSpy = jest
+        .spyOn(QuotePresenter, "present")
+        .mockReturnValue("test quote text")
       const embed = new list_quotes_command.QuotePageEmbed({
-        quoteResults: {rows: [], count: 19},
+        quoteResults: { rows: [], count: 19 },
         pageNum: 3,
         game: { name: "Test Game" },
       })
@@ -570,7 +578,7 @@ describe("data", () => {
 
 describe("help", () => {
   it("includes the command name in the output", () => {
-    const help_text = list_quotes_command.help({command_name: "sillyness"})
+    const help_text = list_quotes_command.help({ command_name: "sillyness" })
 
     expect(help_text).toMatch("sillyness")
   })

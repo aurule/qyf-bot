@@ -4,7 +4,12 @@ const {
   underscore,
 } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
-const { Collection, MessageActionRow, MessageButton, MessageEmbed } = require("discord.js")
+const {
+  Collection,
+  MessageActionRow,
+  MessageButton,
+  MessageEmbed,
+} = require("discord.js")
 const { logger } = require("../util/logger")
 
 const { Guilds, Games, Users } = require("../models")
@@ -44,7 +49,7 @@ class QuotePageEmbed extends MessageEmbed {
    * @param  {Games}                options.game          Game used to search the quotes
    * @param  {string}               options.text          Quote contents used to search the quotes
    */
-  constructor({quoteResults, pageNum, speaker, alias, game, text}) {
+  constructor({ quoteResults, pageNum, speaker, alias, game, text }) {
     super()
     this.setColor("#ade6fe")
 
@@ -59,11 +64,15 @@ class QuotePageEmbed extends MessageEmbed {
 
     this.setTitle(`Quotes from ${this.criteria.game.name}`)
     this.setFooter({
-      text: `Page ${this.pageNum} of ${this.maxPage}`
+      text: `Page ${this.pageNum} of ${this.maxPage}`,
     })
     this.setTimestamp()
 
-    this.setDescription(describeResults(quoteResults.count, this.criteria) + "\n\n" + this.quoteTexts)
+    this.setDescription(
+      describeResults(quoteResults.count, this.criteria) +
+        "\n\n" +
+        this.quoteTexts
+    )
   }
 
   /**
@@ -112,7 +121,7 @@ async function buildPageContents(
     game,
     alias,
     speaker,
-    text
+    text,
   })
 
   return {
@@ -173,10 +182,7 @@ function paginationControls(pageNum, total) {
  * @param  {String|null}      options.text    The text searched for in the quotes
  * @return {String}                           The final human-readable output
  */
-function describeResults(
-  total,
-  { alias, speaker, text } = {}
-) {
+function describeResults(total, { alias, speaker, text } = {}) {
   const desc_lines = []
 
   if (total) {
