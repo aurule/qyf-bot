@@ -4,7 +4,7 @@ const {
   underscore,
 } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
-const { Collection, MessageActionRow, MessageButton } = require("discord.js")
+const { Collection, MessageActionRow, MessageButton, MessageEmbed } = require("discord.js")
 const { logger } = require("../util/logger")
 
 const { Guilds, Games, Users } = require("../models")
@@ -28,84 +28,111 @@ const PAGE_SIZE = 5
 const PAGINATION_TIMEOUT = 300000
 
 /**
- * Get the correct game or fall back on default data
- *
- * If gameName is provided, it will look up that game and ignore the default.
- * If it is not provided and there is a default, it will return the default.
- * If it is not provided and there is no default, it will return a null object:
- * {
- *    id: null,
- *    name: "all games",
- *  }
- *
- * @param  {String}   gameName  Name of the game to use
- * @param  {Channel}  channel   Discord channel object to use for finding a default
- * @param  {Int}      guildId   ID of the guild for the game
- * @return {Game}               Game object or truncated lookalike with id and name properties
+ * Embed class for handling the paginated search results
  */
-async function getGameOrDefault(gameName, channel, guildId) {
-  let null_game = {
-    id: null,
-    name: "all games",
+class QuotePageEmbed extends MessageEmbed {
+  /**
+   * Create a new embed for paginated quote results
+   *
+   * Puts the game name in the title, page numbers in the footer, and describes the search criteria in the
+   * description along with the quote texts.
+   *
+   * @param  {Object{count, rows}}  options.quoteResults  The quote results object, with both count and rows fields
+   * @param  {Int}                  options.pageNum       Current page number
+   * @param  {Users}                options.speaker       Speaker used to search the quotes
+   * @param  {string}               options.alias         Alias used to search the quotes
+   * @param  {Games}                options.game          Game used to search the quotes
+   * @param  {string}               options.text          Quote contents used to search the quotes
+   */
+  constructor({quoteResults, pageNum, speaker, alias, game, text}) {
+    super()
+    this.setColor("#ade6fe")
+
+    this.quoteResults = quoteResults
+    this.pageNum = pageNum
+    this.criteria = {
+      speaker,
+      alias,
+      game,
+      text,
+    }
+
+    this.setTitle(`Quotes from ${this.criteria.game.name}`)
+    this.setFooter({
+      text: `Page ${this.pageNum} of ${this.maxPage}`
+    })
+    this.setTimestamp()
+
+    this.setDescription(describeResults(quoteResults.count, this.criteria) + "\n\n" + this.quoteTexts)
   }
 
-  if (gameName == QuoteListGameCompleter.ALL_GAMES) return null_game
-
-  var game
-  if (gameName) {
-    game = await Games.findOne({ where: { name: gameName, guildId: guildId } })
-  } else {
-    game = await gameForChannel(channel)
+  /**
+   * Simple getter to calculate the maximum page number
+   *
+   * @return {Int} Max page number
+   */
+  get maxPage() {
+    return Math.ceil(this.quoteResults.count / PAGE_SIZE)
   }
 
-  return game || null_game
+  /**
+   * Getter to get user-presentable versions of all our quotes
+   *
+   * @return {string} Quote texts
+   */
+  get quoteTexts() {
+    return QuotePresenter.present(this.quoteResults.rows)
+  }
 }
 
 /**
- * Build a string that represents the filters and options to the command
+ * Construct the reply data for a full page of quote results
+ *
  * @param  {Int}              pageNum         Which page we're on
- * @param  {Int}              total           Total quotes found
- * @param  {Games}            game            The game object the qutoes are from
- * @param  {String}           quote_contents  The quotes themselves, already formatted
- * @param  {String|null}      options.alias   The alias used to find quotes
- * @param  {DiscordUser|null} options.speaker The speaker object used to find quotes
- * @param  {String|null}      options.text    The text searched for in the quotes
- * @return {String}                           The final human-readable output
+ * @param  {SearchOptions}    finder_options  Options for the quote finder
+ * @param  {Games}            game            The game object the quotes are from
+ * @param  {String|null}      alias           The alias used to find quotes
+ * @param  {DiscordUser|null} speaker         The speaker object used to find quotes
+ * @param  {String|null}      text            The text searched for in the quotes
+ * @return {Object}                           Message data object with content and components attributes
  */
-function describeResults(
+async function buildPageContents(
   pageNum,
-  total,
+  finder_options,
   game,
-  quote_contents,
-  { alias, speaker, text } = {}
+  alias,
+  speaker,
+  text
 ) {
-  const desc_lines = []
+  const result = await getPageResults(pageNum, finder_options)
 
-  if (total) {
-    desc_lines.push(
-      `Showing page ${pageNum} of ${Math.ceil(total / PAGE_SIZE)}`
-    )
-  } else {
-    desc_lines.push("No quotes found")
+  const quoteEmbed = new QuotePageEmbed({
+    quoteResults: result,
+    pageNum,
+    game,
+    alias,
+    speaker,
+    text
+  })
+
+  return {
+    embeds: [quoteEmbed],
+    components: paginationControls(pageNum, result.count),
   }
+}
 
-  desc_lines.push(`of quotes from ${game.name}`)
-
-  if (alias) {
-    desc_lines.push("by")
-    if (speaker) desc_lines.push(`${userMention(speaker.id)} as`)
-    desc_lines.push(`${alias}`)
-  } else if (speaker) desc_lines.push(`by ${userMention(speaker.id)}`)
-
-  if (text) desc_lines.push(`including "${text}"`)
-
-  const description = desc_lines.join(" ")
-
-  if (total) {
-    return `${description}:\n\n${quote_contents}`
-  } else {
-    return description
-  }
+/**
+ * [Get the quotes for a given page]
+ *
+ * @param  {Int}            pageNum         Which page we're on
+ * @param  {SearchOptions}  finder_options  Options for the quote finder
+ * @return {Promise}                        Results object with data in .rows and total in .count
+ */
+function getPageResults(pageNum, finder_options) {
+  return QuoteFinder.findAndCountAll(finder_options, {
+    limit: PAGE_SIZE,
+    offset: (pageNum - 1) * PAGE_SIZE,
+  })
 }
 
 /**
@@ -139,76 +166,71 @@ function paginationControls(pageNum, total) {
 }
 
 /**
- * [Get the quotes for a given page]
- *
- * @param  {Int}            pageNum         Which page we're on
- * @param  {SearchOptions}  finder_options  Options for the quote finder
- * @return {Promise}                        Results object with data in .rows and total in .count
+ * Build a string that represents the filters and options to the command
+ * @param  {Int}              total           Total quotes found
+ * @param  {String|null}      options.alias   The alias used to find quotes
+ * @param  {DiscordUser|null} options.speaker The speaker object used to find quotes
+ * @param  {String|null}      options.text    The text searched for in the quotes
+ * @return {String}                           The final human-readable output
  */
-function getPageResults(pageNum, finder_options) {
-  return QuoteFinder.findAndCountAll(finder_options, {
-    limit: PAGE_SIZE,
-    offset: (pageNum - 1) * PAGE_SIZE,
-  })
-}
-
-/**
- * Construct the reply data for a full page of quote results
- *
- * @param  {Int}              pageNum         Which page we're on
- * @param  {SearchOptions}    finder_options  Options for the quote finder
- * @param  {Games}            game            The game object the quotes are from
- * @param  {String|null}      alias           The alias used to find quotes
- * @param  {DiscordUser|null} speaker         The speaker object used to find quotes
- * @param  {String|null}      text            The text searched for in the quotes
- * @return {Object}                           Message data object with content and components attributes
- */
-async function buildPageContents(
-  pageNum,
-  finder_options,
-  game,
-  alias,
-  speaker,
-  text
+function describeResults(
+  total,
+  { alias, speaker, text } = {}
 ) {
-  const result = await getPageResults(pageNum, finder_options)
-  const quote_contents = QuotePresenter.present(result.rows)
-  let content = describeResults(pageNum, result.count, game, quote_contents, {
-    alias: alias,
-    speaker: speaker,
-    text: text,
-  })
+  const desc_lines = []
 
-  if (content.length > 2000) {
-    const warning = `... Can't show more because the quotes on page ${pageNum} exceed Discord's message limit`
-    content = content.substring(0, 2000 - warning.length) + warning
-    logMessageLengthWarning(game, pageNum, result.rows)
+  if (total) {
+    desc_lines.push("Showing")
+    desc_lines.push("quotes")
+  } else {
+    desc_lines.push("No quotes found")
   }
 
-  return {
-    content: content,
-    components: paginationControls(pageNum, result.count),
-  }
+  if (alias) {
+    desc_lines.push("by")
+    if (speaker) desc_lines.push(`${userMention(speaker.id)} as`)
+    desc_lines.push(`${alias}`)
+  } else if (speaker) desc_lines.push(`by ${userMention(speaker.id)}`)
+
+  if (text) desc_lines.push(`including "${text}"`)
+
+  if (total && !(alias || speaker || text)) desc_lines.splice(1, 0, "all")
+
+  return desc_lines.join(" ")
 }
 
 /**
- * Log a warning message about a quotes page exceeding Discord's message length limit
+ * Get the correct game or fall back on default data
  *
- * @param  {Games}          game    The game the quotes are from
- * @param  {Int}            pageNum Current page of results
- * @param  {Array<Quotes>}  rows    Array of quotes which were on the offending page
- * @return {undefined}              Nothing
+ * If gameName is provided, it will look up that game and ignore the default.
+ * If it is not provided and there is a default, it will return the default.
+ * If it is not provided and there is no default, it will return a null object:
+ * {
+ *    id: null,
+ *    name: "all games",
+ *  }
+ *
+ * @param  {String}   gameName  Name of the game to use
+ * @param  {Channel}  channel   Discord channel object to use for finding a default
+ * @param  {Int}      guildId   ID of the guild for the game
+ * @return {Game}               Game object or truncated lookalike with id and name properties
  */
-function logMessageLengthWarning(game, pageNum, rows) {
-  return logger.warn({
-    description: "quotes page exceeded 2000 characters",
-    command: "list-quotes",
-    details: {
-      game: game.id,
-      page: pageNum,
-      quotes: rows.map(r => r.id)
-    },
-  })
+async function getGameOrDefault(gameName, channel, guildId) {
+  let null_game = {
+    id: null,
+    name: "all games",
+  }
+
+  if (gameName == QuoteListGameCompleter.ALL_GAMES) return null_game
+
+  var game
+  if (gameName) {
+    game = await Games.findOne({ where: { name: gameName, guildId: guildId } })
+  } else {
+    game = await gameForChannel(channel)
+  }
+
+  return game || null_game
 }
 
 module.exports = {
@@ -258,7 +280,7 @@ module.exports = {
       })
       if (!user) {
         return interaction.reply(
-          describeResults(1, 0, game, "", {
+          describeResults(0, {
             alias: alias,
             speaker: speaker,
             text: text,
@@ -268,6 +290,7 @@ module.exports = {
       speaker_user = user
     }
 
+    // set up search criteria
     const finder_options = new QuoteFinder.SearchOptions({
       userId: speaker_user.id,
       alias: alias,
@@ -276,9 +299,10 @@ module.exports = {
       guild: guild,
     })
 
+    // show first page of results
     let pageNum = 1
 
-    let content = await buildPageContents(
+    let pageContent = await buildPageContents(
       pageNum,
       finder_options,
       game,
@@ -287,10 +311,11 @@ module.exports = {
       text
     )
     const replyMessage = await interaction.reply({
-      ...content,
+      ...pageContent,
       fetchReply: true,
     })
 
+    // handle pagination
     const paginationCollector = replyMessage.createMessageComponentCollector({
       componentType: "BUTTON",
       time: PAGINATION_TIMEOUT,
@@ -299,7 +324,7 @@ module.exports = {
       if (i.customId == "paginateNext") pageNum++
       if (i.customId == "paginateBack") pageNum--
 
-      content = await buildPageContents(
+      pageContent = await buildPageContents(
         pageNum,
         finder_options,
         game,
@@ -307,7 +332,7 @@ module.exports = {
         speaker,
         text
       )
-      await i.update(content)
+      await i.update(pageContent)
     })
     paginationCollector.on("end", async (collected) => {
       await interaction.editReply({ components: [] })
@@ -315,6 +340,7 @@ module.exports = {
 
     return replyMessage
   },
+  QuotePageEmbed,
   getGameOrDefault,
   describeResults,
   paginationControls,

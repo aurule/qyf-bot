@@ -150,7 +150,7 @@ describe("execute", () => {
 
       const reply = await list_quotes_command.execute(interaction)
 
-      expect(reply.data.content).toMatch("Quote text is cool")
+      expect(reply.data.embeds[0].description).toMatch("Quote text is cool")
     })
   })
 
@@ -336,37 +336,8 @@ describe("getGameOrDefault", () => {
 })
 
 describe("describeResults", () => {
-  it("shows the current page number", () => {
-    const result = list_quotes_command.describeResults(1, 3, game, "things")
-
-    expect(result).toMatch("page 1 of")
-  })
-
-  it("shows the max page number", () => {
-    const result = list_quotes_command.describeResults(1, 9, game, "things")
-
-    expect(result).toMatch("page 1 of 2")
-  })
-
-  it("shows the game name", () => {
-    const result = list_quotes_command.describeResults(3, 3, game, "things")
-
-    expect(result).toMatch("from Test Game")
-  })
-
-  it("includes the quote contents", () => {
-    const result = list_quotes_command.describeResults(
-      3,
-      3,
-      game,
-      "things that were said"
-    )
-
-    expect(result).toMatch("things that were said")
-  })
-
   it("with an alias, says 'by alias'", () => {
-    const result = list_quotes_command.describeResults(3, 3, game, "things", {
+    const result = list_quotes_command.describeResults(3, {
       alias: "alias",
     })
 
@@ -375,7 +346,7 @@ describe("describeResults", () => {
 
   it("with an alias and a speaker, says 'by speaker as alias'", () => {
     const speaker = { id: simpleflake().toString() }
-    const result = list_quotes_command.describeResults(0, 0, game, "things", {
+    const result = list_quotes_command.describeResults(3, {
       speaker: speaker,
       alias: "alias",
     })
@@ -385,7 +356,7 @@ describe("describeResults", () => {
 
   it("with a speaker, says 'by speaker'", () => {
     const speaker = { id: simpleflake().toString() }
-    const result = list_quotes_command.describeResults(0, 0, game, "things", {
+    const result = list_quotes_command.describeResults(3, {
       speaker: speaker,
     })
 
@@ -393,11 +364,23 @@ describe("describeResults", () => {
   })
 
   it("with search text, shows the text", () => {
-    const result = list_quotes_command.describeResults(1, 1, game, "things", {
+    const result = list_quotes_command.describeResults(3, {
       text: "search text",
     })
 
     expect(result).toMatch('including "search text"')
+  })
+
+  it("with no quotes, shows no quotes found", () => {
+    const result = list_quotes_command.describeResults(0, {})
+
+    expect(result).toMatch("No quotes found")
+  })
+
+  it("with quotes but no criteria, says showing all quotes", () => {
+    const result = list_quotes_command.describeResults(3, {})
+
+    expect(result).toMatch("Showing all quotes")
   })
 })
 
@@ -445,42 +428,6 @@ describe("paginationControls", () => {
   })
 })
 
-describe("buildPageContents", () => {
-  beforeEach(async () => {
-    try {
-      guild = await Guilds.create({
-        name: "Test Guild",
-        snowflake: simpleflake().toString(),
-      })
-      game = await Games.create({
-        name: "Test Game",
-        guildId: guild.id,
-      })
-    } catch (err) {
-      console.log(err)
-    }
-  })
-
-  afterEach(async () => {
-    try {
-      await game.destroy()
-      await guild.destroy()
-    } catch (err) {
-      console.log(err)
-    }
-  })
-
-  it("warns when quotes are too big for Discord", async () => {
-    jest.spyOn(QuoteFinder, "findAndCountAll").mockResolvedValue({ rows: [], count: 1 })
-    jest.spyOn(QuotePresenter, "present").mockReturnValue("x".repeat(2001))
-    const finder_opts = new QuoteFinder.SearchOptions()
-
-    const result = await list_quotes_command.buildPageContents(1, finder_opts, game, null, null, null)
-
-    expect(result.content).toMatch("exceed Discord's message limit")
-  })
-})
-
 describe("getPageResults", () => {
   var finderSpy
 
@@ -504,6 +451,103 @@ describe("getPageResults", () => {
     expect(
       finderSpy.mock.calls[finderSpy.mock.calls.length - 1][1]
     ).toMatchObject({ offset: 5 })
+  })
+})
+
+describe("QuotePageEmbed", () => {
+  describe("title", () => {
+    it("includes the game name", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 0},
+        pageNum: 1,
+        game: { name: "Test Game" }
+      })
+
+      expect(embed.title).toMatch("Test Game")
+    })
+  })
+
+  describe("footer", () => {
+    it("includes the current page", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 20},
+        pageNum: 3,
+        game: { name: "Test Game" }
+      })
+
+      expect(embed.footer.text).toMatch("3 of")
+    })
+
+    it("includes the max page", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 20},
+        pageNum: 3,
+        game: { name: "Test Game" }
+      })
+
+      expect(embed.footer.text).toMatch("of 4")
+    })
+  })
+
+  describe("description", () => {
+    it("includes the criteria description", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 20},
+        pageNum: 3,
+        game: { name: "Test Game" },
+        alias: "tester"
+      })
+
+      expect(embed.description).toMatch("by tester")
+    })
+
+    it("includes the quote contents", () => {
+      const presenterSpy = jest.spyOn(QuotePresenter, "present").mockReturnValue("test quote text")
+
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 20},
+        pageNum: 3,
+        game: { name: "Test Game" },
+        alias: "tester"
+      })
+
+      expect(embed.description).toMatch("test quote text")
+    })
+  })
+
+  describe("maxPage", () => {
+    it("with an exact multiple, shows the right max page", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 20},
+        pageNum: 3,
+        game: { name: "Test Game" },
+      })
+
+      expect(embed.maxPage).toEqual(4)
+    })
+
+    it("with an inexact multiple, shows the right max page", () => {
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 19},
+        pageNum: 3,
+        game: { name: "Test Game" },
+      })
+
+      expect(embed.maxPage).toEqual(4)
+    })
+  })
+
+  describe("quoteTexts", () => {
+    it("presents the quotes", () => {
+      const presenterSpy = jest.spyOn(QuotePresenter, "present").mockReturnValue("test quote text")
+      const embed = new list_quotes_command.QuotePageEmbed({
+        quoteResults: {rows: [], count: 19},
+        pageNum: 3,
+        game: { name: "Test Game" },
+      })
+
+      expect(embed.quoteTexts).toEqual("test quote text")
+    })
   })
 })
 
