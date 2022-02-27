@@ -43,7 +43,11 @@ module.exports = {
     const scope = explicitScope(target_channel, server_wide)
 
     const guild = await Guilds.findByInteraction(interaction)
-    const game = await Games.findOne({ where: { name: game_arg, guildId: guild.id } })
+    let game = null
+    const gameResult = await guild.getGamesByPartialName(game_arg)
+    if (gameResult.length) {
+      game = gameResult[0]
+    }
 
     if (!game) {
       logger.error(`Game ${game_arg} not found for guild ${guild.id}`)

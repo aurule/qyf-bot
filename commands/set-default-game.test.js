@@ -102,14 +102,24 @@ describe("execute", () => {
     const completer = set_default_game_command.autocomplete.get("game")
     const game_arg = await completer.complete(interaction).then((values) => values[0].value)
     interaction.command_options.game = game_arg
-    const finderSpy = jest.spyOn(Games, "findOne")
 
     await set_default_game_command.execute(interaction)
 
-    // finderSpy was called with an object including where name:game.name
-    expect(
-      finderSpy.mock.calls[finderSpy.mock.calls.length - 1][0].where
-    ).toMatchObject({ name: game.name })
+    const record = await DefaultGames.findOne({
+      where: { snowflake: interaction.channel.id },
+    })
+    expect(record.gameId).toEqual(game.id)
+  })
+
+  it("gets a game by partial name", async () => {
+    interaction.command_options.game = "Test"
+
+    await set_default_game_command.execute(interaction)
+
+    const record = await DefaultGames.findOne({
+      where: { snowflake: interaction.channel.id },
+    })
+    expect(record.gameId).toEqual(game.id)
   })
 
   describe("reply", () => {
