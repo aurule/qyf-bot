@@ -1,3 +1,4 @@
+const BansModel = require("./bans")
 const { Bans, Users } = require("./")
 
 const { simpleflake } = require("simpleflakes")

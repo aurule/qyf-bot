@@ -1,3 +1,4 @@
+const GuildsModel = require("./guilds")
 const { Guilds } = require("./")
 
 describe("findByInteraction", () => {

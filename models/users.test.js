@@ -1,3 +1,4 @@
+const UsersModel = require("./users")
 const { Users } = require("./")
 
 describe("findBySnowflake", () => {
