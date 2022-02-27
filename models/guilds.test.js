@@ -1,5 +1,9 @@
 const GuildsModel = require("./guilds")
-const { Guilds } = require("./")
+const GamesModel = require("./games")
+const { sequelize, Guilds, Games } = require("./")
+const { Op } = require("sequelize")
+
+const { simpleflake } = require("simpleflakes")
 
 describe("findByInteraction", () => {
   var findSpy
@@ -52,5 +56,48 @@ describe("findBySnowflake", () => {
     const result = await Guilds.findBySnowflake()
 
     expect(result).toBeNull()
+  })
+})
+
+describe("getGamesByPartialName", () => {
+  // All of these have to use case-sensitive matching, since tests are run in
+  // sqlite for ease of development
+  //
+  // Is that a bad decision? Yes.
+  // It is causing weird problems? Yes.
+  // Will I change it? No. Maybe. Not yet.
+
+  let guild
+  beforeEach(async () => {
+    guild = await Guilds.create({ name: "Test Guild", snowflake: simpleflake().toString() })
+  })
+
+  afterEach(async () => {
+    await Games.destroy({ where: { guildId: guild.id } })
+    await guild.destroy()
+  })
+
+  it("returns empty array with no matches", async () => {
+    await guild.createGame({ name: "Not Matching" })
+
+    const result = await guild.getGamesByPartialName("failure")
+
+    expect(result).toEqual([])
+  })
+
+  it("returns array of partial matches", async () => {
+    const game = await guild.createGame({ name: "Yes Matching" })
+
+    const result = await guild.getGamesByPartialName("Yes")
+
+    expect(result[0].id).toEqual(game.id)
+  })
+
+  it("returns array of full matches", async () => {
+    const game = await guild.createGame({ name: "Yes Matching" })
+
+    const result = await guild.getGamesByPartialName("Yes Matching")
+
+    expect(result[0].id).toEqual(game.id)
   })
 })

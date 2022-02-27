@@ -1,6 +1,7 @@
 "use strict"
 
 const { Model } = require("sequelize")
+const { Op } = require("sequelize")
 
 module.exports = (sequelize, DataTypes) => {
   class Guilds extends Model {
@@ -44,6 +45,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static findByInteraction(interaction, options = {}) {
       return Guilds.findBySnowflake(interaction.guildId, options)
+    }
+
+    /**
+     * Get associated games that match a partial or full name
+     *
+     * Compares game names using ilike when available, otherwise uses like.
+     *
+     * @param  {string}       gameName Partial game name to match
+     * @return {Promise<Array<Games>>}          Array of game objects whose name matches
+     */
+    getGamesByPartialName(gameName) {
+      const comparator = sequelize.options.dialect == "postgres" ? Op.ilike : Op.like
+
+      return this.getGames({ where: { name: { [comparator]: `%${gameName}%` } } })
     }
   }
   Guilds.init(
