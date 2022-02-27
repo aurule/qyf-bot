@@ -155,6 +155,16 @@ describe("getGame", () => {
 
         expect(result.id).toEqual(game2.id)
       })
+
+      it("returns the chosen game from a partial name", async () => {
+        const game2 = await Games.create({
+          name: "Some Other Game",
+          guildId: guild.id,
+        })
+        const result = await quote_command.getGame("Other", guild, interaction)
+
+        expect(result.id).toEqual(game2.id)
+      })
     })
   })
 

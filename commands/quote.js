@@ -26,13 +26,20 @@ const { getReplyFn } = require("../util/getReplyFn")
  * @return {Promise<Games|null>}      The correct game, or null if the prompt timed out
  */
 async function getGame(game_arg, guild, interaction) {
-  if (game_arg) return Games.findOne({ where: { name: game_arg, guildId: guild.id } })
+  let game = null
+  if (game_arg) {
+    const gameResult = await guild.getGamesByPartialName(game_arg)
+    if (gameResult.length) {
+      game = gameResult[0]
+    }
+  }
 
-  const default_game = await gameForChannel(interaction.channel)
-  if (default_game) return default_game
+  if (!game) {
+    game = await gameForChannel(interaction.channel)
+  }
 
   // use the version from module.exports so we can mock it in tests
-  return module.exports.promptForGame(interaction, guild)
+  return game || module.exports.promptForGame(interaction, guild)
 }
 
 /**
