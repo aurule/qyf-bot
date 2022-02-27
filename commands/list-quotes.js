@@ -220,10 +220,10 @@ function describeResults(total, { alias, speaker, text } = {}) {
  *
  * @param  {String}   gameName  Name of the game to use
  * @param  {Channel}  channel   Discord channel object to use for finding a default
- * @param  {Int}      guildId   ID of the guild for the game
+ * @param  {Guilds}   guild     The guild for the game
  * @return {Game}               Game object or truncated lookalike with id and name properties
  */
-async function getGameOrDefault(gameName, channel, guildId) {
+async function getGameOrDefault(gameName, channel, guild) {
   let null_game = {
     id: null,
     name: "all games",
@@ -231,10 +231,15 @@ async function getGameOrDefault(gameName, channel, guildId) {
 
   if (gameName == QuoteListGameCompleter.ALL_GAMES) return null_game
 
-  var game
+  let game = null
   if (gameName) {
-    game = await Games.findOne({ where: { name: gameName, guildId: guildId } })
-  } else {
+    const gameResult = await guild.getGamesByPartialName(gameName)
+    if (gameResult.length) {
+      game = gameResult[0]
+    }
+  }
+
+  if (!game) {
     game = await gameForChannel(channel)
   }
 
@@ -273,7 +278,7 @@ module.exports = {
 
     const guild = await Guilds.findByInteraction(interaction)
 
-    const game = await getGameOrDefault(game_arg, interaction.channel, guild.id)
+    const game = await getGameOrDefault(game_arg, interaction.channel, guild)
 
     // This section is a workaround for a bug in sequelize that causes a SQL
     // error we pass a snowflake to the quote finder. For a summary, see

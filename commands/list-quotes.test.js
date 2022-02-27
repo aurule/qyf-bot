@@ -276,7 +276,17 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         game.name,
         interaction.channel,
-        guild.id
+        guild
+      )
+
+      expect(result).toMatchObject({ id: game.id })
+    })
+
+    it("returns the chosen game by partial match", async () => {
+      const result = await list_quotes_command.getGameOrDefault(
+        "Test",
+        interaction.channel,
+        guild
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -297,7 +307,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id
+        guild
       )
 
       expect(result).toMatchObject({ id: game.id })
@@ -309,7 +319,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id
+        guild
       )
 
       expect(result).toMatchObject({ id: null })
@@ -319,7 +329,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         null,
         interaction.channel,
-        guild.id
+        guild
       )
 
       expect(result).toMatchObject({ name: "all games" })
@@ -331,7 +341,7 @@ describe("getGameOrDefault", () => {
       const result = await list_quotes_command.getGameOrDefault(
         QuoteListGameCompleter.ALL_GAMES,
         interaction.channel,
-        guild.id
+        guild
       )
 
       expect(result).toMatchObject({ name: "all games" })
