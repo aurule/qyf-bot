@@ -17,14 +17,6 @@ CommandFetch.all().forEach((command) =>
     client.commands.set(command.name, command)
 )
 
-// Store interaction followups (select menus, buttons)
-client.followups = new Collection()
-const followupFiles = fs.readdirSync("./followups").filter(jsNoTests)
-for (const file of followupFiles) {
-    const followup = require(`./followups/${file}`)
-    client.followups.set(followup.name, followup)
-}
-
 // Register event listeners
 const eventFiles = fs.readdirSync("./events").filter(jsNoTests)
 for (const file of eventFiles) {

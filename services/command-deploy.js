@@ -21,51 +21,6 @@ function restClient() {
 }
 
 /**
- * Build the guild commands json to send to Discord
- * @param  {Guild} guild  The guild object to use for building the commands
- * @return {string} JSON data about the guild's slash commands
- */
-function buildGuildCommandJSON(guild) {
-  return commandFetch.guild().map(c => c.data(guild).toJSON())
-}
-
-/**
- * Push the guild command JSON to a specific guild
- * @param  {Guild} guild  The guild object to receive the command data
- * @return {Promise}      Promise for the http call
- */
-async function deployToGuild(guild) {
-  if (!guild.Games) await guild.reload({ include: Games })
-
-  return restClient()
-    .put(Routes.applicationGuildCommands(clientId, guild.snowflake), {
-      body: buildGuildCommandJSON(guild),
-    })
-    .catch((error) => {
-      logger.warn(`Error deploying commands to guild ${guild.name}: ${error}`)
-    })
-    .finally(() => {
-      logger.info(`Deployed to guild ${guild.name}`)
-    })
-}
-
-/**
- * Push the guild command JSON to many guilds
- * @param  {Array<Guilds>|null} Array of guilds to deploy commands, or null for all guilds
- * @return {null}               Promise for all deploy calls
- */
-async function deployToAllGuilds(guilds = null) {
-  if (!guilds) guilds = await Guilds.findAll({ include: Games })
-
-  logger.info("Deploying commands to all guilds")
-  return Promise
-    .all(guilds.map(g => this.deployToGuild(g)))
-    .finally(() => {
-      logger.info("Done with all guilds")
-    })
-}
-
-/**
  * Build the global command json to send to Discord
  * @return {string} JSON data about our global slash commands
  */
@@ -121,11 +76,8 @@ async function deployDev() {
 }
 
 module.exports = {
-  buildGuildCommandJSON,
   buildGlobalCommandJSON,
   restClient,
-  deployToGuild,
-  deployToAllGuilds,
   deployGlobals,
   deployDev,
 }
