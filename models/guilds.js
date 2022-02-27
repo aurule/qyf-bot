@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
      * @return {Promise<Array<Games>>}          Array of game objects whose name matches
      */
     getGamesByPartialName(gameName) {
-      const comparator = sequelize.options.dialect == "postgres" ? Op.ilike : Op.like
+      const comparator = sequelize.options.dialect == "postgres" ? Op.iLike : Op.like
 
       return this.getGames({ where: { name: { [comparator]: `%${gameName}%` } } })
     }
