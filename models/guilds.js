@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
      * @param  {Object} options       Additional options to pass to the findOne() method
      * @return {Promise<Guilds|null>} Guild object or null
      */
-    static async findBySnowflake(snowflake, options = {}) {
+    static findBySnowflake(snowflake, options = {}) {
       if (!snowflake) return null
 
       return Guilds.findOne({
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
      * @param  {Object}       options     Additional options to pass to the findOne() method
      * @return {Promise<Guilds|null>}     Guild object or null
      */
-    static async findByInteraction(interaction, options = {}) {
+    static findByInteraction(interaction, options = {}) {
       return Guilds.findBySnowflake(interaction.guildId, options)
     }
   }
