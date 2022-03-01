@@ -18,7 +18,12 @@ jobs:
         known_hosts: placeholder
     - name: Adding known hosts
       run: ssh-keyscan -H ${{ secrets.PROD_IP }} >> ~/.ssh/known_hosts
+    - name: Get old command json hash
+      run: echo '::set-output name=HASH::ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }} "cd qyf-bot && ~/.nvm/nvm-exec npm run commands:hash-globals"'
+      id: old-hash
     - name: Push files with rsync
       run: rsync -avzh --delete --exclude='/.git' --filter=':- .gitignore' ./ ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }}:/home/qyf/qyf-bot/
     - name: Setup and restart
       run: ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }} "cd qyf-bot && ~/.nvm/nvm-exec npm run deploy"
+    - name: Deploy new commands
+      run: ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_IP }} "cd qyf-bot && ~/.nvm/nvm-exec npm run commands:deploy-globals -- --hash ${{ steps.old-hash.HASH }}"
