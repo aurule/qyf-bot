@@ -34,6 +34,7 @@
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "test:ci": "NODE_ENV=ci jest --ci",
+    "commands:hash-globals": "node scripts/hash-global-commands",
     "commands:deploy-globals": "node scripts/deploy-global-commands.js",
     "commands:deploy-dev": "node scripts/deploy-dev-commands.js",
     "migrate": "sequelize-cli db:migrate",
