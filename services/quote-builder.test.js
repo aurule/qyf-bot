@@ -76,8 +76,8 @@ describe("makeQuote", () => {
     const quoter_ids = quotes.map((q) => q.quoterId)
 
     await Lines.destroy({ where: { quoteId: quote_ids } })
-    await Users.destroyByPk(speaker_ids)
     await Quotes.destroy({ where: { gameId: game_ids } })
+    await Users.destroyByPk(speaker_ids)
     await Users.destroyByPk(quoter_ids)
     await game.destroy()
     await guild.destroy()
@@ -100,6 +100,7 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: discord_user,
+        quoter: discord_user,
       })
 
       expect(await user.countLines()).toEqual(1)
@@ -116,6 +117,7 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: speaker,
+        quoter: speaker,
       })
 
       const user = await Users.findOne({
@@ -184,6 +186,19 @@ describe("makeQuote", () => {
 
       expect(user).toBeTruthy()
     })
+
+    it("with no quoter, logs a warning", async () => {
+      const logSpy = jest.spyOn(logger, "warn")
+
+      await QuoteBuilder.makeQuote({
+        text: "test text",
+        attribution: "some guy",
+        game: game,
+        speaker: speaker,
+      })
+
+      expect(logSpy).toHaveBeenCalled()
+    })
   })
 
   it("creates a new Quote for the game", async () => {
@@ -202,6 +217,7 @@ describe("makeQuote", () => {
       attribution: "some guy",
       game: game,
       speaker: speaker,
+      quoter: speaker,
       context: "some context!",
     })
 
@@ -230,6 +246,7 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: speaker,
+        quoter: speaker,
       })
 
       expect(quote.Lines[0].content).toMatch("test text")
@@ -241,6 +258,7 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: speaker,
+        quoter: speaker,
       })
 
       expect(quote.Lines[0].speakerId).toEqual(user.id)
@@ -252,6 +270,7 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: speaker,
+        quoter: speaker,
       })
 
 
@@ -264,8 +283,8 @@ describe("makeQuote", () => {
         attribution: "some guy",
         game: game,
         speaker: speaker,
+        quoter: speaker,
       })
-
 
       expect(quote.Lines[0].lineOrder).toEqual(0)
     })
@@ -337,6 +356,7 @@ describe("addLine", () => {
         text: "test text",
         attribution: "some guy",
         speaker: discord_user,
+        quoter: discord_user,
         quote: quote,
       })
 

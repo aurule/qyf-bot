@@ -1,6 +1,7 @@
 "use strict"
 
 const { Quotes, Lines, Users } = require("../models")
+const { logger } = require("../util/logger")
 
 class QuoteData {
   constructor({ text, attribution, speaker, context }) {
@@ -60,6 +61,8 @@ module.exports = {
         defaults: { name: quoter.username },
       })
       quote_attrs.quoterId = quoter_user.id
+    } else {
+      logger.warn(`Missing quoter for new quote with text "${text}"`)
     }
 
     const the_quote = await Quotes.create(quote_attrs)
