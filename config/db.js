@@ -24,6 +24,12 @@ module.exports = {
     database: "test",
     dialect: "sqlite",
     storage: ".sqlite/test.sqlite",
+  //   username: "postgres",
+  //   password: "postgres",
+  //   database: "postgres",
+  //   host: "localhost",
+  //   port: 5433,
+  //   dialect: "postgres",
     transactionType: "IMMEDIATE",
   },
   ci: {
