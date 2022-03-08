@@ -18,6 +18,13 @@ async function handleCommand(interaction) {
 
   if (!command) return Promise.reject(`no command ${interaction.commandName}`)
 
+  logger.info(
+    {
+      command: interaction.commandName,
+    },
+    `command ${interaction.commandName} called`
+  )
+
   const policyResult = await PolicyChecker.check(command.policy, interaction)
 
   if (!policyResult.allowed) {
@@ -103,12 +110,15 @@ module.exports = {
     if (interaction.isCommand() || interaction.isApplicationCommand()) {
       return module.exports.handleCommand(interaction).catch((err) => {
         console.log(err)
-        logger.error({
-          origin: "command",
-          error: err,
-          guild: interaction.guildId,
-          command: interaction.commandName,
-        })
+        logger.error(
+          {
+            origin: "command",
+            error: err,
+            guild: interaction.guildId,
+            command: interaction.commandName,
+          },
+          `Error while executing command ${interaction.commandName}`
+        )
         const fn = getReplyFn(interaction)
         return interaction[fn]({
           content: "There was an error while executing this command!",
@@ -121,13 +131,16 @@ module.exports = {
     // handle autocomplete requests
     if (interaction.isAutocomplete()) {
       return module.exports.handleAutocomplete(interaction).catch((err) => {
-        logger.error({
-          origin: "autocomplete",
-          error: err,
-          guild: interaction.guildId,
-          command: interaction.commandName,
-          option: interaction.options.getFocused(true),
-        })
+        logger.error(
+          {
+            origin: "autocomplete",
+            error: err,
+            guild: interaction.guildId,
+            command: interaction.commandName,
+            option: interaction.options.getFocused(true),
+          },
+          `Error while executing autocomplete for command ${interaction.commandName}`
+        )
         return interaction.respond([])
       })
     }
