@@ -33,7 +33,7 @@ describe("quoteReply", () => {
   })
 
   describe("with a normal speaker", () => {
-    it("includes the speaker id", () => {
+    it("includes the speaker id when different from the reporter", () => {
       const speaker = { id: simpleflake() }
       const reporter = { id: simpleflake() }
 
@@ -44,6 +44,18 @@ describe("quoteReply", () => {
       })
 
       expect(reply).toMatch(speaker.id.toString())
+    })
+
+    it("references the reporter when speaker matches", () => {
+      const reporter = { id: simpleflake() }
+
+      const reply = replyBuilder.quoteReply({
+        speaker: reporter,
+        reporter: reporter,
+        text: "test text",
+      })
+
+      expect(reply).toMatch("themself")
     })
 
     it("includes the alias if given", () => {

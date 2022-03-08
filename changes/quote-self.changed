@@ -1,0 +1,1 @@
+Made self-quoting look less silly. Instead of "@reporter quoted @reporter", commands now say "@repoter quoted themself"

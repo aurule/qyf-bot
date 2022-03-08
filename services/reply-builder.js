@@ -24,7 +24,11 @@ module.exports = {
     if (speaker.anonymous) {
       alias ? lines.push(alias) : lines.push(speaker.username)
     } else {
-      lines.push(memberNicknameMention(speaker.id))
+      if (speaker.id === reporter.id) {
+        lines.push("themself")
+      } else {
+        lines.push(memberNicknameMention(speaker.id))
+      }
       if (alias) {
         lines.push(" as ")
         lines.push(alias)
