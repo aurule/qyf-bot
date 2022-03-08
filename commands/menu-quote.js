@@ -41,6 +41,7 @@ module.exports = {
         attribution: speaker_name,
         game: game,
         speaker: speaker,
+        quoter: user,
       })
         .then((result) => {
           return interaction.reply(
