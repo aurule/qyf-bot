@@ -154,7 +154,7 @@ describe("SearchOptions", () => {
 
 describe("finders", () => {
   let main_guild
-  let game1
+  let main_game
   let game2
   let speaker
   let speaker_quote
@@ -163,6 +163,7 @@ describe("finders", () => {
   let game_quote
   let user_quote
   let alias_quote
+  let lines_quote
 
   let other_guild
   let other_game
@@ -174,7 +175,7 @@ describe("finders", () => {
         name: "Test Guild",
         snowflake: simpleflake().toString(),
       })
-      game1 = await Games.create({
+      main_game = await Games.create({
         name: "Test Game 1",
         guildId: main_guild.id,
       })
@@ -192,8 +193,10 @@ describe("finders", () => {
       })
       speaker_quote = await Quotes.create(
         {
-          gameId: game1.id,
-          Lines: [{ content: "speaker said", speakerId: speaker.id, lineOrder: 0 }],
+          gameId: main_game.id,
+          Lines: [
+            { content: "speaker said", speakerId: speaker.id, lineOrder: 0 },
+          ],
         },
         { include: Lines }
       )
@@ -203,7 +206,7 @@ describe("finders", () => {
       })
       quoter_quote = await Quotes.create(
         {
-          gameId: game1.id,
+          gameId: main_game.id,
           quoterId: quoter.id,
           Lines: [{ content: "quoter said", lineOrder: 0 }],
         },
@@ -215,22 +218,38 @@ describe("finders", () => {
       })
       user_quote = await Quotes.create(
         {
-          gameId: game1.id,
+          gameId: main_game.id,
           Lines: [{ content: "user said", speakerId: user.id, lineOrder: 0 }],
         },
         { include: Lines }
       )
       alias_quote = await Quotes.create(
         {
-          gameId: game1.id,
-          Lines: [{ content: "alias said", speakerAlias: "Alias", lineOrder: 0 }],
+          gameId: main_game.id,
+          Lines: [
+            { content: "alias said", speakerAlias: "Alias", lineOrder: 0 },
+          ],
         },
         { include: Lines }
       )
       text_quote = await Quotes.create(
         {
-          gameId: game1.id,
+          gameId: main_game.id,
           Lines: [{ content: "specific text", lineOrder: 0 }],
+        },
+        { include: Lines }
+      )
+      lines_quote = await Quotes.create(
+        {
+          gameId: main_game.id,
+          Lines: [
+            {
+              content: "lines quote text 1",
+              lineOrder: 0,
+            },
+            { content: "lines quote text 2", lineOrder: 1 },
+            { content: "lines quote text 3", lineOrder: 2 },
+          ],
         },
         { include: Lines }
       )
@@ -244,7 +263,10 @@ describe("finders", () => {
         guildId: other_guild.id,
       })
       guild_quote = await Quotes.create(
-        { gameId: other_game.id, Lines: [{ content: "guild said", lineOrder: 0 }] },
+        {
+          gameId: other_game.id,
+          Lines: [{ content: "guild said", lineOrder: 0 }],
+        },
         { include: Lines }
       )
     } catch (err) {
@@ -261,13 +283,14 @@ describe("finders", () => {
       alias_quote.id,
       guild_quote.id,
       text_quote.id,
+      lines_quote.id,
     ]
     await Lines.destroy({ where: { quoteId: quote_ids } })
     await Quotes.destroyByPk(quote_ids)
 
     await Users.destroyByPk([speaker.id, user.id, quoter.id])
 
-    await Games.destroyByPk([game1.id, game2.id, other_game.id])
+    await Games.destroyByPk([main_game.id, game2.id, other_game.id])
 
     await Guilds.destroyByPk([main_guild.id, other_game.id])
   })
@@ -354,7 +377,7 @@ describe("finders", () => {
       // this querier to find a limited number of quotes from a speaker by snowflake.
       const opts = new QuoteFinder.SearchOptions({
         speaker: speaker.snowflake,
-        gameId: [game1.id],
+        gameId: [main_game.id],
         alias: null,
         text: null,
         guild: main_guild,
@@ -375,6 +398,63 @@ describe("finders", () => {
     })
   })
 
+  describe("count", () => {
+    it("with the main guild, counts all of its quotes", async () => {
+      const opts = new QuoteFinder.SearchOptions({ guild: main_guild })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(7)
+    })
+
+    it("with a game, counts the quote from that game", async () => {
+      const opts = new QuoteFinder.SearchOptions({ gameId: game2.id })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+
+    it("with a guild, counts the quote from the guild", async () => {
+      const opts = new QuoteFinder.SearchOptions({ guild: other_guild })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+
+    it("with a speaker, counts the quote where the speaker is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ speaker: speaker.snowflake })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+
+    it("with a user, counts the quote where the user is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ userId: user.id })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+
+    it("with an alias, counts the quote where a line's attribution matches the alias text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ alias: "lia" })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+
+    it("with text, counts the quote where a line's content matches the text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ text: "specific" })
+
+      const result = await QuoteFinder.count(opts)
+
+      expect(result).toEqual(1)
+    })
+  })
 
   describe("findAndCountall", () => {
     it("with no options, returns all quotes", async () => {
@@ -458,6 +538,7 @@ describe("finders", () => {
       expect(result.count).toEqual(1)
     })
   })
+
   describe("findOne", () => {
     it("returns a single quote", async () => {
       const opts = new QuoteFinder.SearchOptions()
@@ -477,7 +558,7 @@ describe("finders", () => {
       // speaker by snowflake.
       const opts = new QuoteFinder.SearchOptions({
         speaker: speaker.snowflake,
-        gameId: [game1.id],
+        gameId: [main_game.id],
         alias: null,
         text: null,
         guild: main_guild,
@@ -486,7 +567,9 @@ describe("finders", () => {
       var result
 
       try {
-        result = await QuoteFinder.findOne(opts, { order: [["saidAt", "DESC"]] })
+        result = await QuoteFinder.findOne(opts, {
+          order: [["saidAt", "DESC"]],
+        })
         const result_ids = result.map((quote) => quote.id)
 
         expect(result_ids).toEqual([speaker_quote.id])
@@ -503,7 +586,7 @@ describe("finders", () => {
 
     beforeEach(() => {
       discord_quoter = {
-        id: quoter.snowflake
+        id: quoter.snowflake,
       }
     })
 
@@ -519,7 +602,7 @@ describe("finders", () => {
       beforeEach(async () => {
         newest_quote = await Quotes.create({
           quoterId: quoter.id,
-          gameId: game1.id,
+          gameId: main_game.id,
         })
       })
 
@@ -533,6 +616,5 @@ describe("finders", () => {
         expect(result.id).toEqual(newest_quote.id)
       })
     })
-
   })
 })

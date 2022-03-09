@@ -109,6 +109,28 @@ async function findAll(search_options, passthrough_options = {}) {
 }
 
 /**
+ * Count all quotes that match the given criteria
+ *
+ * @param  {SearchOptions}  search_options      Search criteria object
+ * @param  {Object}         passthrough_options Object of options to send directly to Quotes.count(). Items
+ *                                              in where and incliude will overwrite the generated clauses
+ *                                              from search_options.
+ * @return {Promise<Array<Quotes>>}             Promise resolving to an array of Quote objects matching the criteria
+ */
+async function count(search_options, passthrough_options = {}) {
+  const defaults = { distinct: true }
+  const options = search_options.build()
+
+  const final = {
+    ...defaults,
+    ...options,
+    ...passthrough_options,
+  }
+
+  return Quotes.count(final)
+}
+
+/**
  * Find all quotes that match the given criteria and include the total count
  *
  * Orders by quote saidAt timestamp by default. Output format is { rows: Array<Quotes>, count: int }
@@ -188,6 +210,7 @@ async function findLastEditable(quoter, passthrough_options = {}) {
 module.exports = {
   SearchOptions,
   findAll,
+  count,
   findAndCountAll,
   findOne,
   findLastEditable,
