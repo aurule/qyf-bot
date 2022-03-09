@@ -111,13 +111,13 @@ async function findAll(search_options, passthrough_options = {}) {
 /**
  * Find all quotes that match the given criteria and include the total count
  *
- * Orders by quote saidAt timestamp by default.
+ * Orders by quote saidAt timestamp by default. Output format is { rows: Array<Quotes>, count: int }
  *
  * @param  {SearchOptions}  search_options      Search criteria object
  * @param  {Object}         passthrough_options Object of options to send directly to Quotes.findAndCountAll(). Items
  *                                              in where and incliude will overwrite the generated clauses
  *                                              from search_options.
- * @return {Promise<Array<Quotes>>}             Promise resolving to an array of Quote objects matching the criteria
+ * @return {Promise<Obj>}                       Promise resolving to an array of Quote objects matching the criteria
  */
 async function findAndCountAll(search_options, passthrough_options = {}) {
   const defaults = { order: [["saidAt", "DESC"]] }
