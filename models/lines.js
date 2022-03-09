@@ -12,6 +12,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Lines.belongsTo(models.Quotes, { foreignKey: "quoteId" })
       Lines.belongsTo(models.Users, { as: "speaker", foreignKey: "speakerId" })
+      Lines.hasMany(models.Logs, {
+        foreignKey: "loggableId",
+        constraints: false,
+        scope: {
+          loggableType: "Lines",
+        },
+      })
     }
   }
   Lines.init(

@@ -14,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       Quotes.hasMany(models.Lines, { foreignKey: "quoteId" })
       Quotes.belongsTo(models.Users, { as: "quoter", foreignKey: "quoterId" })
       Quotes.hasMany(models.QuoteEditCodes, { foreignKey: "quoteId" })
+      Quotes.hasMany(models.Logs, {
+        foreignKey: "loggableId",
+        constraints: false,
+        scope: {
+          loggableType: "Quotes",
+        },
+      })
     }
   }
   Quotes.init(

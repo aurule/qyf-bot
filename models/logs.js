@@ -20,6 +20,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "loggableId",
         constraints: false,
       })
+      Logs.belongsTo(models.Quotes, {
+        foreignKey: "loggableId",
+        constraints: false,
+      })
+      Logs.belongsTo(models.Lines, {
+        foreignKey: "loggableId",
+        constraints: false,
+      })
     }
 
     /**
@@ -40,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
               if (instance.Bans === undefined) break
               instance.loggable = instance.Bans
               break
+            case "Quotes":
+              if (instance.Quotes === undefined) break
+              instance.loggable = instance.Quotes
+              break
+            case "Lines":
+              if (instance.Lines === undefined) break
+              instance.loggable = instance.Lines
+              break
           }
 
           // to prevent mistakes
@@ -47,6 +63,10 @@ module.exports = (sequelize, DataTypes) => {
           delete instance.dataValues.Feedback
           delete instance.Bans
           delete instance.dataValues.Bans
+          delete instance.Quotes
+          delete instance.dataValues.Quotes
+          delete instance.Lines
+          delete instance.dataValues.Lines
         }
       })
     }
