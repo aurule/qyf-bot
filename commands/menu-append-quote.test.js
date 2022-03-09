@@ -20,16 +20,16 @@ let message_text = "Text of the quote"
 beforeEach(async () => {
   try {
     guild = await Guilds.create({
-      name: "Test Guild",
+      name: "Menu Append Test Guild",
       snowflake: simpleflake().toString(),
     })
     game = await Games.create({
-      name: "Test Game",
+      name: "Menu Append Test Game",
       guildId: guild.id,
     })
     speaker = await Users.create({
       snowflake: simpleflake().toString(),
-      name: "Test Speaker",
+      name: "Menu Append Test Speaker",
     })
     quote = await Quotes.create({
       gameId: game.id,

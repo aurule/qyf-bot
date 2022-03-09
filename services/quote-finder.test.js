@@ -183,7 +183,7 @@ describe("finders", () => {
         guildId: main_guild.id,
       })
       game_quote = await Quotes.create(
-        { gameId: game2.id, Lines: [{ content: "said", lineOrder: 0 }] },
+        { gameId: game2.id, Lines: [{ content: "game said", lineOrder: 0 }] },
         { include: Lines }
       )
       speaker = await Users.create({
@@ -193,7 +193,7 @@ describe("finders", () => {
       speaker_quote = await Quotes.create(
         {
           gameId: game1.id,
-          Lines: [{ content: "said", speakerId: speaker.id, lineOrder: 0 }],
+          Lines: [{ content: "speaker said", speakerId: speaker.id, lineOrder: 0 }],
         },
         { include: Lines }
       )
@@ -205,7 +205,7 @@ describe("finders", () => {
         {
           gameId: game1.id,
           quoterId: quoter.id,
-          Lines: [{ content: "said", lineOrder: 0 }],
+          Lines: [{ content: "quoter said", lineOrder: 0 }],
         },
         { include: Lines }
       )
@@ -216,14 +216,14 @@ describe("finders", () => {
       user_quote = await Quotes.create(
         {
           gameId: game1.id,
-          Lines: [{ content: "said", speakerId: user.id, lineOrder: 0 }],
+          Lines: [{ content: "user said", speakerId: user.id, lineOrder: 0 }],
         },
         { include: Lines }
       )
       alias_quote = await Quotes.create(
         {
           gameId: game1.id,
-          Lines: [{ content: "said", speakerAlias: "Alias", lineOrder: 0 }],
+          Lines: [{ content: "alias said", speakerAlias: "Alias", lineOrder: 0 }],
         },
         { include: Lines }
       )
@@ -244,7 +244,7 @@ describe("finders", () => {
         guildId: other_guild.id,
       })
       guild_quote = await Quotes.create(
-        { gameId: other_game.id, Lines: [{ content: "said", lineOrder: 0 }] },
+        { gameId: other_game.id, Lines: [{ content: "guild said", lineOrder: 0 }] },
         { include: Lines }
       )
     } catch (err) {
