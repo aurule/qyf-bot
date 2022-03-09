@@ -404,41 +404,40 @@ describe("paginationControls", () => {
 
     expect(result).toEqual([])
   })
-
   it("adds a back button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0]).toMatchObject({ customId: "paginateBack" })
+    expect(result[0].components[0].customId).toEqual("paginateBack")
   })
 
   it("disables the back button on the first page", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0]).toMatchObject({ disabled: true })
+    expect(result[0].components[0].disabled).toBeTruthy()
   })
 
   it("enables the back button on later pages", () => {
     const result = list_quotes_command.paginationControls(2, 9)
 
-    expect(result[0].components[0]).toMatchObject({ disabled: false })
+    expect(result[0].components[0].disabled).toBeFalsy()
   })
 
   it("adds a next button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[1]).toMatchObject({ customId: "paginateNext" })
+    expect(result[0].components[1].customId).toEqual("paginateNext")
   })
 
-  it("disables the next button on the first page", () => {
+  it("disables the next button on the second page", () => {
     const result = list_quotes_command.paginationControls(2, 9)
 
-    expect(result[0].components[1]).toMatchObject({ disabled: true })
+    expect(result[0].components[1].disabled).toBeTruthy()
   })
 
   it("enables the next button on earlier pages", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[1]).toMatchObject({ disabled: false })
+    expect(result[0].components[1].disabled).toBeFalsy()
   })
 })
 
