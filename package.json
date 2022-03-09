@@ -43,7 +43,8 @@
     "migrate:ci": "NODE_ENV=ci sequelize-cli db:migrate",
     "deploy": "bash scripts/deploy-bot.sh",
     "changelog:build": "node scripts/build-changelog.js",
-    "changelog:add": "node scripts/add-changelog-snippet.js"
+    "changelog:add": "node scripts/add-changelog-snippet.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
