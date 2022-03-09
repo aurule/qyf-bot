@@ -142,7 +142,7 @@ async function count(search_options, passthrough_options = {}) {
  * @return {Promise<Obj>}                       Promise resolving to an array of Quote objects matching the criteria
  */
 async function findAndCountAll(search_options, passthrough_options = {}) {
-  const defaults = { order: [["saidAt", "DESC"]] }
+  const defaults = { distinct: true, order: [["saidAt", "DESC"]] }
   const options = search_options.build()
 
   const final = {
