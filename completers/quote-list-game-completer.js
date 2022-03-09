@@ -26,7 +26,7 @@ module.exports = {
       .map((game) => {
         return { name: game.name, value: game.name }
       })
-    options.push({ name: "All Games", value: ALL_GAMES})
+    if (data.length > 1) options.push({ name: "All Games", value: ALL_GAMES})
 
     return interaction.respond(options)
   },
