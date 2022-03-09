@@ -375,6 +375,89 @@ describe("finders", () => {
     })
   })
 
+
+  describe("findAndCountall", () => {
+    it("with no options, returns all quotes", async () => {
+      const opts = new QuoteFinder.SearchOptions()
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual(
+        expect.arrayContaining([
+          game_quote.id,
+          speaker_quote.id,
+          user_quote.id,
+          alias_quote.id,
+          guild_quote.id,
+          alias_quote.id,
+          text_quote.id,
+        ])
+      )
+      // we don't test the count here because the results are sometimes polluted by other tests
+      // running in parallel
+    })
+
+    it("with a game, returns the quote from that game", async () => {
+      const opts = new QuoteFinder.SearchOptions({ gameId: game2.id })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([game_quote.id])
+      expect(result.count).toEqual(1)
+    })
+
+    it("with a guild, returns the quote from the guild", async () => {
+      const opts = new QuoteFinder.SearchOptions({ guild: other_guild })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([guild_quote.id])
+      expect(result.count).toEqual(1)
+    })
+
+    it("with a speaker, returns the quote where the speaker is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ speaker: speaker.snowflake })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([speaker_quote.id])
+      expect(result.count).toEqual(1)
+    })
+
+    it("with a user, returns the quote where the user is associated with a line", async () => {
+      const opts = new QuoteFinder.SearchOptions({ userId: user.id })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([user_quote.id])
+      expect(result.count).toEqual(1)
+    })
+
+    it("with an alias, returns the quote where a line's attribution matches the alias text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ alias: "lia" })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([alias_quote.id])
+      expect(result.count).toEqual(1)
+    })
+
+    it("with text, returns the quote where a line's content matches the text", async () => {
+      const opts = new QuoteFinder.SearchOptions({ text: "specific" })
+
+      const result = await QuoteFinder.findAndCountAll(opts)
+      const result_ids = result.rows.map((quote) => quote.id)
+
+      expect(result_ids).toEqual([text_quote.id])
+      expect(result.count).toEqual(1)
+    })
+  })
   describe("findOne", () => {
     it("returns a single quote", async () => {
       const opts = new QuoteFinder.SearchOptions()
