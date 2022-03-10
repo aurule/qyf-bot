@@ -31,7 +31,10 @@ module.exports = {
         .map(c => `• ${commandNamePresenter.present(c)} - ${c.description}`)
         .join("\n"),
       "",
-      "Additionally, it has a few context menu commands:",
+      oneLine`
+        Additionally, there are a few context menu commands, accessable by right-clicking a message, selecting
+        Apps, then selecting the command:
+      `,
       commands
         .filter(c => c.type === "menu")
         .map(c => `• ${commandNamePresenter.present(c)} - ${c.description}`)
