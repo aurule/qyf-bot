@@ -1,12 +1,14 @@
-const { inlineCode } = require("@discordjs/builders")
+const { inlineCode, italic } = require('@discordjs/builders');
 const { stripIndent, oneLine } = require("common-tags")
 const commandFetch = require("../services/command-fetch")
+const commandNamePresenter = require("../presenters/command-name-presenter")
 
 module.exports = {
   name: "commands",
   title: "Commands",
   description: "How to use slash commands and what's available",
   help() {
+    const commands = commandFetch.all()
     return [
       oneLine`
         qyf-bot uses slash commands that let you add games and quotes. Slash commands are started by typing a
@@ -23,10 +25,16 @@ module.exports = {
         the argument name to begin filling it in.
       `,
       "",
-      "Here are all of the commands that qyf-bot knows:",
-      commandFetch
-        .all()
-        .map(c => `• ${inlineCode("/"+c.name)} - ${c.description}`)
+      "Here are all of the slash commands that qyf-bot knows:",
+      commands
+        .filter(c => c.type !== "menu")
+        .map(c => `• ${commandNamePresenter.present(c)} - ${c.description}`)
+        .join("\n"),
+      "",
+      "Additionally, it has a few context menu commands:",
+      commands
+        .filter(c => c.type === "menu")
+        .map(c => `• ${commandNamePresenter.present(c)} - ${c.description}`)
         .join("\n"),
     ].join("\n")
   },
