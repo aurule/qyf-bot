@@ -248,10 +248,11 @@ async function getGameOrDefault(gameName, channel, guild) {
 
 module.exports = {
   name: "list-quotes",
+  description: "Show the most recent quotes from the current game",
   data: () =>
     new SlashCommandBuilder()
-      .setName("list-quotes")
-      .setDescription("Show the most recent quotes from the current game")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addUserOption((option) =>
         option.setName("speaker").setDescription("By a user")
       )

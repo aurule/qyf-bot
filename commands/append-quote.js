@@ -24,10 +24,11 @@ async function getSpeakerMember(arg, interaction, last_line) {
 
 module.exports = {
   name: "append-quote",
+  description: "Add a line to your last quote",
   data: () =>
     new SlashCommandBuilder()
-      .setName("append-quote")
-      .setDescription("Add a line to a quote")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option.setName("text").setDescription("What was said").setRequired(true)
       )

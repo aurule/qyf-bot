@@ -93,10 +93,11 @@ function describeResults(
 
 module.exports = {
   name: "rand-quote",
+  description: "Show a random quote from the current game",
   data: () =>
     new SlashCommandBuilder()
-      .setName("rand-quote")
-      .setDescription("Show a random quote from the current game")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addUserOption((option) =>
         option.setName("speaker").setDescription("By a user")
       )

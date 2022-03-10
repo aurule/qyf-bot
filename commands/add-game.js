@@ -9,11 +9,12 @@ const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "add-game",
+  description: "Add a game to this server",
   policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
-      .setName("add-game")
-      .setDescription("Add a game to this server")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option
           .setName("name")

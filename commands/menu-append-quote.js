@@ -11,10 +11,11 @@ const { quoteReply } = require("../services/reply-builder")
 
 module.exports = {
   name: "Add to quote",
+  description: "Append a message to your last quote",
   type: "menu",
   data: () =>
     new ContextMenuCommandBuilder()
-      .setName("Add to quote")
+      .setName(module.exports.name)
       .setType(ApplicationCommandType.Message),
   async execute(interaction) {
     const message = await interaction.channel.messages.fetch(

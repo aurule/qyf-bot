@@ -85,10 +85,11 @@ async function promptForGame(interaction, guild) {
 
 module.exports = {
   name: "quote",
+  description: "Record a quote!",
   data: () =>
     new SlashCommandBuilder()
-      .setName("quote")
-      .setDescription("Record a quote!")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option.setName("text").setDescription("What was said").setRequired(true)
       )

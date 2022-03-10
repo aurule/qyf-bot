@@ -13,10 +13,11 @@ const { quoteReply } = require("../services/reply-builder")
 
 module.exports = {
   name: "Quote Message",
+  description: "Quote a message that was sent",
   type: "menu",
   data: () =>
     new ContextMenuCommandBuilder()
-      .setName("Quote Message")
+      .setName(module.exports.name)
       .setType(ApplicationCommandType.Message),
   async execute(interaction) {
     const message = await interaction.channel.messages.fetch(

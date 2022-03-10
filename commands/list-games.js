@@ -5,9 +5,10 @@ const { stripIndent, oneLine } = require("common-tags")
 
 module.exports = {
   name: "list-games",
+  description: "Show the games for this server",
   data: () => new SlashCommandBuilder()
-    .setName("list-games")
-    .setDescription("Show the games for this server"),
+    .setName(module.exports.name)
+    .setDescription(module.exports.description),
   async execute(interaction) {
     const guild = await Guilds.findByInteraction(interaction)
     const games = await Games.findAll({

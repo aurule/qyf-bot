@@ -6,13 +6,12 @@ const BannedPolicy = require("../policies/banned-policy")
 
 module.exports = {
   name: "qyf-feedback",
+  description: "Compliment the dev, suggest a new feature, or complain 'cause something broke",
   policy: BannedPolicy,
   data: () =>
     new SlashCommandBuilder()
-      .setName("qyf-feedback")
-      .setDescription(
-        "Compliment the dev, suggest a new feature, or complain 'cause something broke"
-      )
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option
           .setName("type")

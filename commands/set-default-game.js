@@ -10,11 +10,12 @@ const GameManageCompleter = require("../completers/game-manage-completer")
 
 module.exports = {
   name: "set-default-game",
+  description: "Set the default game for this channel",
   policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
-      .setName("set-default-game")
-      .setDescription("Set the default game for this channel")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option
           .setName("game")

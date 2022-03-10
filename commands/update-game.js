@@ -11,11 +11,12 @@ const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "update-game",
+  description: "Change the name or description of a game",
   policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
-      .setName("update-game")
-      .setDescription("Change the name or description of a game")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addIntegerOption((option) =>
         option
           .setName("game")

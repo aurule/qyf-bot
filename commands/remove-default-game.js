@@ -7,10 +7,11 @@ const ManagerPolicy = require("../policies/manager-policy")
 
 module.exports = {
   name: "remove-default-game",
+  description: "Remove the default game for this channel",
   policy: ManagerPolicy,
   data: () => new SlashCommandBuilder()
-    .setName("remove-default-game")
-    .setDescription("Remove the default game for this channel")
+    .setName(module.exports.name)
+    .setDescription(module.exports.description)
     .addChannelOption((option) =>
       option.setName("channel").setDescription("The target channel")
     )

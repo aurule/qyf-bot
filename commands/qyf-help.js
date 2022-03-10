@@ -8,10 +8,11 @@ const Topics = require("../help")
 
 module.exports = {
   name: "qyf-help",
+  description: "Get help with qyf-bot and its commands",
   data() {
     return new SlashCommandBuilder()
-      .setName("qyf-help")
-      .setDescription("Get help with qyf-bot and its commands")
+      .setName(module.exports.name)
+      .setDescription(module.exports.description)
       .addStringOption((option) =>
         option
           .setName("topic")

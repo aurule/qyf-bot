@@ -7,6 +7,7 @@ The command object looks like this:
 ```ts
 {
     name: string,                       // "command-name"
+    description: string,                // "user visible description"
     type?: string,                      // "slash"
     policy?: Object|Array<Object>,      // ManagerPolicy
     data(options?): Builder,            // SlashCommandBuilder
@@ -22,6 +23,7 @@ The command object looks like this:
 Requirements:
 
 * The `name` *must* be the same as used in the builder.setName() call within `data`
+* The `description` should be the same as used in the builder.setDescription() call
 * `type` is optional and describes the type of command: "menu" or "slash". `Undefined` is interpreted as `"slash"`.
 * `policy` is optional and contains a policy object (or array of them) for allowing access to the command. `Undefined` allows all users.
 * `data` must return an instance of a discordjs command builder
