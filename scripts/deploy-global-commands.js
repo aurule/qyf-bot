@@ -10,5 +10,6 @@ const commandService = require("../services/command-deploy");
  */
 (async () => {
   const argv = parseArgs(process.argv.slice(2))
+  console.log(argv)
   await commandService.deployGlobals(argv.hash)
 })()
