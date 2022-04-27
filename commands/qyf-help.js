@@ -17,13 +17,13 @@ module.exports = {
         option
           .setName("topic")
           .setDescription("The topic you want help with")
-          .addChoices(Topics.map((t) => [`${t.title}`, `${t.name}`]))
+          .setChoices(...Topics.map((t) => { return {name: `${t.title}`, value: `${t.name}`} }))
       )
       .addStringOption((option) =>
         option
           .setName("command")
           .setDescription("The command you want help with")
-          .addChoices(CommandChoicesTransformer.transform(commandFetch.all()))
+          .setChoices(...CommandChoicesTransformer.transform(commandFetch.all()))
       )
   },
   async execute(interaction) {

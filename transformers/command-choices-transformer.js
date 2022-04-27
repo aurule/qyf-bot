@@ -10,7 +10,7 @@ module.exports = {
   transform: (commands) => {
     return commands.map((command) => {
       const suffix = command.type == "menu" ? " ☰" : ""
-      return [`${command.name}${suffix}`, `${command.name}`]
+      return {name: `${command.name}${suffix}`, value: `${command.name}`}
     })
   },
 }
