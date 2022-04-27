@@ -1,6 +1,6 @@
 "use strict"
 
-const { memberNicknameMention } = require("@discordjs/builders")
+const { userMention } = require("@discordjs/builders")
 
 module.exports = {
   /**
@@ -19,7 +19,7 @@ module.exports = {
   quoteReply: ({reporter, speaker, text, alias = null, action = "quoted"}) => {
     const lines = []
 
-    lines.push(memberNicknameMention(reporter.id))
+    lines.push(userMention(reporter.id))
     lines.push(` ${action} `)
     if (speaker.anonymous) {
       alias ? lines.push(alias) : lines.push(speaker.username)
@@ -27,7 +27,7 @@ module.exports = {
       if (speaker.id === reporter.id) {
         lines.push("themself")
       } else {
-        lines.push(memberNicknameMention(speaker.id))
+        lines.push(userMention(speaker.id))
       }
       if (alias) {
         lines.push(" as ")
