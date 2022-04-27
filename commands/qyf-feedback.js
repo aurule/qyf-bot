@@ -17,9 +17,11 @@ module.exports = {
           .setName("type")
           .setDescription("The sort of feedback this is")
           .setRequired(true)
-          .addChoice("Feature request", Feedback.TYPE_REQUEST)
-          .addChoice("Bug report or complaint", Feedback.TYPE_COMPLAINT)
-          .addChoice("Just saying things", Feedback.TYPE_COMMENT)
+          .setChoices(
+            {name: "Feature request", value: Feedback.TYPE_REQUEST},
+            {name: "Bug report or complaint", value: Feedback.TYPE_COMPLAINT},
+            {name: "Just saying things", value: Feedback.TYPE_COMMENT}
+          )
       )
       .addStringOption((option) =>
         option
