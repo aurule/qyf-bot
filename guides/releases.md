@@ -2,14 +2,13 @@
 
 Steps to do:
 
-1. make a release branch, `release/<new version>`
-2. run `npm --no-git-tag-version version <arg>` to update the version in package.json and package-lock.json
-    * arg can be one of patch, minor, major, prepatch, preminor, premajor, prerelease
-3. run `npm run changelog:build` to generate the new version's changelog
-4. commit!
-5. merge the release branch into main
-    * copy the changelog into the commit message
-6. tag the merge commit with the new version
-7. merge the release branch into develop
-8. delete the release branch
-9. push main to deploy the release
+1. run `sh scripts/start-release.sh <version>`
+    * this creates the branch `release/<version>`
+    * then runs `npm --no-git-tag-version version <version>` to update the version in package.json and package-lock.json
+    * then runs `npm run changelog:build` to generate the new version's changelog
+2. commit!
+3. merge the release branch into `main`
+4. tag the merge commit with the new version
+5. merge the release branch into `develop`
+6. delete the release branch
+7. push main to deploy the release
