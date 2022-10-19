@@ -2,7 +2,6 @@
 
 const set_default_game_command = require("./set-default-game")
 const { Guilds, Games, DefaultGames } = require("../models")
-const ManagerPolicy = require("../policies/manager-policy")
 
 const { Interaction } = require("../testing/interaction")
 const { simpleflake } = require("simpleflakes")
@@ -137,12 +136,6 @@ describe("execute", () => {
       return set_default_game_command
         .execute(interaction)
         .catch((e) => expect(e.message).toMatch("test error"))
-    })
-  })
-
-  describe("permissions", () => {
-    it("uses the managers policy", async () => {
-      expect(set_default_game_command.policy).toEqual(ManagerPolicy)
     })
   })
 })

@@ -1,7 +1,6 @@
 const add_game_command = require("./add-game")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
-const ManagerPolicy = require("../policies/manager-policy")
 const GamesForGuild = require("../caches/games-for-guild")
 
 const { Interaction } = require("../testing/interaction")
@@ -95,12 +94,6 @@ describe("execute", () => {
       return add_game_command
         .execute(interaction)
         .catch((e) => expect(e.message).toMatch("test error"))
-    })
-  })
-
-  describe("permissions", () => {
-    it("uses the managers policy", async () => {
-      expect(add_game_command.policy).toEqual(ManagerPolicy)
     })
   })
 })

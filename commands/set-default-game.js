@@ -4,13 +4,11 @@ const { SlashCommandBuilder, underscore, Collection } = require("discord.js")
 const { Guilds, Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
 const { logger } = require("../util/logger")
-const ManagerPolicy = require("../policies/manager-policy")
 const GameManageCompleter = require("../completers/game-manage-completer")
 
 module.exports = {
   name: "set-default-game",
   description: "Set the default game for this channel",
-  policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName(module.exports.name)

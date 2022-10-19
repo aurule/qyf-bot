@@ -4,14 +4,12 @@ const { SlashCommandBuilder, Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const { logger } = require("../util/logger")
-const ManagerPolicy = require("../policies/manager-policy")
 const GameManageCompleter = require("../completers/game-manage-completer")
 const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "update-game",
   description: "Change the name or description of a game",
-  policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName(module.exports.name)

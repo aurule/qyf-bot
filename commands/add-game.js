@@ -4,13 +4,11 @@ const { stripIndent, oneLine } = require("common-tags")
 const { Guilds, Games } = require("../models")
 const { UniqueConstraintError } = require("sequelize")
 const { logger } = require("../util/logger")
-const ManagerPolicy = require("../policies/manager-policy")
 const GamesForGuild = require("../caches/games-for-guild")
 
 module.exports = {
   name: "add-game",
   description: "Add a game to this server",
-  policy: ManagerPolicy,
   data: () =>
     new SlashCommandBuilder()
       .setName(module.exports.name)
