@@ -3,12 +3,12 @@ require("dotenv").config()
 
 // Require the necessary discord.js classes
 const fs = require("fs")
-const { Client, Collection, Intents } = require("discord.js")
+const { Client, Collection, GatewayIntentBits } = require("discord.js")
 const { jsNoTests } = require("./util/filters")
 const CommandFetch = require("./services/command-fetch")
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
+const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 const token = process.env.BOT_TOKEN
 
 // Store commands (slash commands, context menu commands)
