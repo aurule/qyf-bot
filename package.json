@@ -1,13 +1,10 @@
 {
   "dependencies": {
-    "@discordjs/builders": "^0.15.0",
-    "@discordjs/collection": "^0.7.0",
-    "@discordjs/rest": "^0.5.0",
     "@keyv/redis": "^2.5.2",
     "common-tags": "^1.8.2",
     "date-fns": "^2.29.1",
-    "discord-api-types": "^0.36.3",
-    "discord.js": "^13.9.1",
+    "discord-api-types": "^0.37.14",
+    "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
     "keyv": "^4.3.3",
     "minimist": "^1.2.7",
