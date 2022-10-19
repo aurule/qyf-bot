@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, italic, underscore } = require("@discordjs/builders")
+const { SlashCommandBuilder, italic, underscore } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const commandFetch = require("../services/command-fetch")

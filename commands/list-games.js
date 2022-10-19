@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
+const { SlashCommandBuilder } = require("discord.js")
 const { Guilds, Games, DefaultGames } = require("../models")
 const { present } = require("../presenters/game-list-presenter")
 const { stripIndent, oneLine } = require("common-tags")

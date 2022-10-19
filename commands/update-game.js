@@ -1,7 +1,6 @@
-const { SlashCommandBuilder } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
 const { UniqueConstraintError } = require("sequelize")
-const { Collection } = require("discord.js")
+const { SlashCommandBuilder, Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const { logger } = require("../util/logger")

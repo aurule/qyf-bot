@@ -1,6 +1,5 @@
-const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
 const { stripIndent, oneLine } = require("common-tags")
-const { Collection } = require("discord.js")
+const { SlashCommandBuilder, userMention, underscore, Collection } = require("discord.js")
 
 const { Guilds, Games, Users, sequelize } = require("../models")
 const GameChoicesTransformer = require("../transformers/game-choices-transformer")

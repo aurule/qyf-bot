@@ -1,6 +1,6 @@
 "use strict"
 
-const { channelMention } = require("@discordjs/builders")
+const { channelMention } = require("discord.js")
 const { DefaultGames } = require("../models")
 
 module.exports = {

@@ -1,6 +1,4 @@
-const { ContextMenuCommandBuilder } = require("@discordjs/builders")
-const { ApplicationCommandType } = require("discord-api-types/v9")
-const { MessageActionRow, MessageSelectMenu } = require("discord.js")
+const { ApplicationCommandType, ContextMenuCommandBuilder, MessageActionRow, MessageSelectMenu } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { determineName } = require("../services/speaker-name")

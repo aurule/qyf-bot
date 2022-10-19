@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, underscore } = require("@discordjs/builders")
+const { SlashCommandBuilder, underscore } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { explicitScope } = require("../services/default-game-scope")

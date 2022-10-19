@@ -5,7 +5,7 @@ const { present } = require("./game-list-presenter")
 
 const { simpleflake } = require("simpleflakes")
 const {
-  MessageMentions: { CHANNELS_PATTERN },
+  MessageMentions: { ChannelsPattern },
 } = require("discord.js")
 
 describe("present", () => {
@@ -114,7 +114,7 @@ describe("present", () => {
     })
     const result = present(gamesList)
 
-    expect(result).toMatch(CHANNELS_PATTERN)
+    expect(result).toMatch(ChannelsPattern)
 
     await defaultGame.destroy()
   })

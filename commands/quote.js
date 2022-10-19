@@ -1,8 +1,6 @@
-const { SlashCommandBuilder, userMention, underscore } = require("@discordjs/builders")
-const { MessageActionRow, MessageSelectMenu } = require("discord.js")
+const { SlashCommandBuilder, userMention, underscore, MessageActionRow, MessageSelectMenu, Collection } = require("discord.js")
 const { followup_store } = require("../util/keyv")
 const { stripIndent, oneLine } = require("common-tags")
-const { Collection } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const { determineName } = require("../services/speaker-name")
