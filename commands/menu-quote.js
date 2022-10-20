@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ContextMenuCommandBuilder, underscore, MessageActionRow, MessageSelectMenu } = require("discord.js")
+const { ApplicationCommandType, ContextMenuCommandBuilder, underscore, ActionRowBuilder, SelectMenuBuilder } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { followup_store } = require("../util/keyv")
@@ -69,8 +69,8 @@ module.exports = {
     const guild = await Guilds.findByInteraction(interaction, {
       include: Games,
     })
-    const gameSelectRow = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
+    const gameSelectRow = new ActionRowBuilder().addComponents(
+      new SelectMenuBuilder()
         .setCustomId("newQuoteGameSelect")
         .setPlaceholder("Pick a game")
         .addOptions(GameSelectTransformer.transform(guild.Games))
