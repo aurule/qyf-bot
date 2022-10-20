@@ -152,7 +152,7 @@ describe("execute", () => {
 
       const reply = await list_quotes_command.execute(interaction)
 
-      expect(reply.data.embeds[0].description).toMatch("Quote text is cool")
+      expect(reply.data.embeds[0].data.description).toMatch("Quote text is cool")
     })
   })
 
@@ -407,13 +407,13 @@ describe("paginationControls", () => {
   it("adds a back button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0].customId).toEqual("paginateBack")
+    expect(result[0].components[0].data.custom_id).toEqual("paginateBack")
   })
 
   it("disables the back button on the first page", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[0].disabled).toBeTruthy()
+    expect(result[0].components[0].data.disabled).toBeTruthy()
   })
 
   it("enables the back button on later pages", () => {
@@ -425,13 +425,13 @@ describe("paginationControls", () => {
   it("adds a next button", () => {
     const result = list_quotes_command.paginationControls(1, 9)
 
-    expect(result[0].components[1].customId).toEqual("paginateNext")
+    expect(result[0].components[1].data.custom_id).toEqual("paginateNext")
   })
 
   it("disables the next button on the second page", () => {
     const result = list_quotes_command.paginationControls(2, 9)
 
-    expect(result[0].components[1].disabled).toBeTruthy()
+    expect(result[0].components[1].data.disabled).toBeTruthy()
   })
 
   it("enables the next button on earlier pages", () => {
@@ -476,7 +476,7 @@ describe("QuotePageEmbed", () => {
         game: { name: "Test Game" },
       })
 
-      expect(embed.title).toMatch("Test Game")
+      expect(embed.data.title).toMatch("Test Game")
     })
   })
 
@@ -488,7 +488,7 @@ describe("QuotePageEmbed", () => {
         game: { name: "Test Game" },
       })
 
-      expect(embed.footer.text).toMatch("3 of")
+      expect(embed.data.footer.text).toMatch("3 of")
     })
 
     it("includes the max page", () => {
@@ -498,7 +498,7 @@ describe("QuotePageEmbed", () => {
         game: { name: "Test Game" },
       })
 
-      expect(embed.footer.text).toMatch("of 4")
+      expect(embed.data.footer.text).toMatch("of 4")
     })
 
     it("is empty with no results", () => {
@@ -508,7 +508,7 @@ describe("QuotePageEmbed", () => {
         game: { name: "Test Game" },
       })
 
-      expect(embed.footer).toBeNull()
+      expect(embed.data.footer).toBeUndefined()
     })
   })
 
@@ -521,7 +521,7 @@ describe("QuotePageEmbed", () => {
         alias: "tester",
       })
 
-      expect(embed.description).toMatch("by tester")
+      expect(embed.data.description).toMatch("by tester")
     })
 
     it("includes the quote contents", () => {
@@ -536,7 +536,7 @@ describe("QuotePageEmbed", () => {
         alias: "tester",
       })
 
-      expect(embed.description).toMatch("test quote text")
+      expect(embed.data.description).toMatch("test quote text")
     })
   })
 
