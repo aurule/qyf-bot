@@ -1,14 +1,13 @@
+const { stripIndent, oneLine } = require("common-tags")
 const {
   SlashCommandBuilder,
   userMention,
   underscore,
-} = require("@discordjs/builders")
-const { stripIndent, oneLine } = require("common-tags")
-const {
   Collection,
-  MessageActionRow,
-  MessageButton,
-  MessageEmbed,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
 } = require("discord.js")
 const { logger } = require("../util/logger")
 
@@ -35,7 +34,7 @@ const PAGINATION_TIMEOUT = 300000
 /**
  * Embed class for handling the paginated search results
  */
-class QuotePageEmbed extends MessageEmbed {
+class QuotePageEmbed extends EmbedBuilder {
   /**
    * Create a new embed for paginated quote results
    *
@@ -160,16 +159,16 @@ function getPageResults(pageNum, finder_options) {
 function paginationControls(pageNum, total) {
   if (total <= PAGE_SIZE) return []
 
-  const actions = new MessageActionRow().addComponents(
-    new MessageButton()
+  const actions = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
       .setCustomId("paginateBack")
       .setLabel("Back")
-      .setStyle("SECONDARY")
+      .setStyle(ButtonStyle.Secondary)
       .setDisabled(pageNum == 1),
-    new MessageButton()
+    new ButtonBuilder()
       .setCustomId("paginateNext")
       .setLabel("Next")
-      .setStyle("SECONDARY")
+      .setStyle(ButtonStyle.Secondary)
       .setDisabled(pageNum * PAGE_SIZE >= total)
   )
 
