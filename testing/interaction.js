@@ -95,8 +95,8 @@ class Interaction {
     return this.interactionType == "command"
   }
 
-  isApplicationCommand() {
-    return this.interactionType == "applicationCommand"
+  isChatInputCommand() {
+    return this.interactionType == "chatInputCommand"
   }
 
   isAutocomplete() {

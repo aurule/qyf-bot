@@ -42,7 +42,7 @@ describe("execute", () => {
     })
 
     it("executes application commands", () => {
-      interaction.interactionType = "applicationCommand"
+      interaction.interactionType = "chatInputCommand"
       handleSpy.mockResolvedValue("worked")
 
       return expect(
