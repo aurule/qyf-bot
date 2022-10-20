@@ -8,6 +8,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  ComponentType
 } = require("discord.js")
 const { logger } = require("../util/logger")
 
@@ -330,7 +331,7 @@ module.exports = {
 
     // handle pagination
     const paginationCollector = replyMessage.createMessageComponentCollector({
-      componentType: "BUTTON",
+      componentType: ComponentType.Button,
       time: PAGINATION_TIMEOUT,
     })
     paginationCollector.on("collect", async (i) => {
