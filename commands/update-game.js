@@ -83,8 +83,7 @@ module.exports = {
   help({ command_name }) {
     return [
       oneLine`
-        ${command_name} changes the details of a game that's already on this server. It can only be used by
-        people with the Manage Channels or Manage Server permissions.
+        ${command_name} changes the details of a game that's already on this server.
       `,
       "",
       stripIndent`

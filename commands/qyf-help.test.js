@@ -12,13 +12,13 @@ describe("execute", () => {
   describe("with a topic", () => {
     beforeEach(() => {
       interaction.command_options.command = undefined
-      interaction.command_options.topic = "permissions"
+      interaction.command_options.topic = "about"
     })
 
     it("displays the help for the topic", async () => {
       const result = await qyf_help_command.execute(interaction)
 
-      expect(result).toMatch("restricted to users")
+      expect(result).toMatch("passion project")
     })
 
     it("warns the user if the topic isn't found", async () => {
@@ -58,7 +58,7 @@ describe("execute", () => {
   describe("with a topic and a command", () => {
     beforeEach(() => {
       interaction.command_options.command = "test-command"
-      interaction.command_options.topic = "permissions"
+      interaction.command_options.topic = "about"
       interaction.client.commands.set("test-command", {
         name: "test-command",
         help: () => "test help",
@@ -68,7 +68,7 @@ describe("execute", () => {
     it("displays the help for the topic", async () => {
       const result = await qyf_help_command.execute(interaction)
 
-      expect(result).toMatch("restricted to users")
+      expect(result).toMatch("passion project")
     })
   })
 

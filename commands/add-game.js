@@ -55,8 +55,7 @@ module.exports = {
   help({ command_name }) {
     return [
       oneLine`
-        ${command_name} adds a new game for quotes on this server. It can only be used by people with the
-        Manage Channels or Manage Server permissions.
+        ${command_name} adds a new game for quotes on this server.
       `,
       "",
       stripIndent`
