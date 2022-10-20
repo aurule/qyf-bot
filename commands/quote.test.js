@@ -230,12 +230,13 @@ describe("promptForGame", () => {
   it("replies with a select menu", async () => {
     const replySpy = jest.spyOn(interaction, "reply")
 
-    const result = await quote_command.promptForGame(interaction, guild)
+    await quote_command.promptForGame(interaction, guild)
 
     // replySpy was called with the correct select component
+    const selectBuilder = replySpy.mock.calls[replySpy.mock.calls.length - 1][0].components[0].components[0]
     expect(
-      replySpy.mock.calls[replySpy.mock.calls.length - 1][0].components[0].components[0]
-    ).toMatchObject({ customId: "newQuoteGameSelect" })
+      selectBuilder.data.custom_id
+    ).toEqual("newQuoteGameSelect")
   })
 
   it("returns the selected game", async () => {

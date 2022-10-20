@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, userMention, underscore, MessageActionRow, MessageSelectMenu, Collection } = require("discord.js")
+const { SlashCommandBuilder, userMention, underscore, ActionRowBuilder, SelectMenuBuilder, Collection } = require("discord.js")
 const { followup_store } = require("../util/keyv")
 const { stripIndent, oneLine } = require("common-tags")
 
@@ -48,8 +48,8 @@ async function getGame(game_arg, guild, interaction) {
  * @return {Promise<Games|null>}      The chosen game, or null if the prompt timed out
  */
 async function promptForGame(interaction, guild) {
-  const gameSelectRow = new MessageActionRow().addComponents(
-    new MessageSelectMenu()
+  const gameSelectRow = new ActionRowBuilder().addComponents(
+    new SelectMenuBuilder()
       .setCustomId("newQuoteGameSelect")
       .setPlaceholder("Pick a game")
       .addOptions(GameSelectTransformer.transform(guild.Games))
