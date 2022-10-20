@@ -9,11 +9,14 @@ module.exports = {
    */
   transform: (games) => {
     return games.map((game) => {
-      return {
+      let optionData = {
         label: game.name,
-        description: game.description,
         value: game.id.toString(),
       }
+
+      if(game.description) optionData.description = game.description
+
+      return optionData
     })
   },
 }
