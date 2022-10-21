@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js")
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { Guilds, Games } = require("../models")
@@ -24,7 +24,8 @@ module.exports = {
           .setName("description")
           .setDescription("A few words about the game")
       )
-      .setDMPermission(false),
+      .setDMPermission(false)
+      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction) {
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")

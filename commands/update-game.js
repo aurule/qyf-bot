@@ -28,7 +28,8 @@ module.exports = {
           .setName("description")
           .setDescription("A few words about the game")
       )
-      .setDMPermission(false),
+      .setDMPermission(false)
+      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),

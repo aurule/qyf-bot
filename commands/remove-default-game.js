@@ -16,7 +16,8 @@ module.exports = {
     .addBooleanOption((option) =>
       option.setName("server").setDescription("Remove the server default")
     )
-    .setDMPermission(false),
+    .setDMPermission(false)
+    .setMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction) {
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")

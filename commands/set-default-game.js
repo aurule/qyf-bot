@@ -28,7 +28,8 @@ module.exports = {
           .setName("server")
           .setDescription("Apply default to the whole server")
       )
-      .setDMPermission(false),
+      .setDMPermission(false)
+      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),
