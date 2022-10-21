@@ -34,14 +34,6 @@ async function handleCommand(interaction) {
     })
   }
 
-  if (!interaction.guild) {
-    if (command.dm) return command.dm(interaction)
-    return interaction.reply({
-      content: "This command does not work in DMs. Sorry!",
-      ephemeral: true,
-    })
-  }
-
   ParticipationCreator.findOrCreateByInteraction(interaction)
 
   return command.execute(interaction)
