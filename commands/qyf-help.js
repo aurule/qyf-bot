@@ -25,6 +25,7 @@ module.exports = {
           .setDescription("The command you want help with")
           .setChoices(...CommandChoicesTransformer.transform(commandFetch.all()))
       )
+      .setDMPermission(true)
   },
   async execute(interaction) {
     const command_name_arg = interaction.options.getString("command")
@@ -50,9 +51,6 @@ module.exports = {
 
     // return reply with the command's help text
     return interaction.reply(CommandHelpPresenter.present(command))
-  },
-  async dm(interaction) {
-    return module.exports.execute(interaction)
   },
   help({ command_name }) {
     return [

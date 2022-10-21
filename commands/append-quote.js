@@ -45,7 +45,8 @@ module.exports = {
           .setDescription(
             "The name of who said it. Replaces the speaker's current nickname."
           )
-      ),
+      )
+      .setDMPermission(true),
   getSpeakerMember,
   async execute(interaction) {
     const text = interaction.options.getString("text")
@@ -105,9 +106,6 @@ module.exports = {
       .catch((error) => {
         throw(error)
       })
-  },
-  async dm(interaction) {
-    return module.exports.execute(interaction)
   },
   help({ command_name }) {
     return [

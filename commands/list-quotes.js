@@ -269,7 +269,8 @@ module.exports = {
             "Game the quote is from. Defaults to channel's current game"
           )
           .setAutocomplete(true)
-      ),
+      )
+      .setDMPermission(false),
   autocomplete: new Collection([["game", QuoteListGameCompleter]]),
   async execute(interaction) {
     const speaker = interaction.options.getUser("speaker")

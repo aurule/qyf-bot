@@ -116,7 +116,8 @@ module.exports = {
           .setName("game")
           .setDescription("Pick a game other than the current default")
           .setAutocomplete(true)
-      ),
+      )
+      .setDMPermission(false),
   autocomplete: new Collection([
     ['game', QuoteGameCompleter]
   ]),

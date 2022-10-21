@@ -8,7 +8,8 @@ module.exports = {
   description: "Show the games for this server",
   data: () => new SlashCommandBuilder()
     .setName(module.exports.name)
-    .setDescription(module.exports.description),
+    .setDescription(module.exports.description)
+    .setDMPermission(false),
   async execute(interaction) {
     const guild = await Guilds.findByInteraction(interaction)
     const games = await Games.findAll({

@@ -23,7 +23,8 @@ module.exports = {
         option
           .setName("description")
           .setDescription("A few words about the game")
-      ),
+      )
+      .setDMPermission(false),
   async execute(interaction) {
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")

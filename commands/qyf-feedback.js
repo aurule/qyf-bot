@@ -28,7 +28,8 @@ module.exports = {
           .setName("content")
           .setDescription("Your message to the dev")
           .setRequired(true)
-      ),
+      )
+      .setDMPermission(true),
   async execute(interaction) {
     const type = interaction.options.getString("type")
     const content = interaction.options.getString("content")
@@ -49,9 +50,6 @@ module.exports = {
       content: "Feedback sent!",
       ephemeral: true,
     })
-  },
-  async dm(interaction) {
-    return module.exports.execute(interaction)
   },
   help({ command_name }) {
     return [

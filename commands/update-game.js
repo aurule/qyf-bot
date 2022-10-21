@@ -27,7 +27,8 @@ module.exports = {
         option
           .setName("description")
           .setDescription("A few words about the game")
-      ),
+      )
+      .setDMPermission(false),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),

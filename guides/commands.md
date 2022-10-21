@@ -13,7 +13,6 @@ The command object looks like this:
     data(options?): Builder,            // SlashCommandBuilder
     autocomplete?: Collection,          // new Collection([['game', GameNameCompleter]])
     async execute(interaction): Promise,
-    async dm(interaction): Promise,
     help(options): string,              // "my very long help text"
 }
 ```
@@ -31,8 +30,6 @@ Requirements:
 * `autocomplete` must be present if any options are marked with `.setAutocomplete(true)`
 * the entries in `autocomplete` must use the name of the autocompleted option as the key, and an object with the `.complete()` method as the value
 * `execute` should return `interaction.reply()` or similar
-* `dm` is an optional method similar to `execute` which is run when the command is invoked in a DM
-    - DM channels do not have a guild, so certain policies may fail before `dm` is called
 * `help` receives an options object with the following attributes
 * `help` must return a string
 

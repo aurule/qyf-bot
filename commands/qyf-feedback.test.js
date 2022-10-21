@@ -108,16 +108,6 @@ describe("execute", () => {
   })
 })
 
-describe("dm", () => {
-  it("calls execute", async () => {
-    const executeMock = jest.spyOn(feedback_command, "execute")
-
-    await feedback_command.dm(interaction)
-
-    expect(executeMock).toHaveBeenCalled()
-  })
-})
-
 describe("data", () => {
   // This test is very bare-bones because we're really just
   // testing that the various calls to discord.js functions

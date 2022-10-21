@@ -27,7 +27,8 @@ module.exports = {
         option
           .setName("server")
           .setDescription("Apply default to the whole server")
-      ),
+      )
+      .setDMPermission(false),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),
