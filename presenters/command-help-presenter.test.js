@@ -18,20 +18,4 @@ describe("present", () => {
 
     expect(result).toMatch(test_command.help())
   })
-
-  it("notes when a command can be used in DMs", () => {
-    const dm_command = {
-      ...test_command,
-      dm: () => "yes",
-    }
-    const result = CommandHelpPresenter.present(dm_command)
-
-    expect(result).toMatch("can be used in DMs")
-  })
-
-  it("does not warn about commands which cannot be used in DMs", () => {
-    const result = CommandHelpPresenter.present(test_command)
-
-    expect(result).not.toMatch("can be used in DMs")
-  })
 })

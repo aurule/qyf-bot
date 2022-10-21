@@ -17,11 +17,6 @@ module.exports = {
 
     lines.push(command.help({command_name: command_name}))
 
-    if (command.dm) {
-      lines.push("")
-      lines.push(`${command_name} can be used in DMs with ${userMention(process.env.CLIENT_ID)}`)
-    }
-
     return lines.join("\n")
   }
 }
