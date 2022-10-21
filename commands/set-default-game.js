@@ -1,5 +1,5 @@
 const { stripIndent, oneLine } = require("common-tags")
-const { SlashCommandBuilder, underscore, Collection } = require("discord.js")
+const { SlashCommandBuilder, underscore, Collection, PermissionFlagsBits } = require("discord.js")
 
 const { Guilds, Games, DefaultGames } = require("../models")
 const { explicitScope } = require("../services/default-game-scope")
@@ -29,7 +29,7 @@ module.exports = {
           .setDescription("Apply default to the whole server")
       )
       .setDMPermission(false)
-      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),

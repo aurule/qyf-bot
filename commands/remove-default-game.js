@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, underscore } = require("discord.js")
+const { SlashCommandBuilder, PermissionFlagsBits, underscore } = require("discord.js")
 const { stripIndent, oneLine } = require("common-tags")
 
 const { explicitScope } = require("../services/default-game-scope")
@@ -17,7 +17,7 @@ module.exports = {
       option.setName("server").setDescription("Remove the server default")
     )
     .setDMPermission(false)
-    .setMemberPermissions(PermissionFlagsBits.ManageChannels),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction) {
     const current_channel = interaction.channel
     const channel_option = interaction.options.getChannel("channel")

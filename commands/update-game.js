@@ -1,6 +1,6 @@
 const { stripIndent, oneLine } = require("common-tags")
 const { UniqueConstraintError } = require("sequelize")
-const { SlashCommandBuilder, Collection } = require("discord.js")
+const { SlashCommandBuilder, Collection, PermissionFlagsBits } = require("discord.js")
 
 const { Guilds, Games } = require("../models")
 const { logger } = require("../util/logger")
@@ -29,7 +29,7 @@ module.exports = {
           .setDescription("A few words about the game")
       )
       .setDMPermission(false)
-      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   autocomplete: new Collection([
     ['game', GameManageCompleter]
   ]),

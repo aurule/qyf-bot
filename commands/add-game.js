@@ -25,7 +25,7 @@ module.exports = {
           .setDescription("A few words about the game")
       )
       .setDMPermission(false)
-      .setMemberPermissions(PermissionFlagsBits.ManageChannels),
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction) {
     const game_name = interaction.options.getString("name")
     const description = interaction.options.getString("description")
