@@ -17,7 +17,7 @@ const clientId = process.env.CLIENT_ID
  */
 function restClient() {
   const token = process.env.BOT_TOKEN
-  return new REST({ version: "9" }).setToken(token)
+  return new REST({ version: "10" }).setToken(token)
 }
 
 /**
